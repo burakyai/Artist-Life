@@ -86,7 +86,7 @@ function concertCalc(dry){const cp=S.cp,v=VENUES.find(x=>x.id===cp.v),x=VEN2[cp.
  let rev,cost;if(x.fee){rev=RF(v.pay[0],v.pay[1])*m*(dry?0:1)||((v.pay[0]+v.pay[1])/2*m);cost=rev*PROD[cp.prod][1]}else{const seats=x.cap*(x.shows||1);rev=seats*occ*x.tk*PRICE[cp.pr][1]*m;cost=x.crew*(1+PROD[cp.prod][1]*4)+rev*PROD[cp.prod][1]}
  return {occ,rev,cost,hak:v.m+cp.prova,g}}
 ACT.concert=()=>{const cp=S.cp,v=VENUES.find(x=>x.id===cp.v),c=concertCalc(false);if(!S._mgr&&!useM(c.hak))return;
- const perf=S._mgr?110:S.skill*.55+cp.prova*8+PROD[cp.prod][2]*30+R(0,35)+(S.health<40?-12:0)+(c.g?6:0),great=perf>=75,good=perf>=42;const occ=c.occ*(great?1.05:1);
+ const perf=S._mgr?110:(S._perf!=null?S._perf:S.skill*.55+R(0,35))+cp.prova*8+PROD[cp.prod][2]*30+(S.health<40?-12:0)+(c.g?6:0),great=perf>=75,good=perf>=42;const occ=c.occ*(great?1.05:1);
  S.gigN=S.gigN||{};const rp=1/(1+(S.gigN[v.id]||0)*.5);S.gigN[v.id]=(S.gigN[v.id]||0)+1;const rev=Math.round(c.rev*rp*(great?1.05:good?1:.9)),net0=rev-c.cost;const fans=Math.round(RF(v.fans[0],v.fans[1])*.5*rp*(great?1.5:good?1:.4)*(1+PROD[cp.prod][2])*(c.g?1.2:1));
  let b;if(net0>0)b=income(net0,'gig');else{S.money+=net0;b={net:net0}}addF(fans,'ig');add('health',-v.m);S.skill=clamp(S.skill+1);
  if(cp.set===1){const s=released().sort((a,b)=>b.ra-a.ra||b.id-a.id)[0];if(s)s.pot*=1.1+PROD[cp.prod][2]}

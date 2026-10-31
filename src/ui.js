@@ -51,7 +51,7 @@ function render(){if(!S)return;
 /* ---------- Alt sayfalar ---------- */
 function sheet(k,sub){if(k!==SHEET)SUB=null;if(sub!==undefined)SUB=sub;SHEET=k;calcFame();save();render();drawSheet();$('ov').classList.add('on')}
 function closeSheet(){SHEET=null;SUB=null;$('ov').classList.remove('on')}
-function drawSheet(){const T={kariyer:'Kariyer',panel:'Dijital Panel',gard:'Gardırop',hayat:'Hayat',ayar:'Ayarlar'};
+function drawSheet(){if(!SHEET){render();return}const T={kariyer:'Kariyer',panel:'Dijital Panel',gard:'Gardırop',hayat:'Hayat',ayar:'Ayarlar'};
  $('shT').textContent=SUB?(SUB.title||T[SHEET]):T[SHEET];$('shBack').style.visibility=SUB?'visible':'hidden';
  const b=$('shB'),top=b.scrollTop;b.innerHTML=({kariyer:shKariyer,panel:shPanel,gard:shGard,hayat:shHayat,ayar:shAyar})[SHEET]();if(!SUB)b.scrollTop=top;else b.scrollTop=0}
 function back(){SUB=null;drawSheet()}
