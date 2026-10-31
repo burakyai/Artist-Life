@@ -45,7 +45,7 @@ function labTick(){const L=S.lab;if(!L)return;let gT=0,netL=0,merch=0;
   if(a.con){const dist=hasLF('dagitim')?0:g*.15,base=g-dist,art=base*a.con.roy/100;let lbl=base-art;const rc=a.con.rec?Math.min(art,a.con.unrec):0;a.con.unrec-=rc;lbl+=rc;a.earn+=art-rc;netL+=lbl}else netL+=g*.5;
   if(a.fol!=null&&a.con)a.fol+=Math.round(v*.003)});
  L.arts.forEach(a=>{if(hasLF('merch'))merch+=a.fol*.4;if(hasLF('prova'))a.tal=clamp(a.tal+RF(.5,1.5));if(a.type==='yildiz')a.tal=clamp(a.tal+.5);a.happy=clamp(a.happy+(hasLF('lounge')?2:0)-(a.type==='diva'?R(2,5):R(0,2)));
-  if(a.type==='caliskan'&&ch(.7))artDemo(a);if(a.type==='sorunlu'&&ch(.12)){a.fol=Math.round(a.fol*.9);a.happy=clamp(a.happy-5);log(`${L.n}: ${a.name} gece kulübünde kavgaya karıştı, magazin manşetlerinde.`,'bad')}
+  {const n=a.type==='caliskan'?2:a.type==='tembel'?(ch(.5)?1:0):R(1,2);for(let k=0;k<n&&a.demos.length<8;k++)artDemo(a)}if(a.type==='sorunlu'&&ch(.12)){a.fol=Math.round(a.fol*.9);a.happy=clamp(a.happy-5);log(`${L.n}: ${a.name} gece kulübünde kavgaya karıştı, magazin manşetlerinde.`,'bad')}
   if(a.happy<20&&ch(.3)){log(`${a.name} mutsuz: "Bana yeterince ilgi göstermiyorsunuz!"`,'bad')}});
  const exp=labBld().up/4+L.arts.length*150000;L.cash+=netL+merch-exp;L.tot.gross+=gT;L.tot.net+=netL+merch-exp;L.lastQ={gross:gT,net:netL,merch,exp};
  if(gT>0||merch>0)log(`${L.n} 3 aylık rapor: brüt ${fmtS(gT)}, şirkete kalan ${fmtS(netL+merch)}, gider ${fmtS(exp)}. Kasa: ${fmtS(L.cash)}`,'dim');

@@ -85,8 +85,8 @@ function concertCalc(dry){const cp=S.cp,v=VENUES.find(x=>x.id===cp.v),x=VEN2[cp.
  const rp0=1/(1+((S.gigN||{})[cp.v]||0)*.5);const hype=rp0*clamp(.45+(S.fame-v.fame)/60+(g?g.fame/250:0)+PROD[cp.prod][2]*.5+stil()/300,.15,1)*(x.fee?1:PRICE[cp.pr][2]);const occ=clamp(hype,.1,1);
  let rev,cost;if(x.fee){rev=RF(v.pay[0],v.pay[1])*m*(dry?0:1)||((v.pay[0]+v.pay[1])/2*m);cost=rev*PROD[cp.prod][1]}else{const seats=x.cap*(x.shows||1);rev=seats*occ*x.tk*PRICE[cp.pr][1]*m;cost=x.crew*(1+PROD[cp.prod][1]*4)+rev*PROD[cp.prod][1]}
  return {occ,rev,cost,hak:v.m+cp.prova,g}}
-ACT.concert=()=>{const cp=S.cp,v=VENUES.find(x=>x.id===cp.v),c=concertCalc(false);if(!useM(c.hak))return;
- const perf=S.skill*.55+cp.prova*8+PROD[cp.prod][2]*30+R(0,35)+(S.health<40?-12:0)+(c.g?6:0),great=perf>=75,good=perf>=42;const occ=c.occ*(great?1.05:1);
+ACT.concert=()=>{const cp=S.cp,v=VENUES.find(x=>x.id===cp.v),c=concertCalc(false);if(!S._mgr&&!useM(c.hak))return;
+ const perf=S._mgr?110:S.skill*.55+cp.prova*8+PROD[cp.prod][2]*30+R(0,35)+(S.health<40?-12:0)+(c.g?6:0),great=perf>=75,good=perf>=42;const occ=c.occ*(great?1.05:1);
  S.gigN=S.gigN||{};const rp=1/(1+(S.gigN[v.id]||0)*.5);S.gigN[v.id]=(S.gigN[v.id]||0)+1;const rev=Math.round(c.rev*rp*(great?1.05:good?1:.9)),net0=rev-c.cost;const fans=Math.round(RF(v.fans[0],v.fans[1])*.5*rp*(great?1.5:good?1:.4)*(1+PROD[cp.prod][2])*(c.g?1.2:1));
  let b;if(net0>0)b=income(net0,'gig');else{S.money+=net0;b={net:net0}}addF(fans,'ig');add('health',-v.m);S.skill=clamp(S.skill+1);
  if(cp.set===1){const s=released().sort((a,b)=>b.ra-a.ra||b.id-a.id)[0];if(s)s.pot*=1.1+PROD[cp.prod][2]}
@@ -128,11 +128,11 @@ function quarterEnd(){
  per.forEach(x=>{x.writer=x.g*(WRITERS[x.s.meta.writer]||WRITERS.kendim).pct;const base=x.g-x.writer;
   const L0=x.s.lab;if(L0){x.lab=base*(1-L0.roy/100);x.dist=0}else{x.lab=0;x.dist=x.s.meta.dist==='kendi'?0:base*(DIST[x.s.meta.dist]||DIST.yuzde).pct}x.art=base-x.lab-x.dist;x.mine=!!(S.contract&&L0&&L0.n===S.contract.n)});
  const artSum=per.reduce((a,x)=>a+(x.mine?x.art:0),0),recT=S.contract&&S.contract.recoup!==false?Math.min(artSum,S.contract.unrec):0;if(S.contract)S.contract.unrec-=recT;
- per.forEach(x=>{x.rec=artSum&&x.mine?x.art*recT/artSum:0;let a=x.art-x.rec;x.mgr=S.manager?a*S.manager.cut:0;a-=x.mgr;x.tax=a*.2;x.net=a-x.tax;x.gross=x.g;
+ per.forEach(x=>{x.rec=artSum&&x.mine?x.art*recT/artSum:0;let a=x.art-x.rec;x.mgr=0;a-=x.mgr;x.tax=a*.2;x.net=a-x.tax;x.gross=x.g;
   ['gross','writer','lab','dist','rec','mgr','tax','net'].forEach(k=>{x.s.mon[k]+=x[k];b[k]+=x[k]});
   const hl=x.s.hy[x.s.hy.length-1];if(hl&&hl.age===S.age){hl.st+=x.st;hl.g+=x.g;hl.net+=x.net;PLAT.forEach(p=>hl.pl[p.id]=(hl.pl[p.id]||0)+x.ps[p.id]);if(x.r&&(!hl.r||x.r<hl.r))hl.r=x.r;if(x.gr&&(!hl.gr||x.gr<hl.gr))hl.gr=x.gr}
   else{x.s.hy.push({age:S.age,st:x.st,pl:{...x.ps},g:x.g,net:x.net,r:x.r,gr:x.gr});if(x.s.hy.length>60)x.s.hy.shift()}});
- PLAT.forEach(p=>S.pend[p.id]+=b.net*(b.gross?b.pl[p.id].tl/b.gross:0));S.yr.stream+=b.net;S.yr.streams=(S.yr.streams||0)+total;S.yr.spo=(S.yr.spo||0)+pl.spo;S.tot.stream+=b.net;S.tot.all+=b.net;
+ PLAT.forEach(p=>S.pend[p.id]+=(b.net+b.tax)*(b.gross?b.pl[p.id].tl/b.gross:0));S.yr.stream+=b.net;S.yr.streams=(S.yr.streams||0)+total;S.yr.spo=(S.yr.spo||0)+pl.spo;S.tot.stream+=b.net;S.tot.all+=b.net;
  if(total>0)log(`Dijital gelir: ${num(total)} dinlenme → brüt ${fmtS(b.gross)}, net ${fmtS(b.net)} platform hesaplarında birikti.${S.contract&&b.rec>0?` (${fmtS(b.rec)} avans borcuna mahsup edildi)`:''}`);
  S.fol+=Math.max(0,total*.0025*(1-S.fol/4e7));
  let exp={yasam:0,ev:0,araba:0};if(S.age>=18){exp.yasam=(S.house?120000+S.fame*9000:40000+S.fame*4000)/4}
