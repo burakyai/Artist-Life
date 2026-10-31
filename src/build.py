@@ -19,4 +19,6 @@ js=g.split(k)[0]+'/* ============ Avatar (Mafia Life Simulator çizim motoru) ==
 sh=open('shell.html').read().replace('__JS__',js)
 m=re.search(r"const IC=\{(.*?)\};",u,re.S).group(1)
 for k2,v in re.findall(r"(\w+):'(<svg.*?</svg>)'",m): sh=sh.replace('__IC_'+k2.upper()+'__',v)
+import time
+sh=sh.replace('__APPV__',time.strftime('%Y.%m.%d-%H%M%S'))
 open('index.html','w').write(sh)
