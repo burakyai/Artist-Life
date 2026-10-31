@@ -133,16 +133,16 @@ function quarterEnd(){
   const hl=x.s.hy[x.s.hy.length-1];if(hl&&hl.age===S.age){hl.st+=x.st;hl.g+=x.g;hl.net+=x.net;PLAT.forEach(p=>hl.pl[p.id]=(hl.pl[p.id]||0)+x.ps[p.id]);if(x.r&&(!hl.r||x.r<hl.r))hl.r=x.r;if(x.gr&&(!hl.gr||x.gr<hl.gr))hl.gr=x.gr}
   else{x.s.hy.push({age:S.age,st:x.st,pl:{...x.ps},g:x.g,net:x.net,r:x.r,gr:x.gr});if(x.s.hy.length>60)x.s.hy.shift()}});
  PLAT.forEach(p=>S.pend[p.id]+=b.net*(b.gross?b.pl[p.id].tl/b.gross:0));S.yr.stream+=b.net;S.yr.streams=(S.yr.streams||0)+total;S.yr.spo=(S.yr.spo||0)+pl.spo;S.tot.stream+=b.net;S.tot.all+=b.net;
- if(total>0)log(`3 aylık dijital gelir: ${num(total)} dinlenme → brüt ${fmtS(b.gross)}, net ${fmtS(b.net)} platform hesaplarında birikti.${S.contract&&b.rec>0?` (${fmtS(b.rec)} avans borcuna mahsup edildi)`:''}`);
+ if(total>0)log(`Dijital gelir: ${num(total)} dinlenme → brüt ${fmtS(b.gross)}, net ${fmtS(b.net)} platform hesaplarında birikti.${S.contract&&b.rec>0?` (${fmtS(b.rec)} avans borcuna mahsup edildi)`:''}`);
  S.fol+=Math.max(0,total*.0025*(1-S.fol/4e7));
  let exp={yasam:0,ev:0,araba:0};if(S.age>=18){exp.yasam=(S.house?120000+S.fame*9000:40000+S.fame*4000)/4}
  S.houses.forEach(id=>{const h=HOUSES.find(x=>x.id===id);exp.ev+=(h.rent?(id===S.house?h.rent:0):h.up)/4});S.cars.forEach(id=>{const c=CARS.find(x=>x.id===id);if(c)exp.araba+=c.up/4});
  b.exp=exp;S.money-=exp.yasam+exp.ev+exp.araba;
- if(S.money<0&&S.age>=18){const i=-S.money*.06;S.money-=i;add('happy',-3);log(`Borçtasın! Kredi kartı faizi ${fmtS(i)}.`,'bad')}
+ if(S.money<0&&S.age>=18){const i=-S.money*.06;S.money-=i;add('happy',-3);S.debtY=(S.debtY||0)+i;if((S.q||0)===3){log(`Bu yıl borç yüzünden ${fmtS(S.debtY)} kredi kartı faizi ödedin. Kasanı artıya geçirmelisin.`,'bad');S.debtY=0}}
  S.lastY=b}
 
 /* ---------- İLERLE (3 ay) ---------- */
-function ageUp(){if(!S.alive)return;closeSheet();
+function ageUpQ(){if(!S.alive)return;closeSheet();
  if(S.genre&&S.age>=14)quarterEnd();
  marketQ();genChart();
  S.q=(S.q||0)+1;S.qt=(S.qt||0)+1;S.months=HAK;S.smc={};S.tiktok=0;S.gym=0;
@@ -155,11 +155,9 @@ function ageUp(){if(!S.alive)return;closeSheet();
  if(S.fol>6e7)S.fol=Math.round(6e7+(S.fol-6e7)*.7);
  if(S.genre&&S.age>=16){S.offers=S.offers.filter(o=>o.k!=='brand'||ch(.5));if(S.fame>=20&&ch(.45)){const w=pick([['Instagram paylaşımı',1,0],['Reklam filmi',3,1],['Marka yüzlüğü',8,1]]);S.offers.push({id:S.nid++,k:'brand',n:pick(BRANDS),w:w[0],m:w[2],pay:Math.max(25000,Math.round(S.fol*RF(.3,.7)*(1+stil()/30)*w[1]*(S.manager?1.25:1)/1000)*1000)})}if(!S.contract&&S.fame>=15&&released().length&&ch(.18)&&S.offers.filter(o=>o.k==='label').length<2)genLabel()}
  calcFame();
- const pool=EVENTS.filter(e=>e.min<=S.age&&(e.max==null||S.age<=e.max)&&(!e.c||e.c())&&!(e.auto&&S.age>=6&&ch(.5)));
- if(ch(S.age<6?.35:.8)&&pool.length){const e=pick(pool);if(e.auto)e.auto();else S.evq.push({id:e.id,p:e.gen?e.gen():{}})}
- if(S.age>=14&&ch(.35)&&pool.length>1){const e=pick(pool.filter(x=>!x.auto));if(e&&!S.evq.some(q=>q.id===e.id))S.evq.push({id:e.id,p:e.gen?e.gen():{}})}
+ if(!S._skipEv)pickEvents();
  if(S.health<=0){S.alive=false;log('Sağlığın daha fazla dayanamadı. Hayata gözlerini yumdun.','bad')}
- calcFame();save();render();if(S.alive&&S.evq.length)showEvent();else if(!S.alive)showDeath()}
+ calcFame();if(S._skipEv)return;save();render();if(S.alive&&S.evq.length)showEvent();else if(!S.alive)showDeath()}
 function yearTick(){
  S.hist.push({age:S.age,stream:S.yr.stream,gig:S.yr.gig,brand:S.yr.brand,alb:S.yr.alb,streams:S.yr.streams||0,spo:S.yr.spo||0});if(S.hist.length>60)S.hist.shift();
  awardsYear();
