@@ -248,7 +248,7 @@ body.monob .tab.on,body[data-th="monokrom"] .tab.on,body[data-th="monokrom"] .bt
 <div class="mod" id="confirm"><div class="box"><h2>Yeni hayat?</h2><p>Mevcut hayatın silinecek ve baştan başlayacaksın.</p><button class="btn" onclick="$('confirm').classList.remove('on');restart()">Evet, baştan başla</button><button class="btn sec" onclick="$('confirm').classList.remove('on')">Vazgeç</button></div></div>
 <script>
 try{if('serviceWorker' in navigator&&/github\.io$/.test(location.hostname))navigator.serviceWorker.register('sw.js').catch(()=>{})}catch(e){}
-const APPV='2026.11.01-005005';
+const APPV='2026.11.01-005614';
 (function(){try{if(!/github\.io$/.test(location.hostname))return;const chk=()=>fetch(location.pathname+'?nc='+Date.now(),{cache:'no-store'}).then(r=>r.text()).then(t=>{const m=t.match(/const APPV='([^']+)'/);if(m&&m[1]!==APPV&&!sessionStorage.getItem('upd'+m[1])){sessionStorage.setItem('upd'+m[1],'1');location.replace(location.pathname+'?v='+encodeURIComponent(m[1]))}}).catch(()=>{});chk();document.addEventListener('visibilitychange',()=>{if(!document.hidden)chk()})}catch(e){}})();
 /* ============ Yardımcılar ============ */
 const $=id=>document.getElementById(id);
@@ -2819,6 +2819,12 @@ const _rn8=render;render=function(){infSync();_rn8();if(S&&S.star){const st=$('s
 const _ds8=drawSheet;drawSheet=function(){infSync();_ds8();if(S&&S.star){const b=document.querySelector('#ov .sh-b');if(b){const sc=b.scrollTop;b.innerHTML=infTxt(b.innerHTML);b.scrollTop=sc}}};
 const _st8=ACT.starT;ACT.starT=()=>{_st8();infSync();render();drawSheet()};
 const _sa8=shAyar;shAyar=function(){return _sa8().replace('Açık · olaylarda süperstar seçenekleri,','Açık · sınırsız hak, olaylarda süperstar seçenekleri,')};
+actKeep();
+/* Süperstar: şöhreti ayarla (takipçi şöhrete göre ayarlanır) */
+ACT.selfFame=v=>{if(!S.star)return;let f=v==='in'?Number((document.getElementById('ss_f')||{}).value):v==='full'?100:S.fame+v;if(isNaN(f)){toast('0-100 arası bir şöhret yaz.');return}f=clamp(Math.round(f));
+ S.fol=f<=0?Math.min(S.fol,150):Math.round(Math.pow(10,f/19.5+2.3));calcFame();log(`⭐ Şöhretin ${f} oldu (${num(S.fol)} takipçi).`,'gold');drawSheet()};
+const _ss9=shSelf;shSelf=function(){let h=_ss9();if(!S.star)return h;const row2=`<div class="ngr"><div><b>Şöhret</b><span>${Math.round(S.fame)} / 100</span></div><div class="stp"><button onclick="ACT.selfFame(-10)">−10</button><button onclick="ACT.selfFame(10)">+10</button><button onclick="ACT.selfFame('full')">Full</button></div></div><div class="ngr"><div><b>Şöhreti yaz</b><span>0-100 · takipçin buna göre ayarlanır</span></div><div class="stp"><input class="inp" id="ss_f" type="number" min="0" max="100" inputmode="numeric" style="width:72px;margin:0" value="${Math.round(S.fame)}"><button onclick="ACT.selfFame('in')">Ayarla</button></div></div>`;
+ const i=h.indexOf('<div class="ngr"><div><b>Takipçi');return i>=0?h.slice(0,i)+row2+h.slice(i):h+row2};
 actKeep();
 
 /* ============ Mahlas · sevgilinin serveti · evlilikte ortak mal · boşanma davası · miras ============ */
