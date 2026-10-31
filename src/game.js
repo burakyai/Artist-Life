@@ -224,7 +224,7 @@ ACT.wear=(cat,id)=>{const L=S.look;
  if(cat==='out'){const o=OUT.find(x=>x.id===id);if(!S.owned.includes(id)){if(!pay(o.p))return;S.owned.push(id);log(`${o.n} aldın (${fmtS(o.p)}).`)}L.outfit=id}
  else if(cat==='oc'){L.oc=L.oc||{};L.oc[L.outfit]=id}
  else if(cat==='acc'){const a=ACCS.find(x=>x.id===id);if(L.acc.includes(id))L.acc=L.acc.filter(x=>x!==id);else{if(!S.accOwned.includes(id)){if(!pay(a.p))return;S.accOwned.push(id);log(`${a.n} aldın (${fmtS(a.p)}).`)}
-  const same=L.acc.filter(x=>{const o=ACCS.find(z=>z.id===x);return o&&o.grp===a.grp});if(a.grp==='kolye'){if(same.length>=2)L.acc=L.acc.filter(x=>x!==same[0])}else if(a.grp!=='diger')L.acc=L.acc.filter(x=>!same.includes(x));L.acc.push(id)}}
+  const same=L.acc.filter(x=>{const o=ACCS.find(z=>z.id===x);return o&&o.grp===a.grp});if(a.grp==='kolye'){if(same.length>=2)L.acc=L.acc.filter(x=>x!==same[0])}else if(a.grp!=='diger'&&a.grp!=='dovme')L.acc=L.acc.filter(x=>!same.includes(x));L.acc.push(id)}}
  else if(cat==='hair'){if(L.hair===id)return;if(!pay(800))return;L.hair=id}
  else if(cat==='hairColor'){if(L.hairColor===id)return;if(!pay(1200))return;L.hairColor=id}
  else if(cat==='beard'){L.beard=id}
