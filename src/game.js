@@ -5,8 +5,8 @@ const RF=(a,b)=>a+Math.random()*(b-a);
 const ch=p=>Math.random()<p;
 const pick=a=>a[Math.floor(Math.random()*a.length)];
 const clamp=(v,a=0,b=100)=>Math.max(a,Math.min(b,v));
-const fmt=n=>(n<0?'−':'')+'₺'+Math.round(Math.abs(n)).toLocaleString('tr-TR');
-const fmtS=n=>{const a=Math.abs(n),s=n<0?'−':'';if(a>=1e9)return s+'₺'+(a/1e9).toLocaleString('tr-TR',{maximumFractionDigits:2})+' Mr';if(a>=1e6)return s+'₺'+(a/1e6).toLocaleString('tr-TR',{maximumFractionDigits:2})+' Mn';if(a>=1e4)return s+'₺'+(a/1e3).toLocaleString('tr-TR',{maximumFractionDigits:1})+' B';return fmt(n)};
+let fmt=n=>(n<0?'−':'')+'₺'+Math.round(Math.abs(n)).toLocaleString('tr-TR');
+let fmtS=n=>{const a=Math.abs(n),s=n<0?'−':'';if(a>=1e9)return s+'₺'+(a/1e9).toLocaleString('tr-TR',{maximumFractionDigits:2})+' Mr';if(a>=1e6)return s+'₺'+(a/1e6).toLocaleString('tr-TR',{maximumFractionDigits:2})+' Mn';if(a>=1e4)return s+'₺'+(a/1e3).toLocaleString('tr-TR',{maximumFractionDigits:1})+' B';return fmt(n)};
 const num=n=>{const a=Math.abs(n);if(a>=1e9)return (n/1e9).toLocaleString('tr-TR',{maximumFractionDigits:2})+' Mr';if(a>=1e6)return (n/1e6).toLocaleString('tr-TR',{maximumFractionDigits:2})+' Mn';if(a>=1e4)return (n/1e3).toLocaleString('tr-TR',{maximumFractionDigits:1})+' B';return Math.round(n).toLocaleString('tr-TR')};
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 let uid=0;
@@ -187,7 +187,7 @@ ACT.gig=id=>{const v=VENUES.find(x=>x.id===id);if(S.age<v.age||S.fame<v.fame)ret
 ACT.post=()=>{if(S.posts>=4){toast('Bu yıl yeterince paylaştın.');return}S.posts++;const g=Math.round(30+S.fol*RF(.004,.012)*(1+stil()/40));S.fol+=g;add('happy',1);log(`Instagram'a yeni kombinini paylaştın. +${num(g)} takipçi`);calcFame();sheet('kariyer')};
 function ttCost(){return Math.round(20000+S.fol*1.2)}
 ACT.tiktok=()=>{const s=released().sort((a,b)=>b.ra-a.ra)[0];if(!s){toast('Önce bir şarkı yayınla.');return}if(S.tiktok){toast('Bu yıl zaten kampanya yaptın.');return}if(!pay(ttCost()))return;S.tiktok=1;s.pot*=1.5;log(`"${s.t}" için TikTok kampanyası başlattın. Viral olma şansı arttı.`,'good');sheet('kariyer')};
-function income(gross,src){let lab=0,mgr=0;if(S.contract&&S.contract.is360&&src!=='stream')lab=gross*.3;let a=gross-lab;if(S.manager&&(src==='gig'||src==='brand')){mgr=a*S.manager.cut;a-=mgr}const tax=a*.2,net=a-tax;S.money+=net;S.yr[src]+=net;S.tot[src]+=net;S.tot.all+=net;return {gross,lab,mgr,tax,net}}
+function income(gross,src){let lab=0,mgr=0;if(S.contract&&S.contract.is360&&src!=='stream')lab=gross*.3;let a=gross-lab;if(S.manager&&(src==='gig'||src==='brand')){mgr=a*S.manager.cut;a-=mgr}const tax=a*(typeof taxR==='function'?taxR(a):.2),net=a-tax;S.money+=net;S.yr[src]+=net;S.tot[src]+=net;S.tot.all+=net;return {gross,lab,mgr,tax,net}}
 ACT.accept=id=>{const o=S.offers.find(x=>x.id===id);if(!o)return;
  if(o.k==='label'){if(S.contract){toast('Zaten sözleşmen var.');return}S.contract={n:o.n,t:o.t,adv:o.adv,roy:o.roy,yrs:o.yrs,left:o.yrs,req:o.req,rel:0,is360:o.is360,unrec:o.adv};S.money+=o.adv;S.offers=S.offers.filter(x=>x.k!=='label');log(`${o.n} ile ${o.yrs} yıllık ${o.is360?'360°':'standart'} sözleşme imzaladın! Avans: ${fmtS(o.adv)}`,'gold')}
  else if(o.k==='mgr'){S.manager={n:o.n,cut:o.cut};S.offers=S.offers.filter(x=>x.k!=='mgr');log(`${o.n} artık menajerin. Komisyon %${Math.round(o.cut*100)}.`,'good')}
