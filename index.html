@@ -567,8 +567,8 @@ function avatarSVG2(L,age,opts){
   if(adult)s+=beard2(L.beard,hc);
   // ağız
   s+=L.g==='k'?FLIPS:sad?`<path d="M46.8 43.4 Q50 41.8 53.2 43.4" stroke="#5a2a22" stroke-width=".85" fill="none" stroke-linecap="round"/>`
-        :`<path d="M46.4 43.1 Q50 42.5 53.6 43.1" stroke="#4a221c" stroke-width=".9" fill="none" stroke-linecap="round"/><path d="M46.4 43.1 L46 43.8 M53.6 43.1 L54 43.8" stroke="#4a221c" stroke-width=".55" stroke-linecap="round"/><path d="M45 39.4 Q44.2 41.6 45.2 43.8 M55 39.4 Q55.8 41.6 54.8 43.8" stroke="${sd}" stroke-width=".55" fill="none"/>`;
-  s+=`<path d="M47.8 44 Q50 45.6 52.2 44 Q50 44.6 47.8 44Z" fill="${sdd}" opacity=".55"/>`;
+        :`<path d="M46.4 43.1 Q50 42.5 53.6 43.1" stroke="#4a221c" stroke-width=".9" fill="none" stroke-linecap="round"/><path d="M46.4 43.1 L46 43.8 M53.6 43.1 L54 43.8" stroke="#4a221c" stroke-width=".55" stroke-linecap="round"/>`+(adult&&!['yok','ince'].includes(L.beard)?'':`<path d="M45 39.4 Q44.2 41.6 45.2 43.8 M55 39.4 Q55.8 41.6 54.8 43.8" stroke="${sd}" stroke-width=".55" fill="none"/>`);
+  if(!(adult&&!['yok','ince','biyik','palakalin'].includes(L.beard)))s+=`<path d="M47.8 44 Q50 45.6 52.2 44 Q50 44.6 47.8 44Z" fill="${sdd}" opacity=".55"/>`;
   if(age>=50)s+=`<path d="M43 23.4 Q47 22.6 50 23.4 Q53 22.6 57 23.4 M41 34.4 L42 35.2 M59 34.4 L58 35.2" stroke="${sdd}" stroke-width=".55" fill="none" opacity=".7"/>`;
   s+=G(hair2(L.hair,hc)+hairM(L.hair,hc));
   if(age>=40&&age<58&&!['kel','asker'].includes(L.hair)&&!['gri','beyaz'].includes(L.hairColor))s+=`<path d="M37.8 30 Q37.4 25 38.6 21.6 M62.2 30 Q62.6 25 61.4 21.6" stroke="#c4c4c4" stroke-width="1.4" opacity=".6" fill="none" stroke-linecap="round"/>`;

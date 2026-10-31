@@ -6,6 +6,8 @@ reps=[("s+=G(body2(o,(L.oc||{})[o]));","s+=G(bodyM(o,(L.oc||{})[o]));"),
 ("  s+=sad?`<path d=\"M40.6 28.6","  s+=L.g==='k'?'':sad?`<path d=\"M40.6 28.6"),
 ("  s+=sad?`<path d=\"M46.8 43.4","  s+=L.g==='k'?FLIPS:sad?`<path d=\"M46.8 43.4"),
 ("return s+'</svg>';","return s+accM(L,accs)+'</svg>';"),
+("<path d=\"M45 39.4 Q44.2 41.6 45.2 43.8 M55 39.4 Q55.8 41.6 54.8 43.8\" stroke=\"${sd}\" stroke-width=\".55\" fill=\"none\"/>`;","`+(adult&&!['yok','ince'].includes(L.beard)?'':`<path d=\"M45 39.4 Q44.2 41.6 45.2 43.8 M55 39.4 Q55.8 41.6 54.8 43.8\" stroke=\"${sd}\" stroke-width=\".55\" fill=\"none\"/>`);"),
+("  s+=`<path d=\"M47.8 44 Q50 45.6 52.2 44 Q50 44.6 47.8 44Z\" fill=\"${sdd}\" opacity=\".55\"/>`;","  if(!(adult&&!['yok','ince','biyik','palakalin'].includes(L.beard)))s+=`<path d=\"M47.8 44 Q50 45.6 52.2 44 Q50 44.6 47.8 44Z\" fill=\"${sdd}\" opacity=\".55\"/>`;"),
 ("s+=G(hair2Back(L.hair,hc));","s+=G(hair2Back(L.hair,hc)+hairMBack(L.hair,hc));"),
 ("s+=G(hair2(L.hair,hc));","s+=G(hair2(L.hair,hc)+hairM(L.hair,hc));")]
 for a,b in reps:
