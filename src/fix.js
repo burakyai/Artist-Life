@@ -2,12 +2,13 @@
 /* ---------- Kaydırma konumu korunur ---------- */
 const shKey=()=>SHEET+'|'+JSON.stringify(SUB||0)+'|'+(S&&(S.htab+S.ptab))||'';
 let _lastKey=null;
-const _ds9=drawSheet;drawSheet=function(){const b=document.querySelector('#ov .sh-b'),k=shKey(),sc=b?b.scrollTop:0;_ds9();const b2=document.querySelector('#ov .sh-b');if(b2&&SHEET){b2.scrollTop=k===_lastKey?sc:0;_lastKey=k}};
+let SCR={};
+const _ds9=drawSheet;drawSheet=function(){const b=document.querySelector('#ov .sh-b');if(b&&_lastKey)SCR[_lastKey]=b.scrollTop;_ds9();const k=shKey(),b2=document.querySelector('#ov .sh-b');if(b2&&SHEET){b2.scrollTop=SCR[k]||0;_lastKey=k}};
 /* ---------- Son sekmeye dön ---------- */
 let LAST=null;
 function ltDraw(){const e=$('ltb');if(!e)return;const T={kariyer:'Kariyer',panel:'Panel',gard:'Gardırop',hayat:'Hayat',ayar:'Ayarlar'};
  if(LAST&&!SHEET&&S&&S.alive){e.innerHTML=`↩ ${(LAST.sub&&LAST.sub.title)||T[LAST.k]||'Geri'}`;e.style.display='inline-flex'}else e.style.display='none'}
-const _cs9=closeSheet;closeSheet=function(){if(SHEET){const b=document.querySelector('#ov .sh-b');LAST={k:SHEET,sub:SUB?JSON.parse(JSON.stringify(SUB)):null,sc:b?b.scrollTop:0}}_cs9();_lastKey=null;ltDraw()};
+const _cs9=closeSheet;closeSheet=function(){if(SHEET){const b=document.querySelector('#ov .sh-b');LAST={k:SHEET,sub:SUB?JSON.parse(JSON.stringify(SUB)):null,sc:b?b.scrollTop:0};if(b)SCR[_lastKey]=b.scrollTop}_cs9();if(!_actD)SCR={};_lastKey=null;ltDraw()};
 function goLast(){if(!LAST)return;const L=LAST;sheet(L.k,L.sub);requestAnimationFrame(()=>{const b=document.querySelector('#ov .sh-b');if(b)b.scrollTop=L.sc;_lastKey=shKey()})}
 const _sh9=sheet;sheet=function(k,sub){_sh9(k,sub);ltDraw()};
 /* ---------- İLERLE geri al ---------- */
@@ -69,3 +70,12 @@ const _shB9=shBorsa;shBorsa=function(){stkInit();let h=_shB9();
  if(S.contract){const x=LSTK.find(l=>l.lab===S.contract.n);if(x)h=h.replace('<div class="card stk">',note(`💡 ${x.n} ile sözleşmelisin. Senin şarkıların hit oldukça ${x.id} hissesi yükselir.`)+'<div class="card stk">')}
  if(S.ipo&&S.lab)h=ipoCard()+h;return h};
 const _ei9=extInit;extInit=function(){_ei9();stkInit()};
+/* ---------- Bir seçeneğe tıklayınca menü kapanmasın, yukarı kaymasın ---------- */
+const NAVACT=new Set(['concert','genre','rehab']);let _actD=0;
+function actKeep(){Object.keys(ACT).forEach(k=>{const f=ACT[k];if(typeof f!=='function'||f._kp)return;const w=function(...a){
+ if(_actD++>0||!SHEET||NAVACT.has(k)){try{return f.apply(this,a)}finally{_actD--}}
+ const k0=SHEET,s0=SUB?JSON.parse(JSON.stringify(SUB)):null,b=document.querySelector('#ov .sh-b'),sc=b?b.scrollTop:0;let r;
+ try{r=f.apply(this,a)}finally{_actD--}
+ if(S&&S.alive&&!$('mod').classList.contains('on')){if(!SHEET){_sh9(k0,s0);_lastKey=shKey();const b2=document.querySelector('#ov .sh-b');if(b2)b2.scrollTop=sc}else if(SHEET===k0&&JSON.stringify(SUB||null)===JSON.stringify(s0)){const b2=document.querySelector('#ov .sh-b');if(b2&&b2.scrollTop!==sc&&shKey()===_lastKey)b2.scrollTop=sc}}
+ ltDraw();return r};w._kp=1;ACT[k]=w})}
+actKeep();
