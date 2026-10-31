@@ -218,6 +218,12 @@ body.monob .tab.on,body[data-th="monokrom"] .tab.on,body[data-th="monokrom"] .bt
 .ach.on{opacity:1;border-color:var(--acc)}.ach span{font-size:24px}.ach b{font-size:14px}.ach em{font-style:normal;font-size:12px;color:#aaa}
 .ltb{position:absolute;right:12px;bottom:8px;align-items:center;gap:4px;padding:8px 14px;border-radius:999px;background:color-mix(in srgb,var(--acc) 85%,#000);color:#fff;font-family:var(--cond);font-weight:700;font-size:14px;letter-spacing:.03em;box-shadow:0 4px 16px #0008;max-width:60%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .nav{position:relative}.udb{position:absolute!important;left:50%;transform:translateX(-50%);bottom:calc(2px + env(safe-area-inset-bottom));padding:3px 10px!important;border-radius:999px;background:var(--deep)!important;border:1px solid var(--acc2)!important;color:#fff!important;font-size:11px!important;letter-spacing:.08em;z-index:3;flex-direction:row!important}
+.avz{position:fixed;inset:0;z-index:60;display:none;align-items:center;justify-content:center;background:#000a;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);opacity:0;transition:opacity .22s}
+.avz.on{display:flex}.avz.in{opacity:1}
+.avzb{display:flex;flex-direction:column;align-items:center;gap:14px;transform:scale(.3);transition:transform .28s cubic-bezier(.2,1.3,.4,1)}.avz.in .avzb{transform:scale(1)}
+.avzc{width:min(78vw,340px);height:min(78vw,340px);border-radius:50%;overflow:hidden;background:radial-gradient(circle at 50% 30%,#3a2d52,#1a1426 72%);border:4px solid var(--acc2);box-shadow:0 0 0 8px color-mix(in srgb,var(--acc) 22%,transparent),0 20px 60px #000c}
+.avzc svg{width:100%;height:100%;display:block}.avzn{text-align:center;color:#fff}.avzn b{display:block;font-family:var(--display);font-size:26px;letter-spacing:.03em}.avzn span{color:var(--muted);font-size:14px}
+#hav{cursor:zoom-in}
 </style>
 </head>
 <body>
@@ -240,7 +246,7 @@ body.monob .tab.on,body[data-th="monokrom"] .tab.on,body[data-th="monokrom"] .bt
 <div class="mod" id="confirm"><div class="box"><h2>Yeni hayat?</h2><p>Mevcut hayatın silinecek ve baştan başlayacaksın.</p><button class="btn" onclick="$('confirm').classList.remove('on');restart()">Evet, baştan başla</button><button class="btn sec" onclick="$('confirm').classList.remove('on')">Vazgeç</button></div></div>
 <script>
 try{if('serviceWorker' in navigator&&/github\.io$/.test(location.hostname))navigator.serviceWorker.register('sw.js').catch(()=>{})}catch(e){}
-const APPV='2026.10.31-232447';
+const APPV='2026.10.31-232748';
 (function(){try{if(!/github\.io$/.test(location.hostname))return;const chk=()=>fetch(location.pathname+'?nc='+Date.now(),{cache:'no-store'}).then(r=>r.text()).then(t=>{const m=t.match(/const APPV='([^']+)'/);if(m&&m[1]!==APPV&&!sessionStorage.getItem('upd'+m[1])){sessionStorage.setItem('upd'+m[1],'1');location.replace(location.pathname+'?v='+encodeURIComponent(m[1]))}}).catch(()=>{});chk();document.addEventListener('visibilitychange',()=>{if(!document.hidden)chk()})}catch(e){}})();
 /* ============ Yardımcılar ============ */
 const $=id=>document.getElementById(id);
@@ -2699,6 +2705,13 @@ ACCS.push(
  {id:'boyun3',n:'Boyunda kanatlar',p:12000,st:3,grp:'dovme'},{id:'alev',n:'Boyunda alevler',p:9000,st:3,grp:'dovme'},{id:'dikenli',n:'Dikenli tel boyun',p:7000,st:3,grp:'dovme'},{id:'boyunyazi',n:'Boyunda "Aile"',p:5000,st:2,grp:'dovme'},{id:'roma',n:'Romen rakamları',p:4500,st:2,grp:'dovme'},
  {id:'kaskesik',n:'Kaş kesiği',p:600,st:1,grp:'diger'},{id:'yara',n:'Yüz yarası (makyaj)',p:1500,st:1,grp:'diger'},{id:'puro',n:'Puro',p:3000,st:2,grp:'diger'});
 AGRP.splice(4,1,['dovme','Dövme'],['diger','Diğer']);
+
+/* ============ Avatara dokununca büyüt ============ */
+function avZoom(el){const svg=el.querySelector('svg');if(!svg)return;let z=$('avz');if(!z){document.body.insertAdjacentHTML('beforeend','<div id="avz" class="avz" onclick="avZoomClose()"><div class="avzb"><div class="avzc"></div><div class="avzn"></div></div></div>');z=$('avz')}
+ const self=el.id==='hav';z.querySelector('.avzc').innerHTML=svg.outerHTML;z.querySelector('.avzn').innerHTML=self&&S?`<b>${esc(S.first+' '+S.last)}</b><span>${S.age} yaş · ${title()}</span>`:'';
+ z.classList.add('on');requestAnimationFrame(()=>z.classList.add('in'))}
+function avZoomClose(){const z=$('avz');if(!z)return;z.classList.remove('in');setTimeout(()=>z.classList.remove('on'),220)}
+document.addEventListener('click',e=>{const a=e.target.closest&&e.target.closest('#hav, .wprev .av, .av.hero');if(a){e.stopPropagation();avZoom(a)}},true);
 
 boot();
 </script>
