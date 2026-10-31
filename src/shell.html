@@ -188,10 +188,22 @@ input{font:inherit}
 .grid.g2{grid-template-columns:repeat(4,1fr)}.gic{font-size:26px}
 body.big{font-size:18px}body.big .yr p{font-size:17.5px}body.big .row .tx b{font-size:17.5px}body.big .row .tx span{font-size:14.5px}
 .inp.amt{margin:6px 0 8px;font-variant-numeric:tabular-nums}.stp .inp.amt{margin:0;padding:8px;font-size:15px;min-width:0}
+#title{display:none;height:100%;overflow-y:auto;background:radial-gradient(120% 50% at 50% 0%,#2a1840,var(--bg) 65%)}#title.on{display:block}
+.appic{width:120px;height:120px;border-radius:26px;display:block;margin:4px auto 18px;box-shadow:0 10px 30px #0009}
+.slot{position:relative;display:flex;align-items:center;gap:12px;width:100%;text-align:left;padding:12px;border-radius:16px;background:var(--panel2);border:1px solid var(--line);margin-bottom:10px}
+.slot.empty{border-style:dashed}.slot .sbody{display:flex;align-items:center;gap:12px;flex:1;min-width:0;text-align:left;padding-right:30px}
+.sic{width:56px;height:56px;border-radius:50%;display:grid;place-items:center;font-size:26px;background:#150f1f;color:var(--acc);flex:none}
+.av.sav{width:56px;height:56px;border-width:1.5px}.slot.dead .av.sav{filter:grayscale(.8)}
+.stx{flex:1;min-width:0}.stx b{display:block;font-size:17px}.stx span{display:block;font-size:13px;color:var(--muted);margin-top:1px}.stx em{color:var(--bad);font-style:normal}
+.sgo{font-family:var(--cond);font-size:14px;font-weight:700;color:var(--gold);white-space:nowrap}
+.sx{position:absolute;top:8px;right:8px;width:30px;height:30px;border-radius:50%;background:#0006;font-size:14px}
+.sdel{position:absolute;inset:0;border-radius:16px;background:#1b1626f2;display:flex;align-items:center;justify-content:center;gap:8px;padding:10px;font-size:14px}
+.back{display:block;margin:0 0 6px;font-family:var(--cond);font-size:15px;color:var(--muted);padding:4px 0}
 .toast{position:fixed;top:calc(84px + env(safe-area-inset-top));left:50%;transform:translateX(-50%);background:#2b2140;border:1px solid var(--line);color:#fff;padding:10px 16px;border-radius:12px;font-size:14px;z-index:60;max-width:90%;text-align:center;box-shadow:0 8px 20px #0008}
 </style>
 </head>
 <body>
+<div id="title"></div>
 <div id="create"></div>
 <div id="game">
  <header class="top"><div class="av" id="hav"></div><div class="who"><h1 id="hname"></h1><p id="hsub"></p></div><button class="gear" onclick="sheet('ayar')" aria-label="Ayarlar">⚙️</button><div class="cash"><small>KASA</small><strong id="hcash"></strong></div></header>

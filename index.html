@@ -188,10 +188,22 @@ input{font:inherit}
 .grid.g2{grid-template-columns:repeat(4,1fr)}.gic{font-size:26px}
 body.big{font-size:18px}body.big .yr p{font-size:17.5px}body.big .row .tx b{font-size:17.5px}body.big .row .tx span{font-size:14.5px}
 .inp.amt{margin:6px 0 8px;font-variant-numeric:tabular-nums}.stp .inp.amt{margin:0;padding:8px;font-size:15px;min-width:0}
+#title{display:none;height:100%;overflow-y:auto;background:radial-gradient(120% 50% at 50% 0%,#2a1840,var(--bg) 65%)}#title.on{display:block}
+.appic{width:120px;height:120px;border-radius:26px;display:block;margin:4px auto 18px;box-shadow:0 10px 30px #0009}
+.slot{position:relative;display:flex;align-items:center;gap:12px;width:100%;text-align:left;padding:12px;border-radius:16px;background:var(--panel2);border:1px solid var(--line);margin-bottom:10px}
+.slot.empty{border-style:dashed}.slot .sbody{display:flex;align-items:center;gap:12px;flex:1;min-width:0;text-align:left;padding-right:30px}
+.sic{width:56px;height:56px;border-radius:50%;display:grid;place-items:center;font-size:26px;background:#150f1f;color:var(--acc);flex:none}
+.av.sav{width:56px;height:56px;border-width:1.5px}.slot.dead .av.sav{filter:grayscale(.8)}
+.stx{flex:1;min-width:0}.stx b{display:block;font-size:17px}.stx span{display:block;font-size:13px;color:var(--muted);margin-top:1px}.stx em{color:var(--bad);font-style:normal}
+.sgo{font-family:var(--cond);font-size:14px;font-weight:700;color:var(--gold);white-space:nowrap}
+.sx{position:absolute;top:8px;right:8px;width:30px;height:30px;border-radius:50%;background:#0006;font-size:14px}
+.sdel{position:absolute;inset:0;border-radius:16px;background:#1b1626f2;display:flex;align-items:center;justify-content:center;gap:8px;padding:10px;font-size:14px}
+.back{display:block;margin:0 0 6px;font-family:var(--cond);font-size:15px;color:var(--muted);padding:4px 0}
 .toast{position:fixed;top:calc(84px + env(safe-area-inset-top));left:50%;transform:translateX(-50%);background:#2b2140;border:1px solid var(--line);color:#fff;padding:10px 16px;border-radius:12px;font-size:14px;z-index:60;max-width:90%;text-align:center;box-shadow:0 8px 20px #0008}
 </style>
 </head>
 <body>
+<div id="title"></div>
 <div id="create"></div>
 <div id="game">
  <header class="top"><div class="av" id="hav"></div><div class="who"><h1 id="hname"></h1><p id="hsub"></p></div><button class="gear" onclick="sheet('ayar')" aria-label="Ayarlar">⚙️</button><div class="cash"><small>KASA</small><strong id="hcash"></strong></div></header>
@@ -210,7 +222,7 @@ body.big{font-size:18px}body.big .yr p{font-size:17.5px}body.big .row .tx b{font
 <div class="mod" id="confirm"><div class="box"><h2>Yeni hayat?</h2><p>Mevcut hayatın silinecek ve baştan başlayacaksın.</p><button class="btn" onclick="$('confirm').classList.remove('on');restart()">Evet, baştan başla</button><button class="btn sec" onclick="$('confirm').classList.remove('on')">Vazgeç</button></div></div>
 <script>
 try{if('serviceWorker' in navigator&&/github\.io$/.test(location.hostname))navigator.serviceWorker.register('sw.js').catch(()=>{})}catch(e){}
-const APPV='2026.10.31-195637';
+const APPV='2026.10.31-195956';
 (function(){try{if(!/github\.io$/.test(location.hostname))return;const chk=()=>fetch(location.pathname+'?nc='+Date.now(),{cache:'no-store'}).then(r=>r.text()).then(t=>{const m=t.match(/const APPV='([^']+)'/);if(m&&m[1]!==APPV&&!sessionStorage.getItem('upd'+m[1])){sessionStorage.setItem('upd'+m[1],'1');location.replace(location.pathname+'?v='+encodeURIComponent(m[1]))}}).catch(()=>{});chk();document.addEventListener('visibilitychange',()=>{if(!document.hidden)chk()})}catch(e){}})();
 /* ============ Yardımcılar ============ */
 const $=id=>document.getElementById(id);
@@ -1802,6 +1814,35 @@ function shPanel(){if(SUB&&SUB.t==='hak')return shRights(SUB.id);if(SUB&&SUB.t==
  if(t==='sirket')return h+labPanel();if(t==='hepsi')return h+allPanel();
  const own=released().filter(s=>s.lab).length;if(own)h+=row("sheet('panel',{t:'haklar',title:'Master hakları'})",'📜','Master hakları',`${own} şarkının hakları plak şirketlerinde · geri satın al`,'›');
  return h+shPanelMe()}
+
+/* ============ Kayıt yuvaları ve ana menü ============ */
+const NSLOT=3;let SLOT=(()=>{try{return +localStorage.getItem('sahne2-aktif')||1}catch(e){return 1}})();
+const skey=n=>'sahne2-slot-'+n;
+function save(){if(!S)return;try{localStorage.setItem(skey(SLOT),JSON.stringify(S));localStorage.setItem('sahne2-aktif',SLOT)}catch(e){}}
+function load(){try{const t=localStorage.getItem(skey(SLOT));return t?JSON.parse(t):null}catch(e){return null}}
+function peek(n){try{const t=localStorage.getItem(skey(n));return t?JSON.parse(t):null}catch(e){return null}}
+(function migrate(){try{const old=localStorage.getItem('sahne2-kayit');if(old&&!localStorage.getItem(skey(1))){localStorage.setItem(skey(1),old)}if(old)localStorage.removeItem('sahne2-kayit')}catch(e){}})();
+let MENU=true,DELQ=null;
+function boot(){if(MENU&&!S){drawTitle();return}
+ if(!S){S=load();if(S){S.songs.forEach(x=>{x.meta=x.meta||defMeta(x.g);x.mon=x.mon||MON0();x.hy=x.hy||[]});extInit()}}
+ if(!S){drawCreate();return}
+ $('title').classList.remove('on');$('create').classList.remove('on');$('game').classList.add('on');document.body.classList.toggle('big',!!S.big);render();
+ if(!S.alive){showDeath();return}if(S.evq&&S.evq.length)showEvent()}
+function drawTitle(){$('game').classList.remove('on');$('create').classList.remove('on');$('title').classList.add('on');
+ let h=`<div class="cwrap"><h1 class="logo">ARTIST <span>LIFE</span></h1><p class="tag">Mahalleden stadyuma bir ömür</p><img class="appic" src="icon-512.png" alt="" onerror="this.remove()"><div class="sec" style="text-align:left">Kayıtlar</div>`;
+ for(let n=1;n<=NSLOT;n++){const p=peek(n);
+  if(!p)h+=`<button class="slot empty" onclick="slotNew(${n})"><span class="sic">＋</span><span class="stx"><b>Boş yuva ${n}</b><span>Yeni bir hayat başlat</span></span><span class="sgo">Yeni oyun ›</span></button>`;
+  else{const t=(()=>{const f=p.fame||0,g=p.genre?GENRES[p.genre].p.toLowerCase():'';if(!p.genre)return p.age<18?'Öğrenci':'Müzik sever';return (f<10?'Amatör ':f<25?'Yerel ':f<45?'Yükselen ':f<65?'Ünlü ':f<85?'Süperstar ':'Efsane ')+g})();
+   h+=`<div class="slot ${p.alive?'':'dead'}"><button class="sbody" onclick="slotOpen(${n})"><span class="av sav">${AV(p.look,p.age)}</span><span class="stx"><b>${esc(p.first+' '+p.last)}</b><span>${p.age} yaş · ${SEASON[p.q||0]} · ${t}</span><span>${fmtS(p.money)} · ${num(p.fol||0)} takipçi${p.lab?' · '+esc(p.lab.n):''}${p.alive?'':' · <em>Hayatı sona erdi</em>'}</span></span><span class="sgo">${p.alive?'Devam ›':'Özet ›'}</span></button>
+   ${DELQ===n?`<div class="sdel"><span>Yuva ${n} silinsin mi?</span><button class="mini red" onclick="slotDel(${n})">Evet, sil</button><button class="mini sec" onclick="DELQ=null;drawTitle()">Vazgeç</button></div>`:`<button class="sx" onclick="DELQ=${n};drawTitle()" aria-label="Sil">🗑</button>`}</div>`}}
+ h+=`<p class="note" style="margin-top:14px">Kayıtlar bu cihazın hafızasında tutulur. Her İLERLE 3 ay; her 3 ayda 10 hakkın var.</p></div>`;$('title').innerHTML=h}
+function slotNew(n){SLOT=n;MENU=false;S=null;CR=null;try{localStorage.setItem('sahne2-aktif',n)}catch(e){}drawCreate()}
+function slotOpen(n){SLOT=n;MENU=false;S=null;try{localStorage.setItem('sahne2-aktif',n)}catch(e){}boot()}
+function slotDel(n){try{localStorage.removeItem(skey(n))}catch(e){}DELQ=null;drawTitle()}
+function toMenu(){save();closeSheet();$('mod').classList.remove('on');S=null;MENU=true;DELQ=null;drawTitle()}
+function restart(){try{localStorage.removeItem(skey(SLOT))}catch(e){}S=null;MENU=false;CR=null;$('mod').classList.remove('on');closeSheet();drawCreate()}
+const _dc=drawCreate;drawCreate=function(){$('title').classList.remove('on');_dc();const w=document.querySelector('#create .cwrap');if(w&&!w.querySelector('.back')){const b=document.createElement('button');b.className='back';b.textContent='‹ Ana menü';b.onclick=()=>{MENU=true;drawTitle()};w.prepend(b)}};
+const _sa=shAyar;shAyar=function(){let h=_sa();return h.replace(sec('Kayıt'),sec('Kayıt')+row('toMenu()','🏠','Ana menü','Kayıt yuvaları, başka bir hayata geç','›'))};
 
 boot();
 </script>
