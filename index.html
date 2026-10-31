@@ -858,11 +858,15 @@ function hairM(h,c){const d=shade(c,-30),l=shade(c,40);
   case 'wolf':return `<path d="M36.4 34 Q34.6 14 47 10 Q60 8.4 63.6 18 Q65.4 26 63.6 34 L62 29 L60.4 33 L59 24.4 L56.6 27.6 L55.2 21.4 L52.2 25.4 L50.4 20.8 L47.8 25 L45.2 21.4 L43.4 27.6 L41.2 24.2 L39.6 33 L38 29Z" fill="${c}"/>`+ln('M43 13 Q48 10.6 55 11.6',.7,l)+ln('M47 15 L45.6 20 M53 15 L54 20',.6);
   case 'spiky':return `<path d="M37.4 29 L36.4 18.4 L39.6 20 L39.4 11.2 L43.6 15.6 L44.8 7.6 L48.4 13.4 L51 6.4 L53.2 13 L56.4 7.8 L57.4 15 L61 11 L60.6 19.6 L63.6 18.2 L62.6 29 Q61 22 57 20.4 Q50 19 43 20.4 Q39 22 37.4 29Z" fill="${c}"/>`+ln('M45 9.4 L46.2 14.6 M51 8.6 L51.2 13.8 M56.4 10 L55.6 14.6',.6,l);
   case 'afro':return `<g stroke="none"><path d="M36.4 31.5 Q34.8 11.2 50 10.2 Q65.2 11.2 63.6 31.5 Q62.2 24 58 21.4 Q50 18.8 42 21.4 Q37.8 24 36.4 31.5Z" fill="${c}"/>${[40,43.4,46.8,50,53.2,56.6,60].map((x,k)=>`<circle cx="${x}" cy="${21.4-Math.sin(k/6*Math.PI)*2.2}" r="1.9" fill="${c}"/>`).join('')}</g>`+curls(c,[[43,14],[50,12.6],[57,14],[40,18.4],[60,18.4]]);
-  case 'orgu':{const dk=shade(c,-28);let s=`<path d="M37.6 28.8 Q37 12.4 50 11.8 Q63 12.4 62.4 28.8 Q61.4 21.8 57 20.4 Q50 19.4 43 20.4 Q38.6 21.8 37.6 28.8Z" fill="${dk}"/><g stroke="none">`;
-   for(let r=0;r<7;r++){const t=.1+r*.8/6,u=1-t,sx=u*u*38.6+2*u*t*50+t*t*61.4,sy=u*u*25.6+2*u*t*16.6+t*t*25.6-1.7,ex=50+(sx-50)*.3,ey=12.8+Math.abs(sx-50)*.04,dx=ex-sx,dy=ey-sy,L=Math.hypot(dx,dy),nx=-dy/L,ny=dx/L;
-    s+=`<path d="M${sx.toFixed(2)} ${sy.toFixed(2)} L${ex.toFixed(2)} ${ey.toFixed(2)}" stroke="${c}" stroke-width="2.3" stroke-linecap="round" fill="none"/>`;
-    for(let k=1;k<7;k++){const f=k/7,x=sx+dx*f,y=sy+dy*f,bx=x-dx/L*.7,by=y-dy/L*.7;s+=`<path d="M${(bx+nx*1).toFixed(2)} ${(by+ny*1).toFixed(2)} L${x.toFixed(2)} ${y.toFixed(2)} L${(bx-nx*1).toFixed(2)} ${(by-ny*1).toFixed(2)}" stroke="${dk}" stroke-width=".4" fill="none"/>`}}
-   return s+'</g>'}
+  case 'orgu':{const dk=shade(c,-35),hi=shade(c,60),id='cr'+(++uid),CAP='M37.4 29.2 Q36.6 12 50 11.2 Q63.4 12 62.6 29.2 Q61.4 22 57.2 20.2 Q50 18.8 42.8 20.2 Q38.6 22 37.4 29.2Z';
+   let s=`<defs><clipPath id="${id}"><path d="${CAP}"/></clipPath></defs><path d="${CAP}" fill="${c}" fill-opacity=".38"/><g stroke="none" clip-path="url(#${id})">`;
+   const hy=x=>{const t=(x-37.4)/25.2;return 29.2-Math.sin(t*Math.PI)*9.6};
+   [38.6,41.6,44.6,47.6,50.6,53.6,56.6,59.6,62.2].forEach(xs=>{const sy=hy(xs)+.2,ex=50+(xs-50)*.62,ey=8,dx=ex-xs,dy=ey-sy,L=Math.hypot(dx,dy),ux=dx/L,uy=dy/L,nx=-uy,ny=ux;
+    s+=`<path d="M${xs} ${sy.toFixed(2)} L${ex.toFixed(2)} ${ey}" stroke="${c}" stroke-width="2.1" stroke-linecap="round" fill="none"/>`;
+    let z='',sd=1;for(let d=.5;d<L;d+=.85){const x=xs+ux*d+nx*.8*sd,y=sy+uy*d+ny*.8*sd;z+=(z?' L':'M')+x.toFixed(2)+' '+y.toFixed(2);sd=-sd}
+    s+=`<path d="${z}" stroke="${dk}" stroke-width=".32" fill="none"/><path d="M${(xs-nx*.55).toFixed(2)} ${(sy-ny*.55).toFixed(2)} L${(ex-nx*.55).toFixed(2)} ${ey}" stroke="${hi}" stroke-width=".3" opacity=".45"/>`});
+   s+=`</g><path d="${CAP}" fill="none" stroke="${OL2}" stroke-width=".7"/>`;
+   return s}
   case 'bob':return `<path d="M35.8 43 Q33.4 13.6 50 11.2 Q66.6 13.6 64.2 43 L60.4 43.6 Q61.6 30 58 22.6 Q53.6 19.6 49 20.2 Q42 20.6 40 28 Q38.6 35 39.6 43.6Z" fill="${c}"/>`+ln('M49 12 Q44 15 41.4 21.6',.8)+ln('M52 12.4 Q58 14 61 20',.7,l);
   case 'kakul':return `<path d="M36.6 46 Q34 14 50 11.4 Q66 14 63.4 46 L60.6 44 Q61.6 32 60 27 L40 27 Q38.4 32 39.4 44Z" fill="${c}"/><path d="M39.6 20 Q50 16.4 60.4 20 L60.6 27 Q55 27.8 50 26.6 Q45 27.8 39.4 27Z" fill="${c}"/>`+ln('M43 21 L43.4 26.6 M46.6 20.4 L46.8 26.6 M50 20 L50 26.4 M53.4 20.4 L53.2 26.6 M57 21 L56.6 26.6',.5)+`<path d="M37.6 40 Q36 54 33.6 64 L39 64 Q40.4 54 40.2 42Z M62.4 40 Q64 54 66.4 64 L61 64 Q59.6 54 59.8 42Z" fill="${c}"/>`;
   case 'spacebuns':return `<circle cx="39.6" cy="12.6" r="6" fill="${c}"/><circle cx="60.4" cy="12.6" r="6" fill="${c}"/>`+ln('M36.4 11 Q39.6 9 42.8 12 M57.2 12 Q60.4 9 63.6 11',.6)+`<path d="M37.4 29 Q35.8 14 44 11.4 Q50 10 56 11.4 Q64.2 14 62.6 29 Q61.4 21 57 19.4 Q50 18 43 19.4 Q38.6 21 37.4 29Z" fill="${c}"/>`+ln('M50 11 L50 18.4',.7);
