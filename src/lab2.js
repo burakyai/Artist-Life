@@ -83,9 +83,9 @@ ACT.fest=()=>{const X=l2(),L=S.lab;if(L.arts.length<3){toast('Festival için en 
  const fan=L.arts.reduce((a,x)=>a+x.fol,0)+S.fol*.3,g=Math.round(fan*RF(1.2,2.2)*(S.star?2:1));L.cash+=g;X.fest=S.age;L.arts.forEach(a=>{a.fol=Math.round(a.fol*1.08);a.happy=clamp(a.happy+10)});addF(Math.round(S.fol*.01),'ig');sCrowd&&sCrowd();
  log(`🎪 ${L.n} Fest: ${L.arts.length} sanatçı aynı sahnede! Hasılat ${fmtS(g)}, maliyet ${fmtS(cost)}.`,'gold');drawSheet()};
 ACT.comp=()=>{const X=l2(),L=S.lab;const top=[...L.songs].sort((a,b)=>b.total-a.total).slice(0,14);if(top.length<8){toast('Toplama albüm için en az 8 şarkı gerekir.');return}if(!useM(1))return;
- const n=`${L.n} Best of ${X.comp.length+1}`,sales=Math.round(top.reduce((a,s)=>a+s.total,0)/2500*RF(.7,1.3)),g=sales*300;L.cash+=g;top.forEach(s=>s.pot*=1.1);X.comp.push(n);log(`💿 "${n}" toplama albümü: ${num(sales)} satış, ${fmtS(g)}. Eski hitler yeniden listelerde.`,'gold');drawSheet()};
+ const n=`${L.n} Best of ${X.comp.length+1}`,g=0;top.forEach(s=>s.pot*=1.25);X.comp.push(n);log(`💿 "${n}" toplama albümü dijital platformlarda: eski hitler yeniden listelerde.`,'gold');drawSheet()};
 ACT.duet=(a1,a2)=>{const L=S.lab,a=L.arts.find(x=>x.id===a1),b=L.arts.find(x=>x.id===a2);if(!a||!b||a===b)return;if(!useM(1))return;a.demos.push({id:S.nid++,t:genTitle(a.genre)+' (feat. '+b.name+')',q:clamp(Math.round((a.tal+b.tal)/2+R(5,15)))});const m=Math.round((a.fol+b.fol)*.05);a.fol+=m;b.fol+=m;log(`🎤 ${a.name} ve ${b.name} düet yaptı. Demo hazır!`,'good');drawSheet()};
-function shFest(){const L=S.lab,X=l2();let h=row('ACT.fest()','🎪',`${esc(L.n)} Fest`,`Bütün sanatçıların aynı sahnede · yılda bir · ${fmtS(15e6+L.arts.length*2e6)}`,X.fest===S.age?'Bu yıl yapıldı':'2 hak',X.fest===S.age&&!S.star)+row('ACT.comp()','💿','Toplama albüm (Best of)','Şirketin en çok dinlenen 14 şarkısı · eski hitler canlanır','1 hak');
+function shFest(){const L=S.lab,X=l2();let h=row('ACT.fest()','🎪',`${esc(L.n)} Fest`,`Bütün sanatçıların aynı sahnede · yılda bir · ${fmtS(15e6+L.arts.length*2e6)}`,X.fest===S.age?'Bu yıl yapıldı':'2 hak',X.fest===S.age&&!S.star)+row('ACT.comp()','💿','Toplama albüm (Best of)','Şirketin en çok dinlenen 14 şarkısı dijitalde · eski hitler canlanır','1 hak');
  if(X.comp.length)h+=note('Çıkan toplamalar: '+X.comp.map(esc).join(', '));
  if(L.arts.length>=2){h+=sec('Şirket içi düet');const A=L.arts.slice(0,6);A.forEach(a=>{h+=`<div class="card"><div class="ch"><b>${esc(a.name)} ile düet</b></div><div class="tabs wrap">${A.filter(b=>b!==a).map(b=>`<button class="tab sm" onclick="ACT.duet(${a.id},${b.id})">${esc(b.name.split(' ')[0])}</button>`).join('')}</div></div>`})}return h}
 
@@ -117,11 +117,10 @@ function shAcq(){const X=l2();if(!X.acq.length)acqList();let h=note('Küçük pl
 /* 10. Yan gelirler ve ödül */
 ACT.facBuy=()=>{const X=l2();if(X.fac)return;if(!lcash(25e6))return;X.fac=1;log(`🏭 ${S.lab.n} plak baskı fabrikası kuruldu! Albüm baskı maliyetlerin düştü, dışarıya baskı da alıyorsun.`,'gold');drawSheet()};
 ACT.rentTog=()=>{const X=l2();if(!hasLF('studyo')&&!S.star){toast('Önce şirket binana kayıt stüdyosu kur.');return}X.rent=X.rent?0:1;drawSheet()};
-function sideTick(){const X=l2(),L=S.lab;let v=0;if(X.fac)v+=R(1.5e6,4e6)+L.songs.length*15000;if(X.rent){v+=R(8e5,2e6)*(hasLF('studyo')?1:.5);L.arts.forEach(a=>a.happy=clamp(a.happy-1))}L.cash+=v;X.side+=v}
+function sideTick(){const X=l2(),L=S.lab;let v=0;if(X.rent){v+=R(8e5,2e6)*(hasLF('studyo')?1:.5);L.arts.forEach(a=>a.happy=clamp(a.happy-1))}L.cash+=v;X.side+=v}
 function awardYear(){const X=l2(),L=S.lab,sc=L.songs.reduce((a,s)=>a+(s.lq||0),0)/1e6+L.arts.length*3+labPop()/5;if(sc>40&&ch(clamp(sc/200,.1,.7))||S.star&&ch(.5)){X.award.push(S.age);L.arts.forEach(a=>a.happy=clamp(a.happy+10));log(`🏆 ${L.n} "Yılın Plak Şirketi" ödülünü kazandı!`,'gold')}}
-const _al6=ACT.album;ACT.album=()=>{const X=S.lab&&S.lab.x;if(X&&X.fac){const m0=S.money;_al6();if(S.money<m0){const back=Math.round((m0-S.money)*.15);S.money+=back;log(`Kendi fabrikanda bastırdığın için ${fmtS(back)} tasarruf ettin.`,'dim')}}else _al6()};
 function shSide(){const X=l2();let h=`<div class="hero2"><small>Yan gelirler</small><div class="big">${fmtS(X.side)}</div><span>${X.award.length?`🏆 Yılın Plak Şirketi: ${X.award.join(', ')} yaşında`:'Henüz "Yılın Plak Şirketi" ödülün yok'}</span></div>`;
- h+=row('ACT.facBuy()','🏭','Plak baskı fabrikası',X.fac?'Çalışıyor · dışarıya baskı + albüm maliyetin %15 az':'Dışarıya plak basıp gelir elde et',X.fac?'✓':S.star?'⭐':'₺25 Mn',!!X.fac)+row('ACT.rentTog()','🎙','Stüdyoyu dışarıya kirala',X.rent?'Açık · sanatçıların stüdyoyu paylaştığı için biraz mutsuz':'Kapalı',X.rent?'Kapat':'Aç');return h}
+ h+=row('ACT.rentTog()','🎙','Stüdyoyu dışarıya kirala',X.rent?'Açık · sanatçıların stüdyoyu paylaştığı için biraz mutsuz':'Kapalı',X.rent?'Kapat':'Aç');return h}
 
 /* ---------- Bağlantılar ---------- */
 const L2PAGES={ltr:['Transfer',shTr],lceo:['CEO',shCeo],lpub:['Yayıncılık',shPub],ldist:['Dağıtım',shDist],lsub:['Alt markalar',shSubs],lshow:['Yetenek yarışması',shShow],lfest:['Festival ve toplama',shFest],lacq:['Satın alma',shAcq],lside:['Yan gelirler',shSide]};
@@ -129,7 +128,7 @@ const _shK6=shKariyer;shKariyer=function(){const T=SUB&&SUB.t;if(L2PAGES[T]){if(
 const _shLab6=shLab;shLab=function(){let h=_shLab6();if(!S.lab)return h;const X=l2();
  const rows=sec('Şirket yönetimi')+row(lsub('ltr','Transfer'),'🔁','Transfer piyasası',X.trOff?'🔔 Yıldızına teklif var!':'Rakip yıldızları transfer et','›')+row(lsub('lceo','CEO'),'👔','CEO',X.ceo?`${esc(X.ceo.n)} yönetiyor`:'Şirketi senin yerine yönetsin','›')+row(lsub('lpub','Yayıncılık'),'✍️','Yayıncılık kolu',`${X.pub.wr.length} söz yazarı · ${X.pub.cat.length} şarkı`,'›')+
   row(lsub('ldist','Dağıtım'),'📦','Dağıtım hizmeti',X.dist.on?`${X.dist.cl.length} müşteri`:'Bağımsızlardan %15 komisyon','›')+row(lsub('lsub','Alt markalar'),'🏷','Alt markalar',`${X.subs.length} alt marka · kapasite ${labCap()}`,'›')+row(lsub('lshow','Yetenek yarışması'),'📺','Yetenek yarışması',X.show?(X.show.fin?'🔔 Finalistler hazır':'Yayında'):'Kendi TV programın','›')+
-  row(lsub('lfest','Festival'),'🎪','Festival, toplama albüm, düet','','›')+row(lsub('lacq','Satın alma'),'🏢','Şirket satın al',`${X.acqd.length} şirket aldın`,'›')+row(lsub('lside','Yan gelirler'),'🏭','Fabrika, stüdyo kirası, ödüller','','›');
+  row(lsub('lfest','Festival'),'🎪','Festival, toplama albüm, düet','','›')+row(lsub('lacq','Satın alma'),'🏢','Şirket satın al',`${X.acqd.length} şirket aldın`,'›')+row(lsub('lside','Yan gelirler'),'🎙','Stüdyo kirası, ödüller','','›');
  h=h.replace(sec('Kasa'),rows+sec('Kasa'));return h.replace(/(<span>Şirket kasası · \d+\/)\d+( sanatçı)/,`$1${labCap()}$2`)};
 const _lt6=labTick;labTick=function(){_lt6();if(S.lab&&S.lab.x){ceoTick();pubTick();distTick();showTick();sideTick();trOffer()}};
 const _ly6=labYear;labYear=function(){_ly6();if(S.lab&&S.lab.x){awardYear();l2().tr=[];l2().acq=[]}};
