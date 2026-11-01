@@ -248,7 +248,7 @@ body.monob .tab.on,body[data-th="monokrom"] .tab.on,body[data-th="monokrom"] .bt
 <div class="mod" id="confirm"><div class="box"><h2>Yeni hayat?</h2><p>Mevcut hayatın silinecek ve baştan başlayacaksın.</p><button class="btn" onclick="$('confirm').classList.remove('on');restart()">Evet, baştan başla</button><button class="btn sec" onclick="$('confirm').classList.remove('on')">Vazgeç</button></div></div>
 <script>
 try{if('serviceWorker' in navigator&&/github\.io$/.test(location.hostname))navigator.serviceWorker.register('sw.js').catch(()=>{})}catch(e){}
-const APPV='2026.11.01-043916';
+const APPV='2026.11.01-044622';
 (function(){try{if(!/github\.io$/.test(location.hostname))return;const chk=()=>fetch(location.pathname+'?nc='+Date.now(),{cache:'no-store'}).then(r=>r.text()).then(t=>{const m=t.match(/const APPV='([^']+)'/);if(m&&m[1]!==APPV&&!sessionStorage.getItem('upd'+m[1])){sessionStorage.setItem('upd'+m[1],'1');location.replace(location.pathname+'?v='+encodeURIComponent(m[1]))}}).catch(()=>{});chk();document.addEventListener('visibilitychange',()=>{if(!document.hidden)chk()})}catch(e){}})();
 /* ============ Yardımcılar ============ */
 const $=id=>document.getElementById(id);
@@ -2818,7 +2818,7 @@ actKeep();
 /* ============ Süperstar: sınırsız hak ============ */
 const INF=999;
 const _um8=useM;useM=function(m){if(S&&S.star){S.months=INF;return true}return _um8(m)};
-function infSync(){if(!S)return;if(S.star)S.months=INF;else if(S.months>HAK)S.months=HAK}
+function infSync(){if(!S)return;if(S.star)S.months=INF;else if(S.months>HAK+(S.hakB||0))S.months=HAK+(S.hakB||0)}
 const infTxt=h=>h.replace(new RegExp(`${INF}\\s*/\\s*${HAK}( hak)?`,'g'),'∞ sınırsız').replace(new RegExp(`\\b${INF} hak\\b`,'g'),'∞ hak');
 const _rn8=render;render=function(){infSync();_rn8();if(S&&S.star){const st=$('stats');if(st)st.innerHTML=infTxt(st.innerHTML)}};
 const _ds8=drawSheet;drawSheet=function(){infSync();_ds8();if(S&&S.star){const b=document.querySelector('#ov .sh-b');if(b){const sc=b.scrollTop;b.innerHTML=infTxt(b.innerHTML);b.scrollTop=sc}}};
@@ -3220,6 +3220,101 @@ const _shF12=shFriend;shFriend=function(id){const f=S.friends.find(x=>x.id===id)
  else add+=row(`ACT.frFame(${id})`,'🌟','Ünlü olmasına yardım et',`PR ve sahne kampanyası · şöhreti ${Math.round(f.fame)} · ${fmtS(FS(300000)*(1+(f.fame||0)/50))}`,'1 hak')+row(`ACT.frFeat(${id})`,'🎶','Birlikte düet yap','Senin şöhretin onu da yükseltir','1 hak')+(S.lab?row(`ACT.frSign(${id})`,'📀','Şirketine imzalat',S.lab.arts.some(a=>a.fr===f.id)?'Şirketinde':'Avanssız, sadık sanatçı olarak','',S.lab.arts.some(a=>a.fr===f.id)):'');
  if(f.type!=='sanatci')add+=row(`ACT.frFame(${id})`,'🌟','Ünlü yap (influencer)',`PR kampanyası · şöhreti ${Math.round(f.fame||0)}`,'1 hak');
  const i=h.indexOf(sec('⭐ Süperstar: düzenle'));return i>=0?h.slice(0,i)+add+h.slice(i):h+add};
+actKeep();
+
+/* ============ Sağlık ve yaşlanma · eğitim · sosyal medya akışı · Şöhretler Salonu ve miras · kulüp/restoran/film · ekip ============ */
+function m2Init(){S.ill=S.ill||[];S.edu=S.edu||[];S.feed=S.feed||[];S.team=S.team||{};S.hof=S.hof||null;S.biz2=S.biz2||{}}
+/* ---------- 5. Sağlık ve yaşlanma ---------- */
+const ILLS={sesteli:{n:'Ses teli nodülü',ic:'🗣',d:'Şarkı kaliten ve konser performansın düşer',cure:'Ses teli ameliyatı',cost:2e6,q:1},yorgun:{n:'Sahne yorgunluğu (tükenmişlik)',ic:'😵',d:'Mutluluğun her 3 ayda düşer',cure:'1 ay tam dinlenme',cost:5e5,q:0},
+ tansiyon:{n:'Yüksek tansiyon',ic:'🩺',d:'Sağlığın her yıl düşer',cure:'Tedavi ve ilaç',cost:3e5,q:0},bel:{n:'Bel fıtığı',ic:'🦴',d:'Konserlerde sağlığın daha çok düşer',cure:'Fizik tedavi',cost:8e5,q:0}};
+const hasIll=k=>(S.ill||[]).includes(k);
+ACT.cure=k=>{const I=ILLS[k],c=FS(I.cost);if(!pay(c))return;if(!useM(k==='yorgun'?3:2))return;S.ill=S.ill.filter(x=>x!==k);add('health',8);add('happy',5);log(`${I.ic} ${I.n} için ${I.cure.toLowerCase()} tamamlandı, iyileştin.`,'good');drawSheet()};
+ACT.privDoc=()=>{S.doc=!S.doc;log(S.doc?'🩺 Özel doktorla anlaştın (yıllık ücretli).':'Özel doktorunla yollarını ayırdın.','dim');drawSheet()};
+ACT.vocalRest=()=>{if(!useM(2))return;add('health',6);add('happy',4);if(hasIll('yorgun')&&ch(.5)){S.ill=S.ill.filter(x=>x!=='yorgun');log('Uzun bir dinlenme tükenmişliğini geçirdi.','good')}else log('Sessiz bir inziva haftası geçirdin.','good');drawSheet()};
+ACT.farewell=()=>{if(S.age<55&&!S.star){toast('Veda turnesi 55 yaşından sonra.');return}if(S.farewell){toast('Veda turnesi yapıldı.');return}if(!useM(4))return;S.farewell=1;
+ const g=Math.round((S.fol*RF(8,14)+3e7)*(1+S.fame/60)),r=income(g,'gig');addF(Math.round(S.fol*.05),'ig');add('happy',20);sCrowd&&sCrowd();log(`🎤 Veda turnesi! 30 şehir, gözyaşları ve ayakta alkışlar. Hasılat ${fmtS(g)}, net ${fmtS(r.net)}. Şarkıların gelir getirmeye devam edecek.`,'gold');drawSheet()};
+function healthQ(){if(S.age<14)return;const risk=(S.age>40?.04:.015)+(S.gigN?Object.values(S.gigN).reduce((a,b)=>a+b,0)/2000:0)-(S.doc?.02:0);
+ Object.keys(ILLS).forEach(k=>{if(!hasIll(k)&&ch(Math.max(.003,risk*(k==='tansiyon'?(S.age>35?1:.2):k==='sesteli'?(S.genre?1:0):1)))){S.ill.push(k);log(`${ILLS[k].ic} Doktor: "${ILLS[k].n}". ${ILLS[k].d}.`,'bad')}});
+ if(hasIll('yorgun'))add('happy',-4);if(S.doc)add('health',2);if(S.age>=50&&!(S.team&&S.team.vocal))S.skill=clamp(S.skill-.4)}
+function healthY(){if(hasIll('tansiyon'))add('health',-R(3,6));if(S.doc){const c=FS(2e5);S.money-=c}}
+const _wr2=ACT.write;ACT.write=()=>{const n0=S.songs.length;_wr2();if(S.songs.length>n0){const s=S.songs[0];if(hasIll('sesteli'))s.q=clamp(s.q-8);s.q=clamp(s.q+(S.eduQ||0)+(S.team&&S.team.writers?4:0))}};
+function shHealth(){let h=`<div class="tk"><span>Sağlık</span><b>%${Math.round(S.health)}</b></div><div class="bar"><i style="width:${S.health}%;background:var(--good)"></i></div>`;
+ h+=sec('Durumun')+(S.ill.length?S.ill.map(k=>{const I=ILLS[k];return row(`ACT.cure('${k}')`,I.ic,I.n,`${I.d} · ${I.cure}`,fmtS(FS(I.cost)))}).join(''):note('✅ Şu an bir rahatsızlığın yok.'));
+ h+=sec('Önlem')+row('ACT.privDoc()','🩺','Özel doktor',S.doc?`Açık · ${fmtS(FS(2e5))}/yıl · hastalık riski azalır, sağlık her 3 ayda ↑`:'Kapalı',S.doc?'Kapat':'Tut')+row('ACT.vocalRest()','🧘','Sessiz inziva','Sağlık ↑ · mutluluk ↑ · tükenmişliğe iyi gelir','2 hak');
+ if(S.age>=50)h+=note(S.team&&S.team.vocal?'🎙 Vokal koçun sayesinde sesin yaşla bozulmuyor.':'🎙 Yaşla birlikte sesin yavaşça değişiyor (yetenek her 3 ayda biraz düşer). Ekibine vokal koçu alırsan durur.');
+ h+=sec('Veda')+row('ACT.farewell()','🎤','Veda turnesi',S.farewell?'Yapıldı':'55 yaş sonrası · tek seferlik büyük turne','4 hak',!!S.farewell);return h}
+/* ---------- 6. Eğitim ---------- */
+const EDU=[{id:'kurs',n:'Prodüksiyon kursu',ic:'🎛',p:3e5,q:4,b:2,d:'Şarkı kalitesi kalıcı +2'},{id:'vokal',n:'Vokal eğitimi',ic:'🎙',p:4e5,q:4,b:0,sk:12,d:'Yetenek +12'},{id:'kons',n:'Devlet konservatuvarı',ic:'🎼',p:1e6,q:16,b:5,sk:15,d:'Şarkı kalitesi kalıcı +5 · yetenek +15'},
+ {id:'berklee',n:'Berklee College of Music (Boston)',ic:'🎓',p:12e6,q:12,b:8,sk:20,d:'Şarkı kalitesi kalıcı +8 · yetenek +20 · ABD pazarında popülerlik'},{id:'mba',n:'Müzik işletmeciliği (MBA)',ic:'💼',p:5e6,q:8,b:0,lab:1,d:'Plak şirketi geliri +%10'}];
+ACT.enroll=id=>{const e=EDU.find(x=>x.id===id);if(S.eduOn){toast('Zaten bir eğitimdesin.');return}if(S.edu.includes(id)){toast('Bunu zaten bitirdin.');return}if(!pay(e.p))return;S.eduOn={id,left:e.q};log(`${e.ic} ${e.n} eğitimine başladın (${e.q*3} ay). Her 3 ayda 2 hakkını eğitim kullanacak.`,'good');drawSheet()};
+ACT.dropEdu=()=>{S.eduOn=null;log('Eğitimi yarıda bıraktın.','dim');drawSheet()};
+function eduQ(){const E=S.eduOn;if(!E)return;S.months=Math.max(0,S.months-2);S.skill=clamp(S.skill+.8);E.left--;if(E.left<=0){const e=EDU.find(x=>x.id===E.id);S.edu.push(e.id);S.eduQ=(S.eduQ||0)+e.b;if(e.sk)S.skill=clamp(S.skill+e.sk);if(e.id==='berklee'){S.intl=S.intl||{};S.intl.us=clamp((S.intl.us||0)+15)}S.eduOn=null;log(`🎓 ${e.n} diplomanı aldın! ${e.d}.`,'gold')}}
+function shEdu(){let h=S.eduOn?`<div class="card"><b>${EDU.find(x=>x.id===S.eduOn.id).ic} ${EDU.find(x=>x.id===S.eduOn.id).n}</b>${note(`${S.eduOn.left*3} ay kaldı · her 3 ayda 2 hak ders için kullanılır`)}<button class="mini red" onclick="ACT.dropEdu()">Bırak</button></div>`:'';
+ if(S.edu.length)h+=note('🎓 Diplomaların: '+S.edu.map(id=>EDU.find(x=>x.id===id).n).join(', '));h+=sec('Eğitimler')+EDU.map(e=>row(`ACT.enroll('${e.id}')`,e.ic,e.n,`${e.d} · ${e.q*3} ay`,S.edu.includes(e.id)?'✓ Bitti':fmtS(e.p),S.edu.includes(e.id))).join('');return h}
+/* ---------- 7. Sosyal medya akışı ---------- */
+const FANC=['Bu şarkı sabahtan beri kafamda 🔥','Kral geri döndü 👑','Konserine bilet bulamadım 😭','Albüm ne zaman?!','Seni ilk günden beri dinliyorum ❤️','Bu nakarat ne be 😍','Türkiye\'nin en iyisi','Lütfen İzmir\'e de gel','Stil efsane 😎','Annem bile dinliyor 😂'];
+const HATEC=['Eskisi daha iyiydi','Ses filtreli belli 🙄','Sadece reklamla ünlü oldu','Bu ne biçim kıyafet','Overrated','Para için her şeyi yapar'];
+const PTYPES={foto:['📸','Fotoğraf paylaş',1],story:['🎞','Story / kulis',1],canli:['🔴','Canlı yayın (bağış)',2],trend:['💃','Trend akımına katıl',1],tartisma:['🌶','Tartışmalı tweet',1]};
+ACT.post=k=>{if(!useM(PTYPES[k][2]))return;const base=Math.max(50,S.fol*RF(.01,.04)*(1+(S.looks||50)/200));let likes=Math.round(base),gain=0,cash=0,note2='';
+ if(k==='trend'&&(S.star||ch(.25)))  {likes*=6;gain=Math.round(S.fol*.05+1000);note2='Viral oldu!'}else if(k==='trend')gain=Math.round(S.fol*.005);
+ if(k==='foto')gain=Math.round(S.fol*.004*(1+(S.looks||50)/100));if(k==='story'){gain=Math.round(S.fol*.002);if(S.fc)S.fc.love=clamp(S.fc.love+3)}
+ if(k==='canli'){cash=Math.round(S.fol*RF(.02,.06)+2000);income(cash,'brand');gain=Math.round(S.fol*.003);note2=`Bağışlar: ${fmtS(cash)}`}
+ if(k==='tartisma'){if(S.star||ch(.5)){gain=Math.round(S.fol*.03);likes*=3;note2='Gündem oldun.'}else{gain=-Math.round(S.fol*.02);note2='Linç yedin.'}}
+ addF(gain,k==='trend'?'tt':k==='canli'?'yt':'ig');const hate=k==='tartisma'?.5:.15;const cm=[0,1,2,3].map(()=>ch(hate)&&!S.star?{h:1,t:pick(HATEC),u:'@'+pick(['anonim','x_user','hater','gercekci'])+R(10,99)}:{h:0,t:pick(FANC),u:'@'+pick(NM_E.concat(NM_K)).toLowerCase()+R(1,999)});
+ const nh=cm.filter(c=>c.h).length;if(nh>=2)add('happy',-3);else add('happy',2);S.feed=[{k,t:PTYPES[k][1],likes,gain,cm,n2:note2,age:S.age}].concat(S.feed).slice(0,8);log(`${PTYPES[k][0]} ${PTYPES[k][1]}: ${num(likes)} beğeni, ${gain>=0?'+':''}${num(gain)} takipçi.${note2?' '+note2:''}`,gain<0?'bad':'good');drawSheet()};
+function shFeed(){let h=`<div class="tabs wrap">${Object.entries(PTYPES).map(([k,v])=>`<button class="tab sm" onclick="ACT.post('${k}')">${v[0]} ${v[1]} · ${v[2]} hak</button>`).join('')}</div>`;
+ if(!S.feed.length)return h+note('Henüz paylaşım yok.');S.feed.forEach(p=>{h+=`<div class="card"><div class="ch"><b>${PTYPES[p.k][0]} ${p.t}</b><span class="pill">❤️ ${num(p.likes)}</span></div>${p.n2?note(p.n2):''}${p.cm.map(c=>`<p class="note" style="margin:3px 0"><b style="color:${c.h?'var(--bad)':'var(--acc)'}">${esc(c.u)}</b> ${esc(c.t)}</p>`).join('')}<div class="note" style="margin-top:4px">${p.gain>=0?'+':''}${num(p.gain)} takipçi · ${p.age} yaşında</div></div>`});return h}
+/* ---------- 9. Şöhretler Salonu ve miras ---------- */
+const hofOK=()=>S.fame>=85&&(S.tot.streams||0)>=2e9&&S.age>=35||S.star&&S.fame>=60;
+function legacy(){return Math.round((S.tot.streams||0)/1e8+S.awards.filter(a=>a.win!==false).length*5+released().filter(s=>s.cert>=4).length*8+(S.vak?S.vak.rep/2:0)+(S.hof?40:0)+(S.museum?15:0)+(S.biopic?15:0))}
+ACT.hofAccept=()=>{if(!hofOK()||S.hof)return;S.hof={age:S.age,honors:[]};addF(Math.round(S.fol*.05),'ig');add('happy',20);log(`🏛 Şöhretler Salonu'na alındın! Tören canlı yayınlandı, ayakta alkışlandın.`,'gold');sJingle&&sJingle();drawSheet()};
+ACT.honor=k=>{if(!S.hof)return;if(S.hof.honors.includes(k))return;if(!useM(1))return;S.hof.honors.push(k);const n={sokak:`${esc(S.city||'İstanbul')} şehrinde bir sokağa adın verildi`,heykel:'Doğduğun mahalleye heykelin dikildi',yildiz:'Şöhret Kaldırımı\'na yıldızın yerleştirildi',pul:'Adına hatıra pulu basıldı'}[k];add('happy',8);log(`🏅 ${n}!`,'gold');drawSheet()};
+ACT.museum=()=>{if(S.museum)return;const c=FS(2e7);if(!pay(c))return;S.museum=1;log(`🏛 Kendi müzeni açtın: sahne kostümleri, plaklar, ödüller. Her yıl ziyaretçi geliri getirir.`,'gold');drawSheet()};
+ACT.biopic=()=>{if(S.biopic||S.fame<70&&!S.star)return;if(!useM(2))return;S.biopic=1;const lic=Math.round(S.fol*RF(2,5)+5e6),r=income(lic,'brand');addF(Math.round(S.fol*.04),'yt');log(`🎬 Hayatını anlatan biyografik film için lisans anlaşması: net ${fmtS(r.net)}. Film vizyona girdi!`,'gold');drawSheet()};
+function hofY(){if(S.museum){const v=Math.round(S.fol*RF(.3,.8)*(S.hof?1.5:1));S.money+=v}if(!S.hof&&hofOK()&&!S.hofAsk){S.hofAsk=1;log('🏛 Şöhretler Salonu seni aday gösterdi! (Hayat › Aktiviteler › Miras)','gold')}if(S.holo){const v=Math.round(S.holo*RF(.8,1.2));S.money+=v;log(`👻 ${S.holoN} hologram konserleri bu yıl ${fmtS(v)} kazandırdı.`,'good')}}
+function shLegacy(){let h=`<div class="hero2"><small>Miras puanın</small><div class="big">${legacy()}</div><span>Dinlenme, ödüller, elmas plaklar, vakıf, onurlar ve müzeden gelir</span></div>`;
+ if(S.hof)h+=`<div class="card"><b>🏛 Şöhretler Salonu üyesi</b>${note(`${S.hof.age} yaşında alındın.`)}<div class="tabs wrap">${[['sokak','🛣 Sokak adı'],['heykel','🗿 Heykel'],['yildiz','⭐ Kaldırım yıldızı'],['pul','📮 Hatıra pulu']].map(([k,n])=>`<button class="tab sm ${S.hof.honors.includes(k)?'on':''}" onclick="ACT.honor('${k}')">${n}</button>`).join('')}</div></div>`;
+ else h+=hofOK()?`<button class="btn" onclick="ACT.hofAccept()">🏛 Şöhretler Salonu törenine katıl</button>`:note('🏛 Şöhretler Salonu için: şöhret 85+, toplam 2 milyar dinlenme ve 35 yaş üstü.');
+ h+=row('ACT.museum()','🏛','Kendi müzeni aç',S.museum?'Açık · her yıl ziyaretçi geliri':fmtS(FS(2e7)),S.museum?'✓':'',!!S.museum)+row('ACT.biopic()','🎬','Biyografik film',S.biopic?'Çekildi':'Şöhret 70+ · lisans geliri','2 hak',!!S.biopic);
+ return h+note('👻 Öldüğünde efsaneysen hologram konserlerin mirasçına her yıl gelir getirir.')}
+const _inh13=inherit;inherit=function(id){const P=S,fame=P.fame,leg=legacy();_inh13(id);if(S&&S!==P){m2Init();if(fame>=70||P.hof){S.holo=Math.round((P.fol*.4+leg*2e5));S.holoN=P.stage||P.first+' '+P.last;log(`👻 ${S.holoN} efsane olduğu için hologram konserleri başlıyor; gelirleri her yıl sana kalacak.`,'gold')}S.team={};S.ill=[];S.eduOn=null;S.edu=[];S.eduQ=0;S.hof=null;S.hofAsk=0;S.museum=P.museum;S.biopic=0;S.farewell=0;S.feed=[];save();render()}};
+/* ---------- 10. Kulüp, restoran zinciri, film şirketi ---------- */
+const CLUBS=[['amator','Amatör kulüp','⚽',2e7,5e6],['lig1','1. Lig kulübü','🏟',2.5e8,6e7],['super','Süper Lig kulübü','🏆',2.5e9,6e8]];
+ACT.clubBuy=i=>{const c=CLUBS[i];if(S.biz2.club){toast('Zaten bir kulübün var.');return}if(!pay(c[3]))return;S.biz2.club={i,n:`${S.city||'İstanbul'} ${pick(['Gücü','Spor','Gençlik','Yıldızları'])}`,pts:0,bud:0,tro:0,fan:R(30,60),pos:null};log(`${c[2]} ${c[1]} satın aldın: ${S.biz2.club.n}! Taraftar coşkulu.`,'gold');drawSheet()};
+ACT.clubSpend=m=>{const C=S.biz2.club,c=CLUBS[C.i],x=c[4]*m;if(!pay(x))return;C.bud+=x;log(`⚽ ${C.n} için ${fmtS(x)} transfer bütçesi ayırdın.`,'dim');drawSheet()};
+ACT.clubSell=()=>{const C=S.biz2.club,c=CLUBS[C.i],v=Math.round(c[3]*(.7+C.fan/150+C.tro*.15));S.money+=v;log(`${C.n} satıldı: ${fmtS(v)}.`,'good');S.biz2.club=null;drawSheet()};
+function clubY(){const C=S.biz2.club;if(!C)return;const c=CLUBS[C.i],str=Math.log10(1+C.bud/c[4]*10)+RF(-.4,.6),pos=clamp(Math.round(18-str*7+R(-2,2)),1,20);C.pos=pos;C.bud=0;const prize=Math.round(c[4]*(1.6-pos/14)),run=c[4]*.8;S.money+=prize-run;C.fan=clamp(C.fan+(pos<=3?10:pos>=16?-12:0));
+ if(pos===1){C.tro++;add('happy',15);log(`🏆 ${C.n} şampiyon oldu! Kupa töreninde sahnedeydin. Gelir-gider: ${fmtS(prize-run)}.`,'gold')}else log(`⚽ ${C.n} sezonu ${pos}. sırada bitirdi. Gelir-gider: ${fmtS(prize-run)}.`,pos<=5?'good':pos>=16?'bad':'dim');
+ if(pos>=18&&C.i>0&&!S.star){C.i--;log(`📉 ${C.n} küme düştü.`,'bad')}else if(pos<=2&&C.i<2){C.i++;log(`📈 ${C.n} üst lige çıktı!`,'gold')}}
+ACT.restOpen=()=>{const c=FS(8e6);if(!pay(c))return;S.biz2.rest=S.biz2.rest||{n:`${S.stage||S.first}'s Kitchen`,br:0,tot:0};S.biz2.rest.br++;log(`🍔 ${S.biz2.rest.n} yeni şube açtı (${S.biz2.rest.br}. şube).`,'good');drawSheet()};
+function restQ(){const R0=S.biz2.rest;if(!R0)return;let v=0;for(let i=0;i<R0.br;i++)v+=RF(-4e5,1.4e6)*(1+S.fame/150);v=Math.round(v);if(v>0)income(v,'brand');else S.money+=v;R0.tot+=v;R0.last=v}
+const FILMS=[['Bağımsız film',5e6],['Orta bütçeli film',4e7],['Gişe filmi',3e8]];
+ACT.film=(i,star)=>{const f=FILMS[i];if(!pay(f[1]))return;if(!useM(star?3:1))return;S.biz2.films=S.biz2.films||[];const t=pick(['Son Perde','Gece Treni','Mahalle','Kırmızı Halı','Sessiz Şehir','Altın Mikrofon']);
+ const mult=Math.max(.1,RF(.2,2.6)*(star?1+S.fame/120:1)*(1+(S.biz2.films.filter(x=>x.r>1).length)*.05)),box=Math.round(f[1]*mult);S.biz2.films.push({t,b:f[1],box,r:mult,star});const r=box-f[1];if(box>0)income(box,'brand');
+ if(star){addF(Math.round(S.fol*.03),'yt');S.skill=clamp(S.skill+1)}log(`🎬 "${t}" vizyonda! Bütçe ${fmtS(f[1])}, gişe ${fmtS(box)} → ${r>=0?'kâr':'zarar'} ${fmtS(Math.abs(r))}${star?'. Başrolde sendin ve film müziğini de yaptın.':''}`,r>=0?'gold':'bad');drawSheet()};
+function shBiz2(){const B=S.biz2,C=B.club;let h=sec('⚽ Futbol kulübü');
+ if(C){const c=CLUBS[C.i];h+=`<div class="card"><div class="ch"><b>${c[2]} ${esc(C.n)}</b><span class="pill">${c[1]}</span></div>${note(`Taraftar %${C.fan} · ${C.tro} şampiyonluk${C.pos?` · geçen sezon ${C.pos}.`:''} · bu sezon transfer bütçesi ${fmtS(C.bud)}`)}<div class="tabs wrap"><button class="tab sm" onclick="ACT.clubSpend(.5)">+${fmtS(c[4]*.5)}</button><button class="tab sm" onclick="ACT.clubSpend(1)">+${fmtS(c[4])}</button><button class="tab sm" onclick="ACT.clubSpend(3)">+${fmtS(c[4]*3)}</button><button class="tab sm" onclick="ACT.clubSell()">Kulübü sat</button></div>${note('Bütçe ne kadar yüksekse sezon sonunda o kadar üst sıradasın. Sezon sonu ödülü ve gider her yıl hesaplanır.')}</div>`}
+ else h+=CLUBS.map((c,i)=>row(`ACT.clubBuy(${i})`,c[2],c[1],`Yıllık işletme ${fmtS(c[4]*.8)} · şampiyonluk, küme düşme, lig atlama`,fmtS(c[3]))).join('');
+ h+=sec('🍔 Restoran zinciri')+(B.rest?note(`${esc(B.rest.n)} · ${B.rest.br} şube · son 3 ay ${fmtS(B.rest.last||0)} · toplam ${fmtS(B.rest.tot)}`):'')+row('ACT.restOpen()','🍔',B.rest?'Yeni şube aç':'Restoran zinciri kur',`Her şube 3 ayda bir kâr ya da zarar eder · ünün müşteri çeker`,fmtS(FS(8e6)));
+ h+=sec('🎬 Film yapım şirketi')+FILMS.map((f,i)=>`<div class="card"><div class="ch"><b>${f[0]}</b><span class="pill">${fmtS(f[1])}</span></div><div class="two"><button class="mini" onclick="ACT.film(${i},0)">Yapımcı ol · 1 hak</button><button class="mini sec" onclick="ACT.film(${i},1)">Başrolde oyna · 3 hak</button></div></div>`).join('');
+ if((B.films||[]).length)h+=note('Filmlerin: '+B.films.slice(-6).map(f=>`"${esc(f.t)}" ${f.box>=f.b?'▲':'▼'}`).join(' · '));return h}
+const _shBiz13=shBiz;shBiz=function(){return _shBiz13()+row("sheet('kariyer',{t:'biz2',title:'Kulüp, restoran, film',par:{t:'biz',title:'İş dünyası'}})",'⚽','Futbol kulübü, restoran zinciri, film şirketi',`${S.biz2.club?esc(S.biz2.club.n):'Kulüp satın al'} · ${S.biz2.rest?S.biz2.rest.br+' şube':'restoran'} · ${(S.biz2.films||[]).length} film`,'›')};
+/* ---------- 11. Ekip ---------- */
+const TEAM={asist:['👩‍💼','Kişisel asistan','Her 3 ayda +2 hak',4e5],stilist:['💅','Stilist','Stil +5 · görünüş ↑',3e5],writers:['✍️','Söz yazarı ekibi','Yazdığın her şarkı +4 kalite',6e5],tour:['🧳','Turne müdürü','Konser gelirleri +%15',5e5],vocal:['🎙','Vokal koçu','Yetenek ↑ · yaşla ses bozulmaz',3e5],pr:['📣','PR uzmanı','Her 3 ayda takipçi ↑',5e5]};
+ACT.hire=k=>{S.team[k]=!S.team[k];log(S.team[k]?`${TEAM[k][0]} ${TEAM[k][1]} işe aldın (${fmtS(FS(TEAM[k][3]))}/3 ay).`:`${TEAM[k][1]} ile çalışmayı bıraktın.`,'dim');S.hakB=S.team.asist?2:0;drawSheet()};
+function teamQ(){let c=0;Object.keys(TEAM).forEach(k=>{if(S.team[k])c+=FS(TEAM[k][3])});if(!c)return;if(!S.star)S.money-=c;if(S.team.asist)S.months+=2;if(S.team.stilist)S.looks=clamp((S.looks||50)+1);if(S.team.vocal)S.skill=clamp(S.skill+.6);if(S.team.pr)addF(Math.round(S.fol*.01+300),'ig');S.hakB=S.team.asist?2:0}
+const _stil13=stil;stil=function(){return _stil13()+(S&&S.team&&S.team.stilist?5:0)};
+const _inc13=income;income=function(g,src){if(src==='gig'&&S.team&&S.team.tour)g*=1.15;return _inc13(g,src)};
+function shTeam(){const c=Object.keys(TEAM).filter(k=>S.team[k]).reduce((a,k)=>a+FS(TEAM[k][3]),0);return note(`Ekibin her 3 ayda maaş alır. Toplam: ${fmtS(c)}/3 ay.`)+Object.entries(TEAM).map(([k,t])=>row(`ACT.hire('${k}')`,t[0],t[1],`${t[2]} · ${fmtS(FS(t[3]))}/3 ay`,S.team[k]?'✓ Çalışıyor':'İşe al')).join('')}
+/* ---------- Bağlantılar ---------- */
+const M2P={health:['Sağlık',shHealth],edu:['Eğitim',shEdu],feed:['Sosyal medya akışı',shFeed],legacy:['Miras',shLegacy],team:['Ekibin',shTeam]};
+const _shH13=shHayat;shHayat=function(){const T=SUB&&SUB.t;m2Init();if(M2P[T])return M2P[T][1]();let h=_shH13();if(SUB||(S.htab||'iliski')!=='aktivite')return h;
+ const L=(t,ic,n,d)=>row(`sheet('hayat',{t:'${t}',title:'${M2P[t][0]}'})`,ic,n,d,'›');
+ return h+sec('Kendini geliştir')+L('health','🩺','Sağlık',S.ill.length?`⚠️ ${S.ill.map(k=>ILLS[k].n).join(', ')}`:'Rahatsızlık yok'+(S.doc?' · özel doktor':''))+L('edu','🎓','Eğitim',S.eduOn?'Eğitimde':S.edu.length?S.edu.length+' diploma':'Konservatuvar, Berklee, kurslar')+L('team','👥','Ekibin',`${Object.values(S.team).filter(Boolean).length} kişi · asistan, stilist, yazarlar…`)+L('feed','📱','Sosyal medya akışı','Paylaş, yorumları oku, canlı yayın yap')+L('legacy','🏛','Miras ve Şöhretler Salonu',S.hof?'Salon üyesi':'Miras puanı '+legacy())};
+const _shK13=shKariyer;shKariyer=function(){if(SUB&&SUB.t==='biz2'){m2Init();return shBiz2()}return _shK13()};
+const _aq13=ageUpQ;ageUpQ=function(){_aq13();if(!S||!S.alive)return;m2Init();healthQ();eduQ();teamQ();restQ();if(S.edu.includes('mba')&&S.lab&&S.lab.lastQ&&S.lab.lastQ.net>0)S.lab.cash+=Math.round(S.lab.lastQ.net*.1)};
+const _yt13=yearTick;yearTick=function(){_yt13();if(!S||!S.alive)return;m2Init();healthY();hofY();clubY()};
+const _ei13=extInit;extInit=function(){_ei13();m2Init();S.hakB=S.team.asist?2:0};
 actKeep();
 
 boot();
