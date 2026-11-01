@@ -107,7 +107,7 @@ function platChart(pid){if(!S.chart)genChart();const rows=S.chart.map(x=>({t:x.t
  return rows.sort((a,b)=>b.w-a.w).slice(0,20)}
 function marketYear(){}
 function marketQ(){STOCKS.forEach(x=>{const m=S.mkt[x.id],sg=x.sg/2;let r=x.mu/4+sg*gauss()-sg*sg/2;if(x.id==='SHNE'||x.id==='ATLS')r+=(S.fame-50)/4000;if(S.tip===x.id)r=Math.max(r,.1+Math.random()*.15);m.p=Math.max(.5,m.p*Math.exp(r));m.h.push(m.p);if(m.h.length>20)m.h.shift()});S.tip=null;
- if(S.bank>0)S.bank+=S.bank*.15/4;if(S.loan>0){const i=S.loan*.42/4;S.loan+=i}}
+ if(S.bank>0){const bi=S.bank*(typeof bankRate==='function'?bankRate():.15)/4;S.bank+=bi;if(typeof btx==='function'&&bi>=1)btx('Mevduat faizi',bi)}if(S.loan>0){const i=S.loan*.42/4;S.loan+=i}}
 
 /* ---------- Çeyrek sonu: dinlenme ve gelir ---------- */
 function quarterEnd(){

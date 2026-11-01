@@ -226,6 +226,11 @@ body.monob .tab.on,body[data-th="monokrom"] .tab.on,body[data-th="monokrom"] .bt
 #hav{cursor:zoom-in}
 #hname .realn{display:block;font-size:11px;opacity:.6;letter-spacing:.02em;font-family:var(--cond,inherit);margin-top:1px;text-transform:none}
 .inp.stg{margin:8px 0}
+.bkcard{border-radius:18px;padding:16px 18px;color:#fff;box-shadow:0 10px 30px #0006;margin-bottom:12px;position:relative;overflow:hidden}
+.bkcard:after{content:"";position:absolute;right:-40px;top:-40px;width:160px;height:160px;border-radius:50%;background:#ffffff18}
+.bkt{display:flex;justify-content:space-between;align-items:center;font-size:13px;opacity:.95}.bkt b{font-size:17px;letter-spacing:.02em}
+.bkcard small{display:block;margin-top:14px;font-size:12px;opacity:.8}.bkb{font-size:32px;font-weight:800;margin:2px 0 6px;font-variant-numeric:tabular-nums}.bki{font-family:monospace;font-size:13px;opacity:.85;margin-bottom:10px;letter-spacing:.04em}
+.bkq{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-bottom:12px}.bkq button{display:flex;flex-direction:column;align-items:center;gap:4px;padding:8px 2px;border-radius:12px;background:var(--panel2);border:1px solid var(--line);font-size:11.5px;font-weight:600}.bkq button i{font-style:normal;font-size:20px}.bkq button.on{border-color:var(--acc);background:var(--tint2)}
 </style>
 </head>
 <body>
@@ -248,7 +253,7 @@ body.monob .tab.on,body[data-th="monokrom"] .tab.on,body[data-th="monokrom"] .bt
 <div class="mod" id="confirm"><div class="box"><h2>Yeni hayat?</h2><p>Mevcut hayatın silinecek ve baştan başlayacaksın.</p><button class="btn" onclick="$('confirm').classList.remove('on');restart()">Evet, baştan başla</button><button class="btn sec" onclick="$('confirm').classList.remove('on')">Vazgeç</button></div></div>
 <script>
 try{if('serviceWorker' in navigator&&/github\.io$/.test(location.hostname))navigator.serviceWorker.register('sw.js').catch(()=>{})}catch(e){}
-const APPV='2026.11.01-135127';
+const APPV='2026.11.01-140147';
 (function(){try{if(!/github\.io$/.test(location.hostname))return;const chk=()=>fetch(location.pathname+'?nc='+Date.now(),{cache:'no-store'}).then(r=>r.text()).then(t=>{const m=t.match(/const APPV='([^']+)'/);if(m&&m[1]!==APPV&&!sessionStorage.getItem('upd'+m[1])){sessionStorage.setItem('upd'+m[1],'1');location.replace(location.pathname+'?v='+encodeURIComponent(m[1]))}}).catch(()=>{});chk();document.addEventListener('visibilitychange',()=>{if(!document.hidden)chk()})}catch(e){}})();
 /* ============ Yardımcılar ============ */
 const $=id=>document.getElementById(id);
@@ -1534,7 +1539,7 @@ function platChart(pid){if(!S.chart)genChart();const rows=S.chart.map(x=>({t:x.t
  return rows.sort((a,b)=>b.w-a.w).slice(0,20)}
 function marketYear(){}
 function marketQ(){STOCKS.forEach(x=>{const m=S.mkt[x.id],sg=x.sg/2;let r=x.mu/4+sg*gauss()-sg*sg/2;if(x.id==='SHNE'||x.id==='ATLS')r+=(S.fame-50)/4000;if(S.tip===x.id)r=Math.max(r,.1+Math.random()*.15);m.p=Math.max(.5,m.p*Math.exp(r));m.h.push(m.p);if(m.h.length>20)m.h.shift()});S.tip=null;
- if(S.bank>0)S.bank+=S.bank*.15/4;if(S.loan>0){const i=S.loan*.42/4;S.loan+=i}}
+ if(S.bank>0){const bi=S.bank*(typeof bankRate==='function'?bankRate():.15)/4;S.bank+=bi;if(typeof btx==='function'&&bi>=1)btx('Mevduat faizi',bi)}if(S.loan>0){const i=S.loan*.42/4;S.loan+=i}}
 
 /* ---------- Çeyrek sonu: dinlenme ve gelir ---------- */
 function quarterEnd(){
@@ -3436,6 +3441,56 @@ ACT.album=()=>{const ad=S.ad;if(!ad)return;const sel=albSel();if(sel.length<3){t
  log(`💿 "${ad.n}" ${ep?'EP\'n':'albümün'} çıktı! ${sel.length} şarkı (${newS.length} yeni${old.length?`, ${old.length} single`:''}), ortalama kalite ${q}. Tüm dijital platformlarda yayında; çıkış haftası ilgisi şarkıları yukarı taşıyacak.${hy>1?` Kampanya ilgiyi ×${hy.toFixed(2).replace('.',',')} artırdı.`:''}`,'gold');try{sJingle()}catch(e){}S.ad=null;SUB=null;sheet('kariyer')};
 const _shK15=shKariyer;shKariyer=function(){let h=_shK15();if(SUB||S.age<14||!S.genre||h.includes('Albüm hazırla'))return h;const n=albPool().length;
  const r=row("sheet('kariyer',{t:'album',title:'Albüm / EP çıkar'})",'💿','Albüm / EP çıkar',n>=3?`${n} uygun şarkın var · kayıtlı şarkılar + single'lar`:`En az 3 şarkı gerekir (şu an ${n})`,'›');const i=h.indexOf(sec('Sahne'));return i>=0?h.slice(0,i)+r+h.slice(i):h+r};
+actKeep();
+
+/* ============ Banka: gerçek banka uygulaması gibi · taksitli kredi · otomatik ödeme · gecikme faizi · vadeli hesap · kredi notu ============ */
+const BANKS={tr:['Sahne Bank','#0b4fd6','#6a3df2'],us:['Liberty Trust','#0f5132','#1f8a5b'],uk:['Crown & Co','#5b1235','#a3245c']};
+const RATES={tr:{loan:.42,dep:.15,vad:.45},us:{loan:.11,dep:.01,vad:.045},uk:{loan:.09,dep:.02,vad:.045}};
+function bankRate(){return RATES[(S&&S.ct)||'tr'].dep}
+function bkInit(){S.loans=S.loans||[];S.btx=S.btx||[];S.vad=S.vad||[];if(S.cscore==null)S.cscore=1250;if(!S.iban)S.iban=('TR'+R(10,99)+' 00'+R(10,99)+' 0'+R(100,999)+' '+R(1000,9999)+' '+R(1000,9999)+' '+R(10,99));
+ if(S.loan>0){S.loans.push(mkLoan(S.loan,8));S.loan=0}}
+function btx(t,a){S.btx=[{t,a:Math.round(a),age:S.age,q:S.q||0}].concat(S.btx||[]).slice(0,40)}
+const loanR=()=>{const base=RATES[(S.ct)||'tr'].loan;return base*(1.3-S.cscore/1900*.55)};
+function mkLoan(P,n){const r=loanR(),i=r/4,inst=Math.round(P*i/(1-Math.pow(1+i,-n)));return {id:S.nid++,P:Math.round(P),bal:Math.round(P),rate:r,n,left:n,inst,od:0,miss:0,age:S.age}}
+const debt=()=>(S.loans||[]).reduce((a,l)=>a+l.bal+l.od,0);
+const limit2=()=>Math.max(0,Math.round(Math.max(200000,S.fame*S.fame*12000+S.bank*.5)*(S.cscore/1250))-debt());
+const scoreN=s=>s>=1700?'Çok iyi':s>=1400?'İyi':s>=1100?'Orta':s>=800?'Riskli':'Çok riskli';
+ACT.bkTerm=n=>{S.bkTerm=n;drawSheet()};
+ACT.loanNew=()=>{const x=amtV('ln_a');if(!need(x))return;if(x>limit2()&&!S.star){toast('Kredi limitin: '+fmtS(limit2()));return}const n=S.bkTerm||8,L=mkLoan(x,n);S.loans.push(L);S.bank+=x;btx(`Kredi kullanımı (${n/4} yıl)`,x);
+ log(`🏦 ${fmtS(x)} kredi çektin: ${n} taksit, her 3 ayda ${fmtS(L.inst)}, yıllık faiz %${(L.rate*100).toFixed(1)}. Para banka hesabına yattı; taksitler hesaptan otomatik çekilecek.`,'dim');drawSheet()};
+ACT.loanOd=id=>{const L=S.loans.find(l=>l.id===id);if(!L||!L.od)return;const src=S.bank>=L.od?'bank':S.money>=L.od?'cash':null;if(!src){toast('Gecikmiş borcu ödemek için yeterli para yok.');return}if(src==='bank')S.bank-=L.od;else S.money-=L.od;btx('Gecikmiş taksit ödemesi',-L.od);log(`🏦 Gecikmiş borcunu ödedin: ${fmtS(L.od)}.`,'good');L.od=0;L.miss=0;S.cscore=Math.min(1900,S.cscore+20);drawSheet()};
+ACT.loanClose=id=>{const L=S.loans.find(l=>l.id===id);const t=Math.round(L.bal*1.02+L.od);const src=S.bank>=t?'bank':S.money>=t?'cash':null;if(!src){toast(`Kapatmak için ${fmtS(t)} gerekli.`);return}if(src==='bank')S.bank-=t;else S.money-=t;btx('Kredi erken kapama',-t);S.loans=S.loans.filter(l=>l!==L);S.cscore=Math.min(1900,S.cscore+40);log(`🏦 Krediyi erken kapattın: ${fmtS(t)} (%2 erken kapama ücreti dahil).`,'good');drawSheet()};
+function loanQ(){bkInit();S.loans.slice().forEach(L=>{const i=L.rate/4;
+ if(L.od>0){const li=Math.round(L.od*i*1.5);L.od+=li}
+ const due=L.left>0?Math.min(L.inst,Math.round(L.bal*(1+i))):0;let paid=0;
+ if(due>0){const fromB=Math.min(Math.max(0,S.bank),due);S.bank-=fromB;paid=fromB;if(paid>0)btx(`Kredi taksiti (${L.n-L.left+1}/${L.n})`,-paid);
+  const interest=L.bal*i,princ=Math.max(0,Math.min(L.bal,due-interest));L.bal=Math.max(0,Math.round(L.bal-princ));L.left--;
+  if(paid<due){const miss=due-paid;L.od+=miss;L.miss++;S.cscore=Math.max(0,S.cscore-70);log(`⚠️ Banka hesabında yeterli para yoktu: ${fmtS(miss)} taksit ödenemedi. Gecikme faizi işleyecek, kredi notun düştü.`,'bad')}else{S.cscore=Math.min(1900,S.cscore+10)}}
+ if(L.od>0&&L.od<=S.bank){S.bank-=L.od;btx('Gecikmiş taksit (otomatik)',-L.od);log(`🏦 Gecikmiş ${fmtS(L.od)} borç hesabından otomatik tahsil edildi.`,'dim');L.od=0;L.miss=0}
+ if(L.miss>=3){const t=L.od+L.bal;let left=t;const a=Math.min(Math.max(0,S.money),left);S.money-=a;left-=a;S.loans=S.loans.filter(x=>x!==L);if(left>0){S.money-=left}S.cscore=Math.max(0,S.cscore-250);add('happy',-10);btx('İcra tahsilatı',-t);log(`⚖️ 3 taksit üst üste ödenmedi: banka yasal takip başlattı, ${fmtS(t)} borç kasandan haciz yoluyla tahsil edildi. Kredi notun çok düştü.`,'bad');return}
+ if(L.left<=0&&L.bal<=1&&L.od<=0){S.loans=S.loans.filter(x=>x!==L);S.cscore=Math.min(1900,S.cscore+50);log('🏦 Kredi borcun tamamen bitti! Kredi notun yükseldi.','good')}});
+ S.vad.slice().forEach(v=>{v.left--;if(v.left<=0){const g=Math.round(v.amt*(1+v.r*v.y)),net=Math.round(g-(g-v.amt)*.15);S.bank+=net;btx('Vadeli hesap vadesi doldu',net);S.vad=S.vad.filter(x=>x!==v);log(`🏦 Vadeli hesabın doldu: ${fmtS(net)} (faiz ${fmtS(net-v.amt)}, stopaj düşüldü) vadesiz hesaba geçti.`,'good')}})}
+ACT.vadOpen=y=>{const x=amtV('vd_a');if(!need(x))return;if(S.bank<x){toast('Vadesiz hesabında yeterli bakiye yok.');return}S.bank-=x;const r=RATES[S.ct||'tr'].vad*(y===2?1.05:1);S.vad.push({id:S.nid++,amt:x,r,y,left:y*4});btx(`Vadeli hesap açıldı (${y} yıl)`,-x);log(`🏦 ${fmtS(x)} ${y} yıllık vadeli hesaba yatırıldı (yıllık %${(r*100).toFixed(1)}).`,'dim');drawSheet()};
+ACT.vadBreak=id=>{const v=S.vad.find(z=>z.id===id);S.bank+=v.amt;btx('Vadeli hesap bozuldu',v.amt);S.vad=S.vad.filter(z=>z!==v);log('Vadeli hesabı bozdun, faiz alamadın.','dim');drawSheet()};
+{const _d=ACT.dep,_w=ACT.wd;ACT.dep=x=>{const b0=S.bank;_d(x);if(S.bank>b0)btx('Kasadan para yatırma',S.bank-b0)};ACT.wd=x=>{const b0=S.bank;_w(x);if(S.bank<b0)btx('Kasaya para çekme',S.bank-b0)}}
+{const _p=ACT.payout;ACT.payout=(pid,to,amt,inv)=>{const b0=S.bank;_p(pid,to,amt,inv);if(S.bank>b0)btx('Platform telif ödemesi',S.bank-b0)}}
+shBank=function(){bkInit();const B=BANKS[S.ct||'tr'],tab=S.bkTab||'hesap',nm=(S.stage||S.first+' '+S.last).toUpperCase(),R0=RATES[S.ct||'tr'];
+ let h=`<div class="bkcard" style="background:linear-gradient(135deg,${B[1]},${B[2]})"><div class="bkt"><b>${B[0]}</b><span>Vadesiz hesap</span></div><small>Kullanılabilir bakiye</small><div class="bkb">${fmtS(S.bank)}</div><div class="bki">${esc(S.iban)}</div><div class="bkt"><span>${esc(nm)}</span><span>💳 •••• ${String(S.nid%10000).padStart(4,'0')}</span></div></div>`;
+ h+=`<div class="bkq">${[['hesap','💸','Para'],['kredi','🏦','Kredi'],['vadeli','📈','Birikim'],['hareket','🧾','Hareketler'],['not','📊','Kredi notu']].map(([k,ic,n])=>`<button class="${tab===k?'on':''}" onclick="S.bkTab='${k}';drawSheet()"><i>${ic}</i>${n}</button>`).join('')}</div>`;
+ if(tab==='hesap'){h+=`<div class="kv"><div>Kasadaki nakit<b>${fmtS(S.money)}</b></div><div>Vadesiz faiz<b>%${(R0.dep*100).toFixed(1)}/yıl</b></div><div>Toplam kredi borcu<b class="${debt()?'neg':''}">${fmtS(debt())}</b></div><div>Vadeli hesaplar<b>${fmtS(S.vad.reduce((a,v)=>a+v.amt,0))}</b></div></div>`+sec('Para transferi')+amtIn('bk_a')+btns([['⬇️ Kasadan yatır',"ACT.dep(amtV('bk_a'))"],['⬆️ Kasaya çek',"ACT.wd(amtV('bk_a'))",'sec']])+`<div style="height:6px"></div>`+btns([['Tüm nakdi yatır',"ACT.dep('all')",'sec'],['Tümünü çek',"ACT.wd('all')",'sec']]);
+  const nx=S.loans.reduce((a,l)=>a+(l.left>0?l.inst:0)+l.od,0);if(nx)h+=note(`📅 Bu dönemin sonunda hesabından otomatik çekilecek: <b>${fmtS(nx)}</b>${S.bank<nx?' · <b class="neg">bakiyen yetersiz!</b>':''}`)}
+ if(tab==='kredi'){h+=`<div class="kv"><div>Kredi limitin<b>${fmtS(limit2())}</b></div><div>Faiz oranı<b>%${(loanR()*100).toFixed(1)}/yıl</b></div></div>`+note('Taksitler her 3 ayda vadesiz hesabından otomatik çekilir. Bakiye yetmezse gecikme faizi işler ve kredi notun düşer; 3 taksit üst üste ödenmezse banka icra yoluyla borcu kasandan tahsil eder.');
+  S.loans.forEach(L=>{h+=`<div class="card" style="${L.od?'border-color:var(--bad)':''}"><div class="ch"><b>🏦 İhtiyaç kredisi · ${fmtS(L.P)}</b><span class="pill">${L.n-L.left}/${L.n} taksit</span></div><div class="bar"><i style="width:${(L.n-L.left)/L.n*100}%;background:var(--good)"></i></div><div class="kv"><div>Kalan anapara<b>${fmtS(L.bal)}</b></div><div>Taksit (3 ayda)<b>${fmtS(L.inst)}</b></div><div>Faiz<b>%${(L.rate*100).toFixed(1)}</b></div><div>Gecikmiş<b class="${L.od?'neg':''}">${fmtS(L.od)}</b></div></div><div class="two">${L.od?`<button class="mini" onclick="ACT.loanOd(${L.id})">Gecikmiş borcu öde</button>`:'<span></span>'}<button class="mini sec" onclick="ACT.loanClose(${L.id})">Erken kapat · ${fmtS(L.bal*1.02+L.od)}</button></div></div>`});
+  const n=S.bkTerm||8,P=amtV('ln_a')||0;h+=sec('Yeni kredi başvurusu')+amtIn('ln_a','Kredi tutarı')+`<div class="tabs wrap">${[[4,'1 yıl'],[8,'2 yıl'],[12,'3 yıl'],[20,'5 yıl']].map(([v,t])=>`<button class="tab sm ${n===v?'on':''}" onclick="ACT.bkTerm(${v})">${t} · ${v} taksit</button>`).join('')}</div>`+note(`Örnek: ${fmtS(1e6*C0().rate)} için ${n} taksitte her 3 ayda ~${fmtS(mkLoan(1e6*C0().rate,n).inst)}, toplam ~${fmtS(mkLoan(1e6*C0().rate,n).inst*n)} geri ödersin.`)+`<button class="btn" onclick="ACT.loanNew()">✍️ Krediyi kullan</button>`}
+ if(tab==='vadeli'){h+=note(`Vadeli hesapta paran kilitlenir ama yıllık %${(R0.vad*100).toFixed(1)} faiz kazanır (vadesiz %${(R0.dep*100).toFixed(1)}). Vade dolunca faizinden %15 stopaj kesilir ve para vadesiz hesaba geçer.`);
+  S.vad.forEach(v=>h+=row(`ACT.vadBreak(${v.id})`,'📈',`${fmtS(v.amt)} · ${v.y} yıl`,`Yıllık %${(v.r*100).toFixed(1)} · ${v.left*3} ay kaldı · vade sonu ~${fmtS(v.amt*(1+v.r*v.y))}`,'Boz'));
+  h+=sec('Yeni vadeli hesap')+amtIn('vd_a','Tutar (vadesiz hesaptan)')+btns([['1 yıl vadeli aç','ACT.vadOpen(1)'],['2 yıl vadeli aç (+%5 faiz)','ACT.vadOpen(2)','sec']])}
+ if(tab==='hareket'){h+=S.btx.length?S.btx.map(t=>row('',t.a>=0?'⬇️':'⬆️',esc(t.t),`${t.age} yaş · ${SEASON[t.q]||''}`,`<span class="${t.a>=0?'up':'dn'}">${t.a>=0?'+':'−'}${fmtS(Math.abs(t.a))}</span>`)).join(''):note('Henüz hesap hareketi yok.')}
+ if(tab==='not'){const s=S.cscore;h+=`<div class="hero2"><small>Kredi notun</small><div class="big">${s}</div><span>${scoreN(s)} · 0–1900</span></div><div class="bar" style="height:12px"><i style="width:${s/19}%;background:${s>=1400?'var(--good)':s>=1000?'var(--gold)':'var(--bad)'}"></i></div>`+note('Taksitlerini zamanında ödersen notun yükselir; geciktirirsen düşer. Not yükseldikçe faiz oranın düşer ve kredi limitin artar.')}
+ return h};
+const _aq16=ageUpQ;ageUpQ=function(){_aq16();if(S&&S.alive)loanQ()};
+const _ei16=extInit;extInit=function(){_ei16();bkInit()};
+const _shH16=shHayat;shHayat=function(){let h=_shH16();if(SUB||(S.htab||'iliski')!=='finans')return h;bkInit();const d=debt();return h.replace(/Mevduat [^<]*?(?=<\/span>)/,`${BANKS[S.ct||'tr'][0]} · bakiye ${fmtS(S.bank)}${d?' · kredi borcu '+fmtS(d):''}`)};
 actKeep();
 
 boot();
