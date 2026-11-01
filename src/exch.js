@@ -1,0 +1,20 @@
+/* ============ Ülkeye göre borsa ve İngilizce isimli şirketler ============ */
+const EXN={tr:'🇹🇷 Borsa İstanbul',us:'🇺🇸 New York Borsası (NYSE · Nasdaq)',uk:'🇬🇧 Londra Borsası (LSE)'};
+STOCKS.forEach(x=>{if(!x.ex)x.ex=['ALTN','KRPT'].includes(x.id)||(typeof LSTK!=='undefined'&&LSTK.some(l=>l.id===x.id))?'global':'tr'});
+[{id:'SKYW',n:'SkyWave Networks',mu:.13,sg:.3,ex:'us'},{id:'LMTR',n:'Liberty Motors',mu:.09,sg:.28,ex:'us'},{id:'CRNT',n:'Current Energy',mu:.11,sg:.35,ex:'us'},{id:'STRM',n:'StreamCo Media',mu:.12,sg:.33,ex:'us'},{id:'PCFB',n:'Pacific Bancorp',mu:.07,sg:.18,ex:'us'},{id:'NOVX',n:'NovaX Biotech',mu:.16,sg:.5,ex:'us'},
+ {id:'CRWN',n:'Crown Telecom',mu:.06,sg:.16,ex:'uk'},{id:'ALBN',n:'Albion Bank',mu:.07,sg:.2,ex:'uk'},{id:'NRTH',n:'Northline Rail',mu:.05,sg:.15,ex:'uk'},{id:'SOHO',n:'Soho Media Group',mu:.1,sg:.3,ex:'uk'},{id:'WSTR',n:'Westerly Energy',mu:.09,sg:.3,ex:'uk'},{id:'KNGS',n:'Kingsway Retail',mu:.06,sg:.22,ex:'uk'}].forEach(x=>{if(!STOCKS.some(s=>s.id===x.id))STOCKS.push(x)});
+const stEx=x=>x.ex||(x.xs?(x.ct||'tr'):'tr');
+const _shB20=shBorsa;shBorsa=function(){stkInit();const ct=S.ct||'tr',all=STOCKS.slice(),vis=all.filter(x=>stEx(x)===ct||stEx(x)==='global'||S.port[x.id]);STOCKS.splice(0,STOCKS.length,...vis.map(x=>stEx(x)!==ct&&stEx(x)!=='global'?{...x,n:x.n+' · '+({tr:'🇹🇷',us:'🇺🇸',uk:'🇬🇧'}[stEx(x)])+' yurt dışı'}:x));let h;try{h=_shB20()}finally{STOCKS.splice(0,STOCKS.length,...all)}
+ return `<div class="tbar"><span>${EXN[ct]}</span><b>${vis.filter(x=>stEx(x)===ct).length} şirket</b></div>`+note('Başka ülkeye taşınınca o ülkenin borsası açılır. Yurt dışındaki eski hisselerini her yerden satabilirsin ama yeni alım sadece bulunduğun ülkenin borsasından ve küresel plak şirketlerinden yapılır.')+h.replace('Fiyatlar her yıl sonunda değişir.','Fiyatlar her 3 ayda değişir.')};
+const _buy20=ACT.buy;ACT.buy=(id,x)=>{const s=STOCKS.find(z=>z.id===id);if(s&&stEx(s)!=='global'&&stEx(s)!==(S.ct||'tr')){toast('Bu hisse başka ülkenin borsasında. Almak için o ülkede olmalısın.');return}_buy20(id,x)};
+/* satılan şirketin borsası: satıldığı ülke */
+{const _ls=ACT.labSell;ACT.labSell=id=>{const n0=(S.xstk||[]).length;_ls(id);const x=(S.xstk||[])[n0];if(x){x.ct=S.ct||'tr';x.ex=x.ct;const s=STOCKS.find(z=>z.id===x.id);if(s){s.ct=x.ct;s.ex=x.ct}}}}
+/* şirket satın alma: yurt dışında İngilizce isimli plak şirketleri */
+const ACQN2={us:['Sunset Records','Brooklyn Beats','Golden Coast Music','Midnight Avenue Records','Hudson Sound','Desert Rose Records','Bayside Music Group','Motor City Sound'],uk:['Camden Sound','Northern Lights Music','Soho Beats','Crown Street Records','Mersey Sound Co.','Highland Records','Brixton Bass','Albion Music Group']};
+const _al20=acqList;acqList=function(){const ct=S.ct||'tr';if(ct==='tr'){_al20();l2().acqCt='tr';return}const keep=ACQN.slice();ACQN.splice(0,ACQN.length,...ACQN2[ct]);try{_al20()}finally{ACQN.splice(0,ACQN.length,...keep)}l2().acqCt=ct};
+const _shAcq20=shAcq;shAcq=function(){const X=l2();if((X.acqCt||'tr')!==(S.ct||'tr'))X.acq=[];return _shAcq20()};L2PAGES.lacq[1]=shAcq;
+/* plak şirketi adayları ve dağıtım müşterileri zaten ülke isimlerini kullanıyor; rakipler ve liste sanatçıları da yurt dışında yabancı isim alsın */
+const RIV2={us:['Jay Rivers','Kayla Storm','Lil Vega','Marcus Gold','Nova Blake','Tyler Kane','Skye Monroe','Dre Carter','Aaliyah Rose','King Malik','Jade West','Cole Harper'],uk:['Theo Black','Ruby Lane','Kai Mercer','Poppy Grace','Reece Knight','Isla Moon','Jamal Stone','Freya Hart','Callum Rae','Niamh Blue','Archie Vale','Millie Fox']};
+const _ri20=rivInit;rivInit=function(){const ct=S.ct||'tr';if(S.rivals&&S.rivCt&&S.rivCt!==ct)S.rivals=null;if(S.rivals){S.rivCt=S.rivCt||ct;return}if(ct==='tr'){_ri20();S.rivCt='tr';return}
+ const keep=ARTISTS2.slice();ARTISTS2.splice(0,ARTISTS2.length,...RIV2[ct]);try{_ri20();S.rivals.forEach(r=>{r.g=['Kayla Storm','Nova Blake','Skye Monroe','Aaliyah Rose','Jade West','Ruby Lane','Poppy Grace','Isla Moon','Freya Hart','Niamh Blue','Millie Fox'].includes(r.name)?'k':'e';r.look=randLook(r.g)})}finally{ARTISTS2.splice(0,ARTISTS2.length,...keep)}S.rivCt=ct;genChart()};
+actKeep();
