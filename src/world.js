@@ -27,7 +27,7 @@ const _se7=showEvent;showEvent=function(){_se7();if(ctId()!=='tr'){const m=$('mo
 const _rn7=render;render=function(){_rn7();if(!S)return;const C=C0(),hs=$('hsub');if(hs){hs.innerHTML=`${C.fl} ${esc(S.city||C.cities[0][0])} · `+hs.innerHTML}if(ctId()!=='tr'){const l=$('log');if(l)l.innerHTML=curFix(l.innerHTML)}};
 /* ---------- Vergi ---------- */
 function taxR(gross){S.yti=(S.yti||0)+gross;const C=C0();return C.tax(S.yti/C.rate)[0]}
-const taxLbl=()=>{const C=C0();return C.tax(((S&&S.yti)||0)/C.rate)[1]};
+let taxLbl=()=>{const C=C0();return C.tax(((S&&S.yti)||0)/C.rate)[1]};
 const _yt7=yearTick;yearTick=function(){_yt7();if(S){S.yti=0;renovYear()}};
 const _pb7=payoutBox;payoutBox=function(pid){return _pb7(pid).replace('<b>Faturalı</b> çekersen %20 stopaj kesilir.',`<b>Faturalı</b> çekersen vergi kesilir (${C0().fl} şu an ${taxLbl()}).`)};
 /* ---------- Dinlenme / pazar ---------- */
