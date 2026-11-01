@@ -18,8 +18,9 @@ const cityOf=()=>{const C=C0();return C.cities.find(c=>c[0]===(S&&S.city))||C.ci
 function applyCountry(ct){const N=NAMES[ct]||NAMES.tr,sw=(a,b)=>a.splice(0,a.length,...b);sw(NM_E,N.e);sw(NM_K,N.k);sw(SURN,N.s);sw(AFIRST_E,N.ae);sw(AFIRST_K,N.ak);
  const C=CTRY[ct];PLAT.forEach(p=>{p.r0=p.r0||p.rate;p.rate=p.r0*C.stream});CARS.forEach(c=>{c.p0=c.p0||c.p;c.u0=c.u0||c.up;c.p=Math.round(c.p0*C.carF/1e4)*1e4;c.up=Math.round(c.u0*C.carF/1e3)*1e3})}
 /* ---------- Para birimi ---------- */
-const _fmtS0=fmtS;fmtS=function(n){const C=C0();if(C.rate===1)return _fmtS0(n);return _fmtS0(n/C.rate).replace('₺',C.cur)};
-const _fmt0=fmt;fmt=function(n){const C=C0();if(C.rate===1)return _fmt0(n);return _fmt0(n/C.rate).replace('₺',C.cur)};
+const _fmt0=fmt;
+const _fmtS0=fmtS;fmtS=function(n){const C=C0();if(C.rate===1)return _fmtS0(n);const v=n/C.rate;return (Math.abs(v)>=1e4?_fmtS0(v):_fmt0(v)).replace('₺',C.cur)};
+fmt=function(n){const C=C0();if(C.rate===1)return _fmt0(n);return _fmt0(n/C.rate).replace('₺',C.cur)};
 const _amtV0=amtV;amtV=function(id){return Math.round(_amtV0(id)*C0().rate)};
 function curFix(html){const C=C0();if(C.rate===1||!html)return html;return html.replace(/₺\s?(\d{1,3}(?:\.\d{3})*(?:,\d+)?)(\s?(?:Mr|Mn|B)\b)?/g,(m,num,suf)=>{const v=parseFloat(num.replace(/\./g,'').replace(',','.'))*({Mr:1e9,Mn:1e6,B:1e3}[(suf||'').trim()]||1);return fmtS(v)}).replace(/\(₺\)/g,'('+C.cur+')')}
 const _ds7=drawSheet;drawSheet=function(){_ds7();const b=document.querySelector('#ov .sh-b');if(b&&ctId()!=='tr'){const st=b.scrollTop;b.innerHTML=curFix(b.innerHTML);b.scrollTop=st}};
@@ -88,4 +89,8 @@ const _ei7=extInit;extInit=function(){_ei7();S.ct=S.ct||'tr';S.city=S.city||'İs
 /* ---------- Süperstar: istediğin kadar para ---------- */
 ACT.selfMoney=sign=>{if(!S.star)return;const x=amtV('ss_m');if(!need(x))return;S.money+=sign*x;log(`⭐ Kasana ${sign>0?'+':'−'}${fmtS(x)}.`,'gold');drawSheet()};
 const _ss7=shSelf;shSelf=function(){let h=_ss7();if(!S.star)return h;return h+sec('💰 İstediğin kadar para')+note(`Tutarı ${C0().cur} olarak yaz.`)+amtIn('ss_m',`Tutar (${C0().cur})`)+btns([['Kasaya ekle','ACT.selfMoney(1)'],['Kasadan çıkar','ACT.selfMoney(-1)','sec']])};
+actKeep();
+/* banka işlemlerinde net bilgi */
+{const _d=ACT.dep,_w=ACT.wd;ACT.dep=x=>{const b0=S.bank;_d(x);const d=S.bank-b0;if(d>0){toast(`🏦 Bankaya ${fmt(d)} yatırıldı.`);log(`🏦 Bankaya ${fmt(d)} yatırdın.`,'dim')}};
+ ACT.wd=x=>{const b0=S.bank;_w(x);const d=b0-S.bank;if(d>0){toast(`🏦 Bankadan ${fmt(d)} çekildi.`);log(`🏦 Bankadan ${fmt(d)} çektin.`,'dim')}}}
 actKeep();
