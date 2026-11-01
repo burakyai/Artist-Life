@@ -253,7 +253,7 @@ body.monob .tab.on,body[data-th="monokrom"] .tab.on,body[data-th="monokrom"] .bt
 <div class="mod" id="confirm"><div class="box"><h2>Yeni hayat?</h2><p>Mevcut hayatın silinecek ve baştan başlayacaksın.</p><button class="btn" onclick="$('confirm').classList.remove('on');restart()">Evet, baştan başla</button><button class="btn sec" onclick="$('confirm').classList.remove('on')">Vazgeç</button></div></div>
 <script>
 try{if('serviceWorker' in navigator&&/github\.io$/.test(location.hostname))navigator.serviceWorker.register('sw.js').catch(()=>{})}catch(e){}
-const APPV='2026.11.01-143508';
+const APPV='2026.11.01-145026';
 (function(){try{if(!/github\.io$/.test(location.hostname))return;const chk=()=>fetch(location.pathname+'?nc='+Date.now(),{cache:'no-store'}).then(r=>r.text()).then(t=>{const m=t.match(/const APPV='([^']+)'/);if(m&&m[1]!==APPV&&!sessionStorage.getItem('upd'+m[1])){sessionStorage.setItem('upd'+m[1],'1');location.replace(location.pathname+'?v='+encodeURIComponent(m[1]))}}).catch(()=>{});chk();document.addEventListener('visibilitychange',()=>{if(!document.hidden)chk()})}catch(e){}})();
 /* ============ Yardımcılar ============ */
 const $=id=>document.getElementById(id);
@@ -3435,12 +3435,16 @@ ACT.album=()=>{const ad=S.ad;if(!ad)return;const sel=albSel();if(sel.length<3){t
  const newS=sel.filter(s=>s.st==='kayit'),old=sel.filter(s=>s.st!=='kayit'),pb=PROMO[ad.promo],cost=newS.reduce((a,s)=>a+relCost(s),0)+pb;if(!canPay(cost)){toast('Paran yetmiyor: '+fmtS(cost));return}if(!useM(1))return;S.money-=cost;
  const q=Math.round(sel.reduce((a,s)=>a+sq(s),0)/sel.length),ep=sel.length<5,hy=1+(ad.tz?.12:0)+(ad.party?.15:0);
  newS.forEach(s=>{s.meta.cover={...ad.cover};doRelease(s,ad.n,pb/Math.max(1,newS.length)*2)});old.forEach(s=>{s.alb=ad.n;s.pot*=1.15+(pb?.1:0);s.rq=Math.max(s.rq||0,S.qt-1)});
- S.songs.filter(s=>s.alb===ad.n).forEach(s=>s.pot*=hy);if(S.contract)S.contract.rel+=ep?2:4;
+ S.songs.filter(s=>s.alb===ad.n).forEach(s=>s.pot*=hy);if(S.contract)S.contract.rel+=newS.length;
  S.songs.filter(s=>s.alb===ad.n).forEach(s=>s.pot*=ep?1.05:1.12);
  S.albums.push({n:ad.n,age:S.age,q,songs:sel.map(s=>s.id),sales:0,cover:{...ad.cover},net:0,ep});
  log(`💿 "${ad.n}" ${ep?'EP\'n':'albümün'} çıktı! ${sel.length} şarkı (${newS.length} yeni${old.length?`, ${old.length} single`:''}), ortalama kalite ${q}. Tüm dijital platformlarda yayında; çıkış haftası ilgisi şarkıları yukarı taşıyacak.${hy>1?` Kampanya ilgiyi ×${hy.toFixed(2).replace('.',',')} artırdı.`:''}`,'gold');try{sJingle()}catch(e){}S.ad=null;SUB=null;sheet('kariyer')};
 const _shK15=shKariyer;shKariyer=function(){let h=_shK15();if(SUB||S.age<14||!S.genre||h.includes('Albüm hazırla'))return h;const n=albPool().length;
  const r=row("sheet('kariyer',{t:'album',title:'Albüm / EP çıkar'})",'💿','Albüm / EP çıkar',n>=3?`${n} uygun şarkın var · kayıtlı şarkılar + single'lar`:`En az 3 şarkı gerekir (şu an ${n})`,'›');const i=h.indexOf(sec('Sahne'));return i>=0?h.slice(0,i)+r+h.slice(i):h+r};
+/* sözleşme taahhüdü: bu sözleşmeyle yayınlanan şarkıları say */
+function relSync(){const c=S&&S.contract;if(!c)return;if(c.st0==null)c.st0=S.age-(c.yrs-c.left)-1;const n=released().filter(s=>s.lab&&s.lab.n===c.n&&s.ra>=c.st0).length;if(n>c.rel)c.rel=n}
+const _ei18=extInit;extInit=function(){_ei18();relSync()};
+const _sg18=ACT.sign;if(_sg18)ACT.sign=(...a)=>{_sg18(...a);if(S.contract&&S.contract.st0==null)S.contract.st0=S.age};
 actKeep();
 
 /* ============ Banka: gerçek banka uygulaması gibi · taksitli kredi · otomatik ödeme · gecikme faizi · vadeli hesap · kredi notu ============ */
