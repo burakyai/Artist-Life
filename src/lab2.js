@@ -26,7 +26,7 @@ function shTr(){const X=l2();if(!X.tr.length)trMarket();let h=note('Rakip sanat�
 
 /* 2. CEO */
 const CEOS=[['Selim Aksoy','agresif','Agresif büyüme: bütün demoları tanıtımla yayınlar, boş yerlere imza atar'],['Nermin Kaya','temkinli','Temkinli: sadece iyi demoları yayınlar, kasayı korur'],['Can Tekin','hit','Hit avcısı: 70+ demoları büyük tanıtımla yayınlar, hitlere klip çeker'],['Defne Arıkan','hit','Hit avcısı: 70+ demoları büyük tanıtımla yayınlar, hitlere klip çeker'],['Murat Ece','agresif','Agresif büyüme: bütün demoları tanıtımla yayınlar, boş yerlere imza atar'],['Leyla Okan','temkinli','Temkinli: sadece iyi demoları yayınlar, kasayı korur']];
-function ceoCands(){const X=l2();X.ceoC=[...CEOS].sort(()=>Math.random()-.5).slice(0,3).map(c=>({n:c[0],st:c[1],d:c[2],lv:S.star?100:R(45,95),sal:0})).map(c=>(c.sal=Math.round((c.lv*c.lv*120+5e5)/1e4)*1e4,c))}
+function ceoCands(){const X=l2();X.ceoC=[...CEOS].sort(()=>Math.random()-.5).slice(0,3).map(c=>({n:c[0],st:c[1],d:c[2],lv:S.star?100:R(45,95),sal:0})).map(c=>(c.sal=Math.round((150000+c.lv*4000)/1e4)*1e4,c))}
 ACT.ceoHire=i=>{const X=l2(),c=X.ceoC[i];if(!useM(1))return;X.ceo={...c,g:R(0,1)};log(`👔 ${c.n} ${S.lab.n}'ın CEO'su oldu. Maaş ${fmtS(c.sal)}/3 ay.`,'good');drawSheet()};
 ACT.ceoFire=()=>{const X=l2();log(`${X.ceo.n} ile yollar ayrıldı. Tazminat ${fmtS(X.ceo.sal*2)}.`,'dim');S.lab.cash-=X.ceo.sal*2;X.ceo=null;drawSheet()};
 function ceoTick(){const X=l2(),c=X.ceo,L=S.lab;if(!c)return;if(!S.star)L.cash-=c.sal;let rel=0,cl=0,sg=0;const sk=c.lv/100;
@@ -37,7 +37,7 @@ function ceoTick(){const X=l2(),c=X.ceo,L=S.lab;if(!c)return;if(!S.star)L.cash-=
  L.arts.forEach(a=>{if(a.con.left<=1&&a.happy>40&&ch(sk))a.con.left+=2;a.happy=clamp(a.happy+sk*2)});
  if(rel||cl||sg)log(`👔 CEO ${c.n}: ${rel} şarkı yayınladı${cl?`, ${cl} klip çekti`:''}${sg?`, ${sg} yeni sanatçı imzaladı`:''}.`,'dim')}
 function shCeo(){const X=l2();if(!X.ceoC.length)ceoCands();let h=note('CEO şirketi senin yerine yönetir: demoları yayınlar, klip çeker, sözleşmeleri uzatır. Sen başka işlerle uğraşırken şirket büyür.');
- if(X.ceo){const c=X.ceo;h+=`<div class="card"><div class="ch"><b>👔 ${esc(c.n)}</b><span class="pill">Yetenek ${c.lv}</span></div>${note(c.d+'<br>Maaş '+fmtS(c.sal)+'/3 ay')}<button class="mini red" onclick="ACT.ceoFire()">Kov · tazminat ${fmtS(c.sal*2)}</button></div>`}
+ if(X.ceo){const c=X.ceo;h+=`<div class="card"><div class="ch"><b>👔 ${esc(c.n)}</b><span class="pill">Yetenek ${c.lv}</span></div>${note(c.d+'<br>Maaş '+fmtS(c.sal)+'/3 ay + kârlı çeyreklerde %10 prim')}<button class="mini red" onclick="ACT.ceoFire()">Kov · tazminat ${fmtS(c.sal*2)}</button></div>`}
  else{h+=sec('Adaylar');X.ceoC.forEach((c,i)=>h+=row(`ACT.ceoHire(${i})`,'👔',`${c.n} · yetenek ${c.lv}`,c.d,S.star?'⭐ Bedava':fmtS(c.sal)+'/3 ay'));h+=row('ceoCands();drawSheet()','🔄','Yeni adaylar','','')}return h}
 
 /* 3. Yayıncılık */
