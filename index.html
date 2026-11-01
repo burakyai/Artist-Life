@@ -253,7 +253,7 @@ body.monob .tab.on,body[data-th="monokrom"] .tab.on,body[data-th="monokrom"] .bt
 <div class="mod" id="confirm"><div class="box"><h2>Yeni hayat?</h2><p>Mevcut hayatın silinecek ve baştan başlayacaksın.</p><button class="btn" onclick="$('confirm').classList.remove('on');restart()">Evet, baştan başla</button><button class="btn sec" onclick="$('confirm').classList.remove('on')">Vazgeç</button></div></div>
 <script>
 try{if('serviceWorker' in navigator&&/github\.io$/.test(location.hostname))navigator.serviceWorker.register('sw.js').catch(()=>{})}catch(e){}
-const APPV='2026.11.01-145026';
+const APPV='2026.11.01-145331';
 (function(){try{if(!/github\.io$/.test(location.hostname))return;const chk=()=>fetch(location.pathname+'?nc='+Date.now(),{cache:'no-store'}).then(r=>r.text()).then(t=>{const m=t.match(/const APPV='([^']+)'/);if(m&&m[1]!==APPV&&!sessionStorage.getItem('upd'+m[1])){sessionStorage.setItem('upd'+m[1],'1');location.replace(location.pathname+'?v='+encodeURIComponent(m[1]))}}).catch(()=>{});chk();document.addEventListener('visibilitychange',()=>{if(!document.hidden)chk()})}catch(e){}})();
 /* ============ Yardımcılar ============ */
 const $=id=>document.getElementById(id);
@@ -3533,6 +3533,14 @@ function fameDecay(){if(S.age<16||!S.genre||S.fol<1000)return;const rel=released
  if(f<1){const l=Math.round(S.fol*(1-f));S.fol-=l;calcFame();log(`📉 ${why}. Takipçilerinden ${num(l)} kişi kaybettin; şöhretin ${Math.round(S.fame)}'e düştü.`,'bad')}}
 const _yt17=yearTick;yearTick=function(){_yt17();if(S&&S.alive)fameDecay()};
 actKeep();
+
+/* ============ Yurt dışında şarkı isimleri İngilizce ============ */
+const WORDS_EN={rap:[['Concrete','Midnight','Hustle','Street','Cold','Gold','Block','Money','Dark','Ghetto','Loyal','Savage','Back','No'],['Dreams','Kings','Talk','Life','Mode','Chains','Code','Bars','Season','Hearts','Rules','Pressure','Flow','Love']],
+ pop:[['Neon','Summer','Golden','Electric','Sweet','Lonely','Crazy','Velvet','Starlight','Paper','Wild','Pink','Lost','Better'],['Heart','Nights','Love','Dance','Skies','Feelings','Kiss','City','Dreams','Days','Lights','Lies','Party','Fire']],
+ arabesk:[['Broken','Tears of','Endless','Silent','Lonely','Bitter','Last','Fallen','Faded','Burning'],['Heart','Goodbye','Rain','Night','Longing','Love','Memories','Pain','Prayer','Exile']],
+ rock:[['Thunder','Iron','Highway','Black','Wild','Restless','Burning','Electric','Rebel','Stone'],['Road','Storm','Revolution','Echoes','Machine','Riot','Fire','Soul','Skies','Engine']],
+ turku:[['Mountain','River','Old','Valley','Shepherd\'s','Homeland','Distant','Willow','Village','Northern'],['Song','Wind','Lament','Road','Ballad','Fields','Home','Path','Tale','Hymn']]};
+const _gt19=genTitle;genTitle=function(g){if(S&&S.ct&&S.ct!=='tr'){const w=WORDS_EN[g]||WORDS_EN.pop;return pick(w[0])+' '+pick(w[1])}return _gt19(g)};
 
 boot();
 </script>
