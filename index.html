@@ -248,7 +248,7 @@ body.monob .tab.on,body[data-th="monokrom"] .tab.on,body[data-th="monokrom"] .bt
 <div class="mod" id="confirm"><div class="box"><h2>Yeni hayat?</h2><p>Mevcut hayatın silinecek ve baştan başlayacaksın.</p><button class="btn" onclick="$('confirm').classList.remove('on');restart()">Evet, baştan başla</button><button class="btn sec" onclick="$('confirm').classList.remove('on')">Vazgeç</button></div></div>
 <script>
 try{if('serviceWorker' in navigator&&/github\.io$/.test(location.hostname))navigator.serviceWorker.register('sw.js').catch(()=>{})}catch(e){}
-const APPV='2026.11.01-044622';
+const APPV='2026.11.01-045251';
 (function(){try{if(!/github\.io$/.test(location.hostname))return;const chk=()=>fetch(location.pathname+'?nc='+Date.now(),{cache:'no-store'}).then(r=>r.text()).then(t=>{const m=t.match(/const APPV='([^']+)'/);if(m&&m[1]!==APPV&&!sessionStorage.getItem('upd'+m[1])){sessionStorage.setItem('upd'+m[1],'1');location.replace(location.pathname+'?v='+encodeURIComponent(m[1]))}}).catch(()=>{});chk();document.addEventListener('visibilitychange',()=>{if(!document.hidden)chk()})}catch(e){}})();
 /* ============ Yardımcılar ============ */
 const $=id=>document.getElementById(id);
@@ -3315,6 +3315,97 @@ const _shK13=shKariyer;shKariyer=function(){if(SUB&&SUB.t==='biz2'){m2Init();ret
 const _aq13=ageUpQ;ageUpQ=function(){_aq13();if(!S||!S.alive)return;m2Init();healthQ();eduQ();teamQ();restQ();if(S.edu.includes('mba')&&S.lab&&S.lab.lastQ&&S.lab.lastQ.net>0)S.lab.cash+=Math.round(S.lab.lastQ.net*.1)};
 const _yt13=yearTick;yearTick=function(){_yt13();if(!S||!S.alive)return;m2Init();healthY();hofY();clubY()};
 const _ei13=extInit;extInit=function(){_ei13();m2Init();S.hakB=S.team.asist?2:0};
+actKeep();
+
+/* ============ Film yapım şirketi ve restoran zinciri: detaylı yönetim + halka arz ============ */
+const coKey=t=>t==='film'?'fc':'rc';const coGet=t=>S.biz2[coKey(t)];
+const tkOf=n=>((n||'').replace(/[^A-Za-zÇĞİÖŞÜçğıöşü]/g,'').toUpperCase().replace(/[ÇĞİÖŞÜ]/g,c=>({Ç:'C',Ğ:'G',İ:'I',Ö:'O',Ş:'S',Ü:'U'}[c]))+'XXXX').slice(0,4);
+/* ---------- ortak: kasa ve halka arz ---------- */
+ACT.coMove=(t,dir,x)=>{const C=coGet(t);if(x==='all')x=dir==='in'?Math.max(0,S.money):Math.max(0,C.cash);if(!need(x))return;if(dir==='in'){if(!pay(x))return;C.cash+=x;log(`${C.n} kasasına ${fmtS(x)} aktardın.`,'dim')}else{if(C.cash<x){toast('Şirket kasası yetmiyor.');return}C.cash-=x;const r=income(x,'brand');log(`${C.n} kasasından ${fmtS(x)} temettü çektin (net ${fmtS(r.net)}).`,'dim')}drawSheet()};
+function coValue(t){const C=coGet(t);if(!C)return 0;if(t==='film')return Math.round(C.cash+C.films.filter(f=>f.st==='bitti').reduce((a,f)=>a+f.box*.25,0)+[0,5e7,4e8][C.studio]*.9+Math.max(0,C.yrP||0)*6);
+ return Math.round(C.cash+C.br.length*6e6+C.br.reduce((a,b)=>a+Math.max(0,b.lastP||0),0)*4*5+C.fr*4e6+Math.max(0,C.yrP||0)*5)}
+const coP=t=>{const C=coGet(t);return coValue(t)*C.ipo.mult/IPO_N};
+ACT.coIpo=(t,pct)=>{const C=coGet(t),v=coValue(t);if(C.ipo)return;if(v<3e7&&!S.star){toast('Halka arz için şirket değeri en az ₺30 Mn olmalı.');return}if(!useM(2))return;C.ipo={tk:tkOf(C.n),mult:RF(1.1,1.4),mine:IPO_N*(1-pct/100),h:[]};const p=coP(t),raise=Math.round(IPO_N*pct/100*p*.95);C.cash+=raise;C.ipo.h.push(p);
+ log(`🔔 ${C.n} borsada (${C.ipo.tk})! Hissenin %${pct}'i halka arz edildi, şirkete ${fmtS(raise)} girdi.`,'gold');try{sJingle()}catch(e){}drawSheet()};
+ACT.coSellSh=(t,pct)=>{const I=coGet(t).ipo,n=I.mine*pct/100;if((I.mine-n)/IPO_N<.51){toast('Kontrol için en az %51 sende kalmalı.');return}const v=Math.round(n*coP(t)*.98);I.mine-=n;S.money+=v;I.mult*=.97;log(`${I.tk} hisselerinden ${fmtS(v)} sattın. Payın %${(I.mine/IPO_N*100).toFixed(1)}.`,'good');drawSheet()};
+ACT.coBuySh=(t,pct)=>{const I=coGet(t).ipo,n=Math.min(IPO_N-I.mine,IPO_N*pct/100),c=Math.round(n*coP(t)*1.02);if(n<=0)return;if(!pay(c))return;I.mine+=n;I.mult*=1.02;log(`${I.tk} hisselerini geri aldın: ${fmtS(c)}.`,'good');drawSheet()};
+ACT.coDiv=t=>{const C=coGet(t),d=Math.round(C.cash*.2);if(d<1e5){toast('Dağıtılacak kâr yok.');return}C.cash-=d;const mine=Math.round(d*(C.ipo?C.ipo.mine/IPO_N:1)),r=income(mine,'brand');if(C.ipo)C.ipo.mult*=1.03;log(`${C.n} ${fmtS(d)} temettü dağıttı; sana net ${fmtS(r.net)}.`,'good');drawSheet()};
+ACT.coPump=t=>{if(!S.star)return;coGet(t).ipo.mult*=1.5;drawSheet()};
+function coIpoQ(t,perf){const C=coGet(t);if(!C||!C.ipo)return;C.ipo.mult=clamp(C.ipo.mult*Math.exp(.1*gauss()+perf),.4,6);C.ipo.h.push(coP(t));if(C.ipo.h.length>40)C.ipo.h.shift()}
+function coBox(t){const C=coGet(t);let h=sec('Kasa')+note(`Şirket kasası ${fmtS(C.cash)} · kişisel kasan ${fmtS(S.money)}`)+amtIn('co_'+t)+`<div class="two"><button class="mini" onclick="ACT.coMove('${t}','in',amtV('co_${t}'))">Şirkete yatır</button><button class="mini sec" onclick="ACT.coMove('${t}','out',amtV('co_${t}'))">Temettü çek</button></div>`;
+ const I=C.ipo,v=coValue(t);if(!I)return h+sec('Borsa')+note(`Şirket değeri ${fmtS(v)}. Halka arz edersen satılan hisselerin parası şirket kasasına girer.`)+`<div class="tabs wrap">${[10,25,49].map(p=>`<button class="tab sm" onclick="ACT.coIpo('${t}',${p})">%${p} halka arz</button>`).join('')}</div>`;
+ const p=coP(t),ph=I.h[I.h.length-2]||p,chg=(p/ph-1)*100;return h+sec(`Borsa · ${I.tk}`)+`<div class="card stk"><div class="ch"><b>${I.tk}</b><span class="${chg>=0?'up':'dn'}">${chg>=0?'▲':'▼'} %${Math.abs(chg).toFixed(1)}</span></div><div class="srow">${spark(I.h.length>1?I.h:[p,p],chg>=0?'#6fd39a':'#ff7d73')}<div><b>₺${p.toLocaleString('tr-TR',{maximumFractionDigits:2})}</b><span>Piyasa değeri ${fmtS(p*IPO_N)}</span></div></div>${note(`Payın %${(I.mine/IPO_N*100).toFixed(1)} · değeri ${fmtS(I.mine*p)}`)}<div class="tabs wrap"><button class="tab sm" onclick="ACT.coSellSh('${t}',10)">%10 sat</button><button class="tab sm" onclick="ACT.coBuySh('${t}',5)">%5 geri al</button><button class="tab sm" onclick="ACT.coBuySh('${t}',100)">Hepsini geri al</button><button class="tab sm" onclick="ACT.coDiv('${t}')">Temettü dağıt</button>${S.star?`<button class="tab sm" onclick="ACT.coPump('${t}')">⭐ Hisseyi uçur</button>`:''}</div></div>`}
+
+/* ---------- FİLM ŞİRKETİ ---------- */
+const FG=[['aksiyon','💥','Aksiyon'],['dram','🎭','Dram'],['komedi','😂','Komedi'],['korku','👻','Korku'],['romantik','💞','Romantik'],['bk','🚀','Bilim kurgu'],['muzikal','🎤','Müzikal / biyografi']];
+const FB=[['Bağımsız',5e6],['Orta bütçe',4e7],['Büyük bütçe',2e8],['Blockbuster',8e8]];
+function fcInit(){const C=S.biz2.fc;if(!C)return;S.ftr=S.ftr||{};FG.forEach(g=>{if(S.ftr[g[0]]==null)S.ftr[g[0]]=RF(.75,1.3)});if(!C.dirs||C.dirsY!==S.age){C.dirs=[0,1,2,3].map(()=>{const sk=R(35,95);return {n:pick(NM_E.concat(NM_K))+' '+pick(SURN),sk,fee:Math.round(sk*sk*1500/1e4)*1e4}});C.acts=[0,1,2,3].map(()=>{const f=R(20,95);return {n:pick(NM_E.concat(NM_K))+' '+pick(SURN),fame:f,fee:Math.round(f*f*4000/1e4)*1e4}});C.dirsY=S.age}C.d=C.d||{g:'dram',b:1,dir:0,act:-1,me:0,mus:1,mkt:0}}
+ACT.fcFound=()=>{if(S.biz2.fc)return;const n=((document.getElementById('fc_nm')||{}).value||'').trim()||`${S.stage||S.last} Film`;if(!pay(2e7))return;S.biz2.fc={n:n.slice(0,28),cash:1.5e7,films:[],studio:0,yrP:0,yr0:0,tot:0,aw:0};(S.biz2.films||[]).forEach(f=>S.biz2.fc.films.push({t:f.t,g:'dram',b:f.b,q:50,box:f.box,st:'bitti',age:S.age}));fcInit();log(`🎬 "${S.biz2.fc.n}" film yapım şirketini kurdun! Kasada ${fmtS(1.5e7)} sermaye var.`,'gold');drawSheet()};
+ACT.fcSet=(k,v)=>{fcInit();S.biz2.fc.d[k]=v;drawSheet()};
+const fcCost=()=>{const C=S.biz2.fc,d=C.d,b=FB[d.b][1]*(1-C.studio*.05),dir=C.dirs[d.dir],act=d.act>=0?C.acts[d.act]:null;return {b,dir:dir.fee,act:act?act.fee:0,mkt:Math.round(FB[d.b][1]*[0,.1,.3,.6][d.mkt]),tot:Math.round(b+dir.fee+(act?act.fee:0)+FB[d.b][1]*[0,.1,.3,.6][d.mkt])}};
+ACT.fcMake=()=>{const C=S.biz2.fc,d=C.d,c=fcCost();if(C.films.filter(f=>f.st==='cekim').length>=2&&!S.star){toast('Aynı anda en fazla 2 film çekebilirsin.');return}if(C.cash<c.tot&&!S.star){toast(`Şirket kasası yetmiyor: ${fmtS(c.tot)}`);return}if(!useM(d.me?3:1))return;if(!S.star)C.cash-=c.tot;
+ const dir=C.dirs[d.dir],act=d.act>=0?C.acts[d.act]:null,star=d.me?S.fame:act?act.fame:R(5,25);
+ const q=clamp(Math.round(dir.sk*.45+star*.25+d.b*5+(d.mus?S.skill*.1:0)+C.studio*3+R(-12,12)+(S.star?20:0)));const t=pick(['Son Perde','Gece Treni','Mahalle','Kırmızı Halı','Sessiz Şehir','Altın Mikrofon','Rüzgârın Sesi','Karanlık Sahne','Boğaz\'da Bir Gece','Son Şarkı','Yıldız Tozu','Kayıp Plak']);
+ C.films.push({id:S.nid++,t,g:d.g,b:FB[d.b][1],cost:c.tot,q,dir:dir.n,star:d.me?(S.stage||S.first):act?act.n:'yeni yüzler',me:d.me,mus:d.mus,mkt:d.mkt,st:'cekim',left:2,box:0,run:0,age:S.age});
+ if(d.me){S.skill=clamp(S.skill+1)}log(`🎬 ${C.n}: "${t}" (${FG.find(x=>x[0]===d.g)[2]}) çekimleri başladı. Yönetmen ${dir.n}, başrolde ${d.me?'sen':act?act.n:'yeni yüzler'}. Toplam maliyet ${fmtS(c.tot)}. 6 ay sonra vizyonda.`,'good');drawSheet()};
+ACT.fcStudio=l=>{const C=S.biz2.fc,p=[0,5e7,4e8][l];if(C.studio>=l)return;if(C.cash<p&&!S.star){toast('Şirket kasası yetmiyor: '+fmtS(p));return}if(!S.star)C.cash-=p;C.studio=l;log(`🏗 ${C.n} ${['','küçük stüdyo','büyük plato kompleksi'][l]} sahibi oldu: maliyetler düştü, kalite arttı.`,'gold');drawSheet()};
+function fcQ(){const C=S.biz2.fc;if(!C)return;fcInit();let perf=0,earn=0;C.cash-=8e5+C.studio*1.5e6;
+ C.films.forEach(f=>{if(f.st==='cekim'){f.left--;if(f.left<=0){f.st='vizyon';f.run=0;const tr=S.ftr[f.g]||1;f.open=Math.round(f.b*(.25+f.q/55)*tr*(1+[0,.25,.6,1][f.mkt])*RF(.55,1.5)*(f.me?1+S.fame/150:1));f.dig=Math.round(f.b*.25*(f.q/60));C.cash+=f.dig;earn+=f.dig;
+   log(`🎟 "${f.t}" vizyona girdi! İlk hafta gişe rekoru${f.open>f.b?' kırdı':' beklentinin altında kaldı'}. Dijital platform hakları: ${fmtS(f.dig)}.`,f.open>f.b?'gold':'dim')}}
+  else if(f.st==='vizyon'){const part=[.6,.3,.1][f.run]||0,g=Math.round(f.open*part);f.box+=g;C.cash+=g*.5;earn+=g*.5;f.run++;if(f.run>=3){f.st='bitti';const r=f.box*.5+f.dig-f.cost;perf+=r>0?.05:-.05;log(`🎬 "${f.t}" vizyondan kalktı: toplam gişe ${fmtS(f.box)} (şirkete %50), ${r>=0?'kâr':'zarar'} ${fmtS(Math.abs(r))}.${f.me&&f.mus?' Film müziğin de listelerde.':''}`,r>=0?'good':'bad');if(f.me&&f.mus){addF(Math.round(S.fol*.02),'yt')}}}
+  else if(f.st==='bitti'){const lic=Math.round(f.box*.0075);C.cash+=lic;earn+=lic}});
+ C.tot+=earn;coIpoQ('film',perf)}
+function fcY(){const C=S.biz2.fc;if(!C)return;S.ftr&&Object.keys(S.ftr).forEach(k=>S.ftr[k]=clamp(S.ftr[k]*RF(.85,1.18),.5,1.6));const yr=C.films.filter(f=>f.age===S.age-1||f.age===S.age);
+ yr.filter(f=>f.st==='bitti'&&f.q>=80&&!f.aw).forEach(f=>{if(ch(.4)){f.aw=1;C.aw++;const a=pick(['Altın Portakal','Altın Koza','uluslararası bir film festivali']);log(`🏆 "${f.t}" ${a} ödülünü kazandı!`,'gold');if(C.ipo)C.ipo.mult*=1.1}});
+ const prof=C.cash-(C.yr0||0);C.yrP=prof;C.yr0=C.cash;if(prof>0){const tx=Math.round(prof*.25);C.cash-=tx;log(`🏢 ${C.n} kurumlar vergisi: ${fmtS(tx)}.`,'dim')}}
+function shFilmCo(){const C=S.biz2.fc;if(!C)return note('Kendi film yapım şirketini kur: tür, bütçe, yönetmen, oyuncu ve tanıtım bütçesini sen seç. Filmler 6 ay çekilir, 9 ay vizyonda kalır, sonra yıllarca lisans geliri getirir. Kuruluş ₺20 Mn (₺15 Mn şirket kasasına gider).')+`<input class="inp" id="fc_nm" maxlength="28" placeholder="${esc(S.stage||S.last)} Film"><button class="btn" onclick="ACT.fcFound()">🎬 Şirketi kur</button>`;
+ fcInit();const d=C.d,c=fcCost(),done=C.films.filter(f=>f.st==='bitti');
+ let h=`<div class="hero2"><small>${esc(C.n)}${C.ipo?' · '+C.ipo.tk:''}</small><div class="big">${fmtS(C.cash)}</div><span>Şirket kasası · ${C.films.length} film · ${C.aw} ödül · değer ${fmtS(coValue('film'))}</span></div>`;
+ const cur=C.films.filter(f=>f.st!=='bitti');if(cur.length)h+=sec('Yapımdaki ve vizyondaki filmler')+cur.map(f=>row('',f.st==='cekim'?'🎥':'🎟',esc(f.t),`${FG.find(x=>x[0]===f.g)[2]} · kalite ${f.q} · ${f.st==='cekim'?`çekim: ${f.left*3} ay kaldı`:`vizyonda · gişe ${fmtS(f.box)}`}`,fmtS(f.cost))).join('');
+ const chip=(k,arr)=>`<div class="tabs wrap">${arr.map(([v,n])=>`<button class="tab sm ${d[k]===v?'on':''}" onclick="ACT.fcSet('${k}',${typeof v==='string'?`'${v}'`:v})">${n}</button>`).join('')}</div>`;
+ h+=sec('Yeni film')+note('Tür trendleri her yıl değişir: ▲ olan türler daha çok izlenir.')+chip('g',FG.map(g=>[g[0],`${g[1]} ${g[2]} ${(S.ftr[g[0]]||1)>=1.1?'▲':(S.ftr[g[0]]||1)<=.9?'▼':''}`]))+note('Bütçe')+chip('b',FB.map((b,i)=>[i,`${b[0]} · ${fmtS(b[1])}`]))+
+  note('Yönetmen')+chip('dir',C.dirs.map((x,i)=>[i,`${esc(x.n)} · yetenek ${x.sk} · ${fmtS(x.fee)}`]))+note('Başrol')+`<div class="tabs wrap"><button class="tab sm ${d.me?'on':''}" onclick="ACT.fcSet('me',1);ACT.fcSet('act',-1)">⭐ Ben oynarım (3 hak)</button><button class="tab sm ${!d.me&&d.act<0?'on':''}" onclick="ACT.fcSet('me',0);ACT.fcSet('act',-1)">Yeni yüzler</button>${C.acts.map((x,i)=>`<button class="tab sm ${!d.me&&d.act===i?'on':''}" onclick="ACT.fcSet('me',0);ACT.fcSet('act',${i})">${esc(x.n)} · ünü ${x.fame} · ${fmtS(x.fee)}</button>`).join('')}</div>`+
+  note('Film müziği')+chip('mus',[[1,'🎵 Ben yaparım'],[0,'Besteci tutulsun']])+note('Tanıtım')+chip('mkt',[[0,'Yok'],[1,'Az (%10)'],[2,'Orta (%30)'],[3,'Dev kampanya (%60)']])+
+  `<div class="kv"><div>Bütçe<b>${fmtS(c.b)}</b></div><div>Yönetmen<b>${fmtS(c.dir)}</b></div><div>Oyuncu<b>${fmtS(c.act)}</b></div><div>Tanıtım<b>${fmtS(c.mkt)}</b></div></div><button class="btn" onclick="ACT.fcMake()">🎬 Çekimlere başla · ${fmtS(c.tot)}</button>`;
+ h+=sec('Stüdyo')+row('ACT.fcStudio(1)','🏠','Küçük stüdyo','Maliyet −%5 · kalite +3',C.studio>=1?'✓':fmtS(5e7),C.studio>=1)+row('ACT.fcStudio(2)','🏯','Büyük plato kompleksi','Maliyet −%10 · kalite +6',C.studio>=2?'✓':fmtS(4e8),C.studio>=2);
+ if(done.length)h+=sec('Film kataloğu')+done.slice(-10).reverse().map(f=>row('',f.aw?'🏆':'🎞',esc(f.t),`${FG.find(x=>x[0]===f.g)?FG.find(x=>x[0]===f.g)[2]:''} · kalite ${f.q} · gişe ${fmtS(f.box)} · yıllık lisans geliri`,fmtS(f.box*.03))).join('');
+ return h+coBox('film')}
+
+/* ---------- RESTORAN ZİNCİRİ ---------- */
+const CONC={burger:['🍔','Burger',300,1],kebap:['🥙','Kebap & ocakbaşı',550,1.1],kahve:['☕','Kahve zinciri',160,.8],sushi:['🍣','Sushi',1200,1.4],fine:['🍽','Fine dining',3500,2]};
+const LOCS={avm:['AVM',30000,1.5e6],cadde:['Cadde',22000,1e6],sahil:['Sahil',16000,1.3e6],havaalani:['Havalimanı',40000,2.5e6]};
+ACT.rcFound=c=>{if(S.biz2.rc)return;const n=((document.getElementById('rc_nm')||{}).value||'').trim()||`${S.stage||S.first}'s ${CONC[c][1].split(' ')[0]}`;if(!pay(1e7))return;
+ S.biz2.rc={n:n.slice(0,28),c,cash:5e6,br:[],price:1,qual:1,mkt:0,face:1,fr:0,yr0:5e6,yrP:0,tot:0};const old=S.biz2.rest;if(old)for(let i=0;i<old.br;i++)S.biz2.rc.br.push({id:S.nid++,city:S.city||'İstanbul',loc:'cadde',rate:65,lastP:0});S.biz2.rest=null;log(`${CONC[c][0]} "${S.biz2.rc.n}" restoran zincirini kurdun!`,'gold');drawSheet()};
+ACT.rcOpen=(loc)=>{const C=S.biz2.rc,cost=Math.round(8e6*CONC[C.c][3]*(loc==='havaalani'?1.8:1));if(C.cash<cost&&!S.star){toast('Şirket kasası yetmiyor: '+fmtS(cost));return}if(!useM(1))return;if(!S.star)C.cash-=cost;const city=pick(C0().cities)[0];C.br.push({id:S.nid++,city,loc,rate:R(55,72),lastP:0});log(`${CONC[C.c][0]} ${C.n} ${city} ${LOCS[loc][0].toLowerCase()} şubesi açıldı (${fmtS(cost)}).`,'good');drawSheet()};
+ACT.rcClose=id=>{const C=S.biz2.rc;C.br=C.br.filter(b=>b.id!==id);C.cash+=2e6;log('Bir şubeyi kapattın, ekipmanı sattın.','dim');drawSheet()};
+ACT.rcSet=(k,v)=>{S.biz2.rc[k]=v;drawSheet()};
+ACT.rcFr=()=>{const C=S.biz2.rc;if(C.br.length<3||(C.br.reduce((a,b)=>a+b.rate,0)/C.br.length)<65){toast('Franchise için en az 3 şube ve ortalama %65 puan gerekli.');return}if(!useM(1))return;const fee=Math.round(5e6*CONC[C.c][3]*(1+C.fr*.1));C.fr++;C.cash+=fee;log(`🤝 ${C.n} franchise sattı: ${fmtS(fee)} giriş ücreti, cirodan %6 telif.`,'good');drawSheet()};
+function rcQ(){const C=S.biz2.rc;if(!C)return;const K=CONC[C.c];let tot=0,rev=0;const pf=[.8,1,1.3][C.price],cf=[1.2,1,.72][C.price],ing=[.33,.38,.46][C.qual],mk=[0,1e6,3e6,8e6][C.mkt];
+ C.br.forEach(b=>{const L=LOCS[b.loc],cust=Math.round(L[1]*(b.rate/70)*cf*(1+mk/(mk+5e6)*.5)*(C.face?1+S.fame/250:1)*RF(.85,1.15)),r=cust*K[2]*pf,cost=L[2]*K[3]+2.5e6*K[3]+r*(ing+.15)+mk/Math.max(1,C.br.length),p=Math.round(r-cost);
+  b.rate=clamp(b.rate+[-3,0,2][C.qual]+(C.price===2&&C.qual<2?-2:0)+R(-2,2),20,98);b.lastP=p;b.cust=cust;tot+=p;rev+=r});
+ const frRev=C.fr*2.5e6*K[3]*.06;tot+=frRev;C.cash+=tot;C.tot+=tot;C.lastQ={p:tot,rev};
+ if(C.br.length&&ch(.07)&&!S.star){const b=pick(C.br);if(ch(.5)){b.rate=clamp(b.rate-12);const f=FS(2e5);C.cash-=f;log(`🧪 ${C.n} ${b.city} şubesine gıda denetimi: ceza ${fmtS(f)}, puan düştü.`,'bad')}else{b.rate=clamp(b.rate+10);log(`⭐ Ünlü bir yemek eleştirmeni ${C.n} ${b.city} şubesini övdü!`,'good')}}
+ coIpoQ('rest',tot>0?.02:-.03)}
+function rcY(){const C=S.biz2.rc;if(!C)return;const prof=C.cash-(C.yr0||0);C.yrP=prof;C.yr0=C.cash;if(prof>0){const tx=Math.round(prof*.25);C.cash-=tx;C.yr0-=tx;log(`🏢 ${C.n} kurumlar vergisi: ${fmtS(tx)}.`,'dim')}}
+function shRestCo(){const C=S.biz2.rc;if(!C)return note('Restoran zinciri kur: konsepti seç, şehir şehir şube aç, fiyat, kalite ve reklamı yönet; franchise sat, sonra borsaya aç. Kuruluş ₺10 Mn (₺5 Mn şirket kasasına).')+`<input class="inp" id="rc_nm" maxlength="28" placeholder="Zincirin adı">`+Object.entries(CONC).map(([k,c])=>row(`ACT.rcFound('${k}')`,c[0],c[1],`Kişi başı ortalama ${fmtS(c[2])}`,'Kur')).join('');
+ const K=CONC[C.c],avg=C.br.length?Math.round(C.br.reduce((a,b)=>a+b.rate,0)/C.br.length):0;
+ let h=`<div class="hero2"><small>${K[0]} ${esc(C.n)}${C.ipo?' · '+C.ipo.tk:''}</small><div class="big">${fmtS(C.cash)}</div><span>Şirket kasası · ${C.br.length} şube · ${C.fr} franchise · ortalama puan ${avg}${C.lastQ?` · son 3 ay ${fmtS(C.lastQ.p)}`:''}</span></div>`;
+ const chip=(k,arr,d)=>note(d)+`<div class="tabs wrap">${arr.map(([v,n])=>`<button class="tab sm ${C[k]===v?'on':''}" onclick="ACT.rcSet('${k}',${v})">${n}</button>`).join('')}</div>`;
+ h+=sec('Yönetim')+chip('price',[[0,'Ucuz'],[1,'Normal'],[2,'Premium']],'Fiyat: ucuz daha çok müşteri, premium daha çok kâr ister')+chip('qual',[[0,'Ekonomik malzeme'],[1,'Standart'],[2,'Premium malzeme']],'Malzeme kalitesi puanları etkiler')+chip('mkt',[[0,'Yok'],[1,fmtS(1e6)+'/3 ay'],[2,fmtS(3e6)+'/3 ay'],[3,fmtS(8e6)+'/3 ay']],'Reklam bütçesi')+chip('face',[[1,'⭐ Reklamlarda ben varım'],[0,'Ünlü yüz yok']],'Şöhretin müşteri çeker');
+ h+=sec('Şubeler')+C.br.map(b=>`<div class="card"><div class="ch"><b>${K[0]} ${esc(b.city)} · ${LOCS[b.loc][0]}</b><span class="pill">⭐ ${b.rate}</span></div>${note(`Son 3 ay ${num(b.cust||0)} müşteri · ${b.lastP>=0?'kâr':'zarar'} ${fmtS(Math.abs(b.lastP||0))}`)}<button class="mini red" onclick="ACT.rcClose(${b.id})">Kapat</button></div>`).join('')+
+  `<div class="tabs wrap">${Object.entries(LOCS).map(([k,l])=>`<button class="tab sm" onclick="ACT.rcOpen('${k}')">+ ${l[0]} şubesi · ${fmtS(8e6*K[3]*(k==='havaalani'?1.8:1))}</button>`).join('')}</div>`;
+ h+=row('ACT.rcFr()','🤝','Franchise sat',`En az 3 şube ve %65 puan · giriş ücreti + cirodan %6`,'1 hak');return h+coBox('rest')}
+
+/* ---------- Bağlantılar ---------- */
+const _shBiz2b=shBiz2;shBiz2=function(){let h=_shBiz2b();const i=h.indexOf(sec('🍔 Restoran zinciri'));if(i>=0)h=h.slice(0,i);const F=S.biz2.fc,Rc=S.biz2.rc;
+ return h+sec('🎬 Film ve 🍔 restoran')+row("sheet('kariyer',{t:'filmco',title:'Film şirketi',par:{t:'biz2',title:'Kulüp, restoran, film',par:{t:'biz',title:'İş dünyası'}}})",'🎬','Film yapım şirketi',F?`${esc(F.n)} · ${F.films.length} film · kasa ${fmtS(F.cash)}${F.ipo?' · '+F.ipo.tk:''}`:'Kur, film çek, borsaya aç','›')+
+  row("sheet('kariyer',{t:'restco',title:'Restoran zinciri',par:{t:'biz2',title:'Kulüp, restoran, film',par:{t:'biz',title:'İş dünyası'}}})",'🍔','Restoran zinciri',Rc?`${esc(Rc.n)} · ${Rc.br.length} şube · kasa ${fmtS(Rc.cash)}${Rc.ipo?' · '+Rc.ipo.tk:''}`:'Kur, şube aç, borsaya aç','›')};
+const _shK14=shKariyer;shKariyer=function(){const T=SUB&&SUB.t;if(T==='filmco'){m2Init();return shFilmCo()}if(T==='restco'){m2Init();return shRestCo()}return _shK14()};
+restQ=function(){};
+const _aq14=ageUpQ;ageUpQ=function(){_aq14();if(!S||!S.alive)return;m2Init();fcQ();rcQ()};
+const _yt14=yearTick;yearTick=function(){_yt14();if(!S||!S.alive)return;m2Init();fcY();rcY()};
+/* borsa sayfasında kendi şirketlerin */
+const _shB14=shBorsa;shBorsa=function(){let h=_shB14();if(!S.biz2)return h;['film','rest'].forEach(t=>{const C=coGet(t);if(C&&C.ipo){const p=coP(t);h=`<div class="card"><div class="ch"><b>${C.ipo.tk} <small>${esc(C.n)}</small></b><span>₺${p.toLocaleString('tr-TR',{maximumFractionDigits:2})}</span></div>${note(`Payın %${(C.ipo.mine/IPO_N*100).toFixed(1)} · değeri ${fmtS(C.ipo.mine*p)}`)}</div>`+h}});return h};
 actKeep();
 
 boot();
