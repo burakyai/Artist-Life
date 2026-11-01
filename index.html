@@ -248,7 +248,7 @@ body.monob .tab.on,body[data-th="monokrom"] .tab.on,body[data-th="monokrom"] .bt
 <div class="mod" id="confirm"><div class="box"><h2>Yeni hayat?</h2><p>Mevcut hayatın silinecek ve baştan başlayacaksın.</p><button class="btn" onclick="$('confirm').classList.remove('on');restart()">Evet, baştan başla</button><button class="btn sec" onclick="$('confirm').classList.remove('on')">Vazgeç</button></div></div>
 <script>
 try{if('serviceWorker' in navigator&&/github\.io$/.test(location.hostname))navigator.serviceWorker.register('sw.js').catch(()=>{})}catch(e){}
-const APPV='2026.11.01-025113';
+const APPV='2026.11.01-031218';
 (function(){try{if(!/github\.io$/.test(location.hostname))return;const chk=()=>fetch(location.pathname+'?nc='+Date.now(),{cache:'no-store'}).then(r=>r.text()).then(t=>{const m=t.match(/const APPV='([^']+)'/);if(m&&m[1]!==APPV&&!sessionStorage.getItem('upd'+m[1])){sessionStorage.setItem('upd'+m[1],'1');location.replace(location.pathname+'?v='+encodeURIComponent(m[1]))}}).catch(()=>{});chk();document.addEventListener('visibilitychange',()=>{if(!document.hidden)chk()})}catch(e){}})();
 /* ============ Yardımcılar ============ */
 const $=id=>document.getElementById(id);
@@ -3012,13 +3012,21 @@ function shLux(){if(!S.lots||S.lotY!==S.age)lotsGen();let h='';if(S.lux.length){
 const _stil8=stil;stil=function(){return _stil8()+Math.round(((S.looks||50)-50)/8)+(S.lux||[]).filter(x=>x.k==='arac').length*2};
 /* ---------- 7. Kumar ---------- */
 const casN=()=>({tr:"Kıbrıs'taki kumarhane",us:'Las Vegas',uk:'Londra kumarhanesi'}[(S.ct||'tr')]);
-function gamble(x,p,mult,what){if(!need(x))return;if(!canPay(x)){toast('Kasanda o kadar para yok.');return}S.money-=x;S.gamb=clamp((S.gamb||0)+R(2,5));const win=S.star||ch(p);if(win){S.money+=x*mult;log(`🎰 ${what}: kazandın! +${fmtS(x*mult-x)}`,'gold');add('happy',4)}else{log(`🎰 ${what}: kaybettin. −${fmtS(x)}`,'bad');add('happy',-3)}drawSheet()}
-ACT.rulet=()=>gamble(amtV('gb_a'),18/37,2,`${casN()}, rulette kırmızı`);
-ACT.bj=()=>gamble(amtV('gb_a'),.44,2,`${casN()}, blackjack`);
-ACT.slot=()=>gamble(amtV('gb_a'),.08,10,`${casN()}, slot makinesi`);
-ACT.horse=i=>gamble(amtV('gb_a'),[.4,.25,.15,.08][i],[2.3,3.8,6,11][i],`At yarışı (${['Rüzgar','Karayel','Gökbörü','Sisli Gece'][i]})`);
-ACT.match=i=>gamble(amtV('gb_a'),[.5,.27,.23][i],[1.85,3.4,4.1][i],`Maç bahsi (${['ev sahibi','beraberlik','deplasman'][i]})`);
-function shGamb(){let h=note(`Kumar bağımlılık yapar.${S.gamb>40?` <b class="neg">Bağımlılık seviyen %${Math.round(S.gamb)}.</b>`:''}`)+amtIn('gb_a','Bahis tutarı');
+let GBET=0;
+const gbV=()=>{const v=amtV('gb_a');if(v)GBET=v;return GBET};
+ACT.gbSet=v=>{GBET=v==='all'?Math.max(0,Math.floor(S.money)):Math.round(v);drawSheet()};
+function gamble(x,p,mult,what){if(!x||x<=0){toast('Önce bahis tutarını seç ya da yaz.');return}if(!canPay(x)){toast('Kasanda o kadar para yok.');return}S.money-=x;S.gamb=clamp((S.gamb||0)+R(2,5));const win=S.star||ch(p);
+ if(win){S.money+=x*mult;log(`🎰 ${what}: kazandın! +${fmtS(x*mult-x)}`,'gold');add('happy',4);try{sJingle()}catch(e){}}else{log(`🎰 ${what}: kaybettin. −${fmtS(x)}`,'bad');add('happy',-3);try{sBad()}catch(e){}}
+ S.gLast={w:win,t:what,x,g:win?x*mult-x:-x};S.gTot=(S.gTot||0)+(win?x*mult-x:-x);toast(win?`🎉 Kazandın! +${fmtS(x*mult-x)}`:`💸 Kaybettin. −${fmtS(x)}`);render();drawSheet()}
+ACT.rulet=()=>gamble(gbV(),18/37,2,`${casN()}, rulette kırmızı`);
+ACT.bj=()=>gamble(gbV(),.44,2,`${casN()}, blackjack`);
+ACT.slot=()=>gamble(gbV(),.08,10,`${casN()}, slot makinesi`);
+ACT.horse=i=>gamble(gbV(),[.4,.25,.15,.08][i],[2.3,3.8,6,11][i],`At yarışı (${['Rüzgar','Karayel','Gökbörü','Sisli Gece'][i]})`);
+ACT.match=i=>gamble(gbV(),[.5,.27,.23][i],[1.85,3.4,4.1][i],`Maç bahsi (${['ev sahibi','beraberlik','deplasman'][i]})`);
+function shGamb(){const L=S.gLast;let h=`<div class="hero2"><small>Kasan</small><div class="big">${fmtS(S.money)}</div><span>Bahis: <b>${GBET?fmtS(GBET):'seçilmedi'}</b> · kumardan toplam ${(S.gTot||0)>=0?'kâr':'zarar'} ${fmtS(Math.abs(S.gTot||0))}</span></div>`+
+ (L?`<div class="card" style="border-color:${L.w?'var(--good)':'var(--bad)'}"><b style="font-size:18px;color:${L.w?'var(--good)':'var(--bad)'}">${L.w?'🎉 Kazandın':'💸 Kaybettin'} ${L.w?'+':'−'}${fmtS(Math.abs(L.g))}</b>${note(esc(L.t))}</div>`:'')+
+ note(`Önce bahis tutarını seç ya da yaz, sonra oyunu seç.${S.gamb>40?` <b class="neg">Bağımlılık seviyen %${Math.round(S.gamb)}.</b>`:''}`)+
+ `<div class="tabs wrap">${[1e4,1e5,1e6,1e7,1e8].map(v=>`<button class="tab sm ${GBET===v?'on':''}" onclick="ACT.gbSet(${v})">${fmtS(v)}</button>`).join('')}<button class="tab sm" onclick="ACT.gbSet('all')">Hepsi</button></div>`+amtIn('gb_a','Ya da tutarı yaz');
  h+=sec(casN())+`<div class="tabs wrap"><button class="tab sm" onclick="ACT.rulet()">🎡 Rulet (2×)</button><button class="tab sm" onclick="ACT.bj()">🃏 Blackjack (2×)</button><button class="tab sm" onclick="ACT.slot()">🎰 Slot (10×)</button></div>`;
  h+=sec('At yarışı')+`<div class="tabs wrap">${[['Rüzgar','2,3'],['Karayel','3,8'],['Gökbörü','6'],['Sisli Gece','11']].map(([n,o],i)=>`<button class="tab sm" onclick="ACT.horse(${i})">🏇 ${n} · ${o}</button>`).join('')}</div>`;
  h+=sec('Maç bahsi')+`<div class="tabs wrap">${[['Ev sahibi','1,85'],['Beraberlik','3,4'],['Deplasman','4,1']].map(([n,o],i)=>`<button class="tab sm" onclick="ACT.match(${i})">⚽ ${n} · ${o}</button>`).join('')}</div>`;return h}
