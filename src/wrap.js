@@ -1,11 +1,11 @@
 /* ============ Yıl sonu özeti (Wrapped): en çok dinlenen şarkılar, gelir, takipçi, şöhret ============ */
-const WRAP_CSS=`.wrap{border-radius:18px;padding:16px 14px;color:#fff;background:linear-gradient(160deg,#1a0b2e 0%,#5b1fa6 45%,#ff4fa3 100%);text-align:left;position:relative;overflow:hidden}
-.wrap:before{content:'';position:absolute;inset:-40%;background:radial-gradient(circle at 70% 20%,rgba(255,255,255,.18),transparent 40%),radial-gradient(circle at 20% 80%,rgba(255,230,0,.18),transparent 40%);pointer-events:none}
-.wrap *{position:relative}.wrap .wy{font:900 13px/1 var(--cond);letter-spacing:.2em;opacity:.8;text-transform:uppercase}.wrap h3{margin:4px 0 10px;font-size:22px;line-height:1.1}
-.wrap .wbig{font:900 34px/1 var(--cond);letter-spacing:.02em;margin:2px 0}.wrap .wsm{font-size:12px;opacity:.85;margin-bottom:10px}
-.wrap .wl{background:rgba(0,0,0,.28);border-radius:12px;padding:8px 10px;margin:6px 0}.wrap .wl div{display:flex;justify-content:space-between;gap:8px;font-size:13px;padding:3px 0;border-bottom:1px solid rgba(255,255,255,.08)}.wrap .wl div:last-child{border:0}
-.wrap .wl b{font-family:var(--cond);letter-spacing:.03em;white-space:nowrap}.wrap .wg{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:8px}.wrap .wg div{background:rgba(255,255,255,.12);border-radius:10px;padding:7px 9px;font-size:11px;opacity:.95}.wrap .wg b{display:block;font:900 17px/1.2 var(--cond)}
-.wrap .wq{font-size:12px;font-style:italic;opacity:.9;margin-top:10px}`;
+const WRAP_CSS=`.sh-b{overflow-x:hidden}.wrp{border-radius:18px;padding:16px 14px;color:#fff;background:linear-gradient(160deg,#1a0b2e 0%,#5b1fa6 45%,#ff4fa3 100%);text-align:left;position:relative;overflow:hidden}
+.wrp:before{content:'';position:absolute;inset:-40%;background:radial-gradient(circle at 70% 20%,rgba(255,255,255,.18),transparent 40%),radial-gradient(circle at 20% 80%,rgba(255,230,0,.18),transparent 40%);pointer-events:none}
+.wrp *{position:relative}.wrp .wy{font:900 13px/1 var(--cond);letter-spacing:.2em;opacity:.8;text-transform:uppercase}.wrp h3{margin:4px 0 10px;font-size:22px;line-height:1.1}
+.wrp .wbig{font:900 34px/1 var(--cond);letter-spacing:.02em;margin:2px 0}.wrp .wsm{font-size:12px;opacity:.85;margin-bottom:10px}
+.wrp .wl{background:rgba(0,0,0,.28);border-radius:12px;padding:8px 10px;margin:6px 0}.wrp .wl div{display:flex;justify-content:space-between;gap:8px;font-size:13px;padding:3px 0;border-bottom:1px solid rgba(255,255,255,.08)}.wrp .wl div:last-child{border:0}
+.wrp .wl b{font-family:var(--cond);letter-spacing:.03em;white-space:nowrap}.wrp .wg{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:8px}.wrp .wg div{background:rgba(255,255,255,.12);border-radius:10px;padding:7px 9px;font-size:11px;opacity:.95}.wrp .wg b{display:block;font:900 17px/1.2 var(--cond)}
+.wrp .wq{font-size:12px;font-style:italic;opacity:.9;margin-top:10px}`;
 if(!document.getElementById('wrapcss')){const st=document.createElement('style');st.id='wrapcss';st.textContent=WRAP_CSS;document.head.appendChild(st)}
 function wrapBuild(){const age=S.age,rel=released();const top=rel.map(s=>{const h=(s.hy||[]).find(x=>x.age===age);return {t:s.t,st:h?h.st:0,r:h?h.r:null,gr:h?h.gr:null,nw:s.ra===age}}).filter(x=>x.st>0).sort((a,b)=>b.st-a.st);
  const streams=S.yr.streams||0,rels=rel.filter(s=>s.ra===age).length,alb=(S.albums||[]).filter(a=>a.age===age||a.ra===age).length;
@@ -17,7 +17,7 @@ function wrapHTML(w,inModal){const C=CTRY[w.ct]||CTRY.tr;
  const topH=w.top.length?`<div class="wl">${w.top.map((x,i)=>`<div><span>${i+1}. ${esc(x.t)}${x.nw?' <small>yeni</small>':''}</span><b>${num(x.st)}</b></div>`).join('')}</div>`:note('Bu yıl hiç dinlenmen olmadı.');
  const incH=`<div class="wl">${[['🎧 Streaming (net)',w.inc.stream],['🎤 Konserler',w.inc.gig],['📣 Reklam & marka',w.inc.brand],['💿 Albüm',w.inc.alb],['🎼 Telif kuruluşu',w.inc.pro]].filter(x=>x[1]>0).map(x=>`<div><span>${x[0]}</span><b>${fmtS(x[1])}</b></div>`).join('')||'<div><span>Müzik geliri yok</span><b>—</b></div>'}</div>`;
  const quote=w.streams>5e7?'Bu yıl senin yılındı. Dünya seni dinledi.':w.streams>5e6?'Milyonlar seni dinledi. Sahne artık senin.':w.streams>5e5?'Kulaktan kulağa yayılıyorsun.':w.streams>0?'Her büyük hikâye küçük başlar.':'Stüdyoya dönme vakti.';
- return `<div class="wrap"><div class="wy">${C.fl} ${esc(w.city||C.n)} · ${w.age} yaş</div><h3>${esc(S.stage||S.first)}, işte yılın özeti</h3>
+ return `<div class="wrp"><div class="wy">${C.fl} ${esc(w.city||C.n)} · ${w.age} yaş</div><h3>${esc(S.stage||S.first)}, işte yılın özeti</h3>
  <div class="wsm">Toplam dinlenme</div><div class="wbig">${num(w.streams)}</div><div class="wsm">≈ ${num(w.lis)} farklı dinleyici · ${w.min>=6e7?Math.round(w.min/6e7)+' Mn saat':num(Math.round(w.min/60))+' saat'} müzik${w.viral?` · ${w.viral} viral şarkı`:''}</div>
  <div class="wsm" style="font-weight:800;opacity:1">🏆 En çok dinlenen şarkıların</div>${topH}
  <div class="wsm" style="font-weight:800;opacity:1;margin-top:8px">💰 Müzikten kazandıkların · ${fmtS(w.tot)}</div>${incH}
