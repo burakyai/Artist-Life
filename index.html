@@ -253,7 +253,7 @@ body.monob .tab.on,body[data-th="monokrom"] .tab.on,body[data-th="monokrom"] .bt
 <div class="mod" id="confirm"><div class="box"><h2>Yeni hayat?</h2><p>Mevcut hayatın silinecek ve baştan başlayacaksın.</p><button class="btn" onclick="$('confirm').classList.remove('on');restart()">Evet, baştan başla</button><button class="btn sec" onclick="$('confirm').classList.remove('on')">Vazgeç</button></div></div>
 <script>
 try{if('serviceWorker' in navigator&&/github\.io$/.test(location.hostname))navigator.serviceWorker.register('sw.js').catch(()=>{})}catch(e){}
-const APPV='2026.11.02-061328';
+const APPV='2026.11.02-061826';
 (function(){try{if(!/github\.io$/.test(location.hostname))return;const chk=()=>fetch(location.pathname+'?nc='+Date.now(),{cache:'no-store'}).then(r=>r.text()).then(t=>{const m=t.match(/const APPV='([^']+)'/);if(m&&m[1]!==APPV&&!sessionStorage.getItem('upd'+m[1])){sessionStorage.setItem('upd'+m[1],'1');location.replace(location.pathname+'?v='+encodeURIComponent(m[1]))}}).catch(()=>{});chk();document.addEventListener('visibilitychange',()=>{if(!document.hidden)chk()})}catch(e){}})();
 /* ============ Yardımcılar ============ */
 const $=id=>document.getElementById(id);
@@ -3759,6 +3759,29 @@ function ecoYear(){const out={};Object.keys(CTRY).forEach(ct=>{const P=ECOP[ct]|
  log(`${x.crash?'📉 Emlak piyasası çöktü!':'🏘'} ${CTRY[ct].fl} Bu yıl konut fiyatları ${pc(x.h)}, kiralar ${pc(x.r)}, sıfır araba fiyatları ${pc(x.c)}.${own.length?` Evlerinin toplam piyasa değeri: ${fmtS(ov)}.`:''}`,x.crash?'bad':'dim');S.ecoH=(S.ecoH||[]).concat({age:S.age,ct,...x}).slice(-30)}
 {const _yt=yearTick;yearTick=function(){_yt();if(S&&S.alive){try{ecoYear()}catch(e){console.error(e)}}}}
 {const _ei=extInit;extInit=function(){_ei();applyCountry(S.ct||'tr');(S.cars||[]).forEach(carB);(S.houses||[]).forEach(id=>{const h=HOUSES.find(x=>x.id===id);if(h&&!h.rent){S.hbuy=S.hbuy||{};if(S.hbuy[id]==null)S.hbuy[id]=h.p}})}}
+/* 5) Evleri kiraya verme: oturmadığın evler kiracıya, 3 ayda bir kira geliri (vergisi kesilir); emlakçıdan aldığın mülkler de dahil */
+const KYLD={tr:.05,us:.04,uk:.038,de:.035,kr:.03,fr:.035};
+const letable=()=>(S.houses||[]).map(id=>HOUSES.find(h=>h.id===id)).filter(h=>h&&!h.rent&&h.id!==S.house);
+function hRentQ(h){const e=eco(h.c||'tr');return Math.round(h.p*(KYLD[h.c||'tr']||.04)*(e.r/e.h)/4/1e3)*1e3}
+ACT.letAll=on=>{S.hlet=S.hlet||{};let n=0;letable().forEach(h=>{if(!!S.hlet[h.id]!==on){S.hlet[h.id]=on;n++}});let m=0;((S.re&&S.re.own)||[]).forEach(x=>{if(reT(x.t)[4]&&!!x.rent!==on){x.rent=on;m++}});
+ if(!n&&!m){toast(on?'Kiraya verilecek boş evin yok (oturduğun ev hariç).':'Kirada evin yok.');return}
+ const q=letable().filter(h=>S.hlet[h.id]).reduce((a,h)=>a+hRentQ(h),0);log(on?`🔑 ${n+m} mülkünü kiraya verdin.${q?` Evlerinden 3 ayda bir yaklaşık ${fmtS(q)} kira gelecek.`:''}`:`🔑 ${n+m} mülkünü kiracılardan boşalttın.`,on?'good':'dim');drawSheet()};
+ACT.let1=id=>{S.hlet=S.hlet||{};const h=HOUSES.find(x=>x.id===id);if(!h)return;if(id===S.house){toast('Oturduğun evi kiraya veremezsin; önce başka eve taşın.');return}S.hlet[id]=!S.hlet[id];log(S.hlet[id]?`🔑 ${h.n} (${h.loc}) kiraya verildi: 3 ayda ~${fmtS(hRentQ(h))}.`:`🔑 ${h.n} kiracıdan boşaltıldı.`,'dim');drawSheet()};
+function letQ(){if(!S.hlet)return;let g=0,miss=0;letable().forEach(h=>{if(!S.hlet[h.id])return;if(ch(.05)){miss++;return}g+=hRentQ(h)});Object.keys(S.hlet).forEach(id=>{if(!S.houses.includes(id)||id===S.house)delete S.hlet[id]});
+ if(g>0){const t=g*taxR(g),net=Math.round(g-t);S.money+=net;S.yr.rent=(S.yr.rent||0)+net;S.tot.all+=net;log(`🔑 Evlerinden kira geliri: ${fmtS(g)} (vergi ${fmtS(t)}) → net ${fmtS(net)}.${miss?` ${miss} kiracı bu 3 ay ödemedi.`:''}`,'good')}else if(miss)log(`🔑 ${miss} kiracın bu 3 ay kirayı ödemedi.`,'bad')}
+{const _aq=ageUpQ;ageUpQ=function(){if(S&&S.alive&&S.age>=18)try{letQ()}catch(e){console.error(e)}_aq()}}
+/* kirada olan eve taşınırsan kiracı çıkar */
+{const _h=ACT.house;ACT.house=id=>{_h(id);if(S.house===id&&S.hlet&&S.hlet[id]){delete S.hlet[id];log('🔑 Kiracı çıktı, evine taşındın.','dim')}}}
+function shLet(){S.hlet=S.hlet||{};const L=letable(),re=((S.re&&S.re.own)||[]).filter(x=>reT(x.t)[4]);const on=L.filter(h=>S.hlet[h.id]),q=on.reduce((a,h)=>a+hRentQ(h),0),reQ=re.filter(x=>x.rent).reduce((a,x)=>a+x.val*reT(x.t)[4]/4,0);
+ let h=`<div class="hero2"><small>3 ayda bir kira geliri (vergi öncesi)</small><div class="big">${fmtS(q+reQ)}</div><span>${on.length+re.filter(x=>x.rent).length} mülk kirada · ${L.length+re.length} mülk kiraya verilebilir</span></div>`;
+ h+=`<div class="two" style="margin:8px 0"><button class="btn" onclick="ACT.letAll(true)">🔑 Hepsini kiraya ver</button><button class="mini sec" onclick="ACT.letAll(false)">Hepsini boşalt</button></div>`;
+ h+=note('Oturduğun ev hariç bütün evlerin ve emlakçıdan aldığın mülkler kiraya verilir. Kira her 3 ayda kasana yatar, gelir vergisi kesilir. Kira getirisi ülkeye ve o yılki kira piyasasına göre değişir; ara sıra kiracı ödemeyebilir. Bakım masrafı sende kalır. Kiradaki bir eve taşınırsan kiracı çıkar.');
+ if(L.length)h+=sec('Evlerin')+L.map(x=>row(`ACT.let1('${x.id}')`,x.ic,x.n,`${CTRY[x.c||'tr'].fl} ${esc(x.loc)} · değeri ${fmtS(x.p)} · 3 ayda ~${fmtS(hRentQ(x))}`,S.hlet[x.id]?'✓ Kirada':'Boş')).join('');
+ if(re.length)h+=sec('Emlak yatırımların')+re.map(x=>row(`ACT.reRent(${x.id})`,'🏢',esc(x.n),`${esc(x.loc)} · 3 ayda ~${fmtS(x.val*reT(x.t)[4]/4)}`,x.rent?'✓ Kirada':'Boş')).join('');
+ if(!L.length&&!re.length)h+=note('Oturduğun ev dışında evin yok. Yeni bir ev alıp kiraya verebilirsin.');return h}
+{const _sh=shHayat;shHayat=function(){if(SUB&&SUB.t==='kira')return shLet();let h=_sh();if(SUB||(S.htab||'iliski')!=='varlik')return h;S.hlet=S.hlet||{};
+ const L=letable(),n=L.filter(x=>S.hlet[x.id]).length,r=row("sheet('hayat',{t:'kira',title:'Kiraya ver'})",'🔑','Evlerini kiraya ver',L.length?`${n}/${L.length} ev kirada · 3 ayda ~${fmtS(L.filter(x=>S.hlet[x.id]).reduce((a,x)=>a+hRentQ(x),0))}`:'Oturduğun ev dışında evin yok','›');
+ const k='✈️';const i=h.indexOf('Başka şehre ya da ülkeye taşın');if(i<0)return r+h;const j=h.indexOf('</button>',i)+9;return h.slice(0,j)+r+h.slice(j)}}
 actKeep();
 
 boot();
