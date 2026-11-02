@@ -253,7 +253,7 @@ body.monob .tab.on,body[data-th="monokrom"] .tab.on,body[data-th="monokrom"] .bt
 <div class="mod" id="confirm"><div class="box"><h2>Yeni hayat?</h2><p>Mevcut hayatın silinecek ve baştan başlayacaksın.</p><button class="btn" onclick="$('confirm').classList.remove('on');restart()">Evet, baştan başla</button><button class="btn sec" onclick="$('confirm').classList.remove('on')">Vazgeç</button></div></div>
 <script>
 try{if('serviceWorker' in navigator&&/github\.io$/.test(location.hostname))navigator.serviceWorker.register('sw.js').catch(()=>{})}catch(e){}
-const APPV='2026.11.02-054854';
+const APPV='2026.11.02-061328';
 (function(){try{if(!/github\.io$/.test(location.hostname))return;const chk=()=>fetch(location.pathname+'?nc='+Date.now(),{cache:'no-store'}).then(r=>r.text()).then(t=>{const m=t.match(/const APPV='([^']+)'/);if(m&&m[1]!==APPV&&!sessionStorage.getItem('upd'+m[1])){sessionStorage.setItem('upd'+m[1],'1');location.replace(location.pathname+'?v='+encodeURIComponent(m[1]))}}).catch(()=>{});chk();document.addEventListener('visibilitychange',()=>{if(!document.hidden)chk()})}catch(e){}})();
 /* ============ Yardımcılar ============ */
 const $=id=>document.getElementById(id);
@@ -1422,7 +1422,7 @@ function shBorsa(){const pv=portVal(),pc=Object.values(S.port).reduce((a,x)=>a+x
   ${hd?note(`Elinde ${hd.q.toLocaleString('tr-TR',{maximumFractionDigits:1})} lot · değer ${fmtS(hd.q*m.p)} · ${hd.q*m.p>=hd.c?'kâr':'zarar'} ${fmtS(hd.q*m.p-hd.c)}`):''}
   ${amtIn('st_'+x.id,'Tutar (₺)')}<div class="two"><button class="mini" onclick="ACT.buy('${x.id}',amtV('st_${x.id}'))">Al</button>${hd?`<button class="mini sec" onclick="ACT.sellAmt('${x.id}',amtV('st_${x.id}'))">Bu tutarda sat</button>`:'<span></span>'}</div>${hd?`<div class="tabs wrap" style="margin-top:6px"><button class="tab sm" onclick="ACT.sell('${x.id}',.5)">%50 sat</button><button class="tab sm" onclick="ACT.sell('${x.id}',1)">Tümünü sat</button></div>`:''}</div></div>`});return h}
 function shShop(){const t=(SUB&&SUB.tab)||'araba';let h=`<div class="tabs">${[['araba','Arabalar'],['saat','Saatler']].map(([k,n])=>`<button class="tab ${t===k?'on':''}" onclick="SUB={t:'shop',tab:'${k}',title:'Alışveriş'};drawSheet()">${n}</button>`).join('')}</div>`;
- if(t==='araba')CARS.forEach(c=>{const own=S.cars.includes(c.id);h+=row(`ACT.car('${c.id}')`,c.ic,c.n+(S.car===c.id?' · kullanıyorsun':''),`${fmtS(c.p)} · bakım ${fmtS(c.up)}/yıl · prestij +${c.pr}`,own?(S.car===c.id?'':'Kullan'):'Satın al')+(own?`<button class="mini red inl" onclick="ACT.sellCar('${c.id}')">Sat · ${fmtS(c.p*.65)}</button>`:'')});
+ if(t==='araba')CARS.forEach(c=>{const own=S.cars.includes(c.id);h+=row(`ACT.car('${c.id}')`,c.ic,c.n+(S.car===c.id?' · kullanıyorsun':''),(own&&typeof carVal==='function'?`Değeri ${fmtS(carVal(c.id))} (${fmtS(carB(c.id).buy)}'ye aldın) · bakım ${fmtS(c.up*carUpF(c.id))}/yıl · prestij +${c.pr}`:`${fmtS(c.p)} · bakım ${fmtS(c.up)}/yıl · prestij +${c.pr}`),own?(S.car===c.id?'':'Kullan'):'Satın al')+(own?`<button class="mini red inl" onclick="ACT.sellCar('${c.id}')">Sat · ${fmtS(typeof carVal==='function'?carVal(c.id):c.p*.65)}</button>`:'')});
  if(t==='saat'){h+=note('Koleksiyonundaki en değerli saat stil puanına eklenir.');WATCHES.forEach(w=>{const own=S.watches.includes(w.id);h+=row(`ACT.watch('${w.id}')`,'⌚',w.n,`${fmtS(w.p)} · ✨${w.st}`,own?'Koleksiyonda':'Satın al',own)})}
  return h}
 function shHouse(hid){const x=HOUSES.find(z=>z.id===hid),f=S.hup[hid]||[];let h=`<div class="card"><div class="ch"><b>${x.ic} ${x.n}</b><span class="pill">${x.loc}</span></div>${note(`${f.length}/${HFEAT.length} özellik eklendi`)}</div>`;
@@ -1567,8 +1567,8 @@ function quarterEnd(){
  PLAT.forEach(p=>S.pend[p.id]+=(b.net+b.tax)*(b.gross?b.pl[p.id].tl/b.gross:0));S.yr.stream+=b.net;S.yr.streams=(S.yr.streams||0)+total;S.yr.spo=(S.yr.spo||0)+pl.spo;S.tot.stream+=b.net;S.tot.all+=b.net;
  if(total>0)log(`Dijital gelir: ${num(total)} dinlenme → brüt ${fmtS(b.gross)}, net ${fmtS(b.net)} platform hesaplarında birikti.${S.contract&&b.rec>0?` (${fmtS(b.rec)} avans borcuna mahsup edildi)`:''}`);
  S.fol+=Math.max(0,total*.0025*(1-S.fol/4e7));
- let exp={yasam:0,ev:0,araba:0};if(S.age>=18){exp.yasam=(S.house?120000+S.fame*9000:40000+S.fame*4000)/4+(S.star?0:teamCost()/4)}
- S.houses.forEach(id=>{const h=HOUSES.find(x=>x.id===id);exp.ev+=(h.rent?(id===S.house?h.rent:0):h.up)/4});S.cars.forEach(id=>{const c=CARS.find(x=>x.id===id);if(c)exp.araba+=c.up/4});
+ let exp={yasam:0,ev:0,araba:0};if(S.age>=18){exp.yasam=(S.house?120000:40000)/4}
+ S.houses.forEach(id=>{const h=HOUSES.find(x=>x.id===id);exp.ev+=(h.rent?(id===S.house?h.rent:0):h.up)/4});S.cars.forEach(id=>{const c=CARS.find(x=>x.id===id);if(c)exp.araba+=c.up*carUpF(c.id)/4});
  b.exp=exp;S.money-=exp.yasam+exp.ev+exp.araba;
  if(S.money<0&&S.age>=18){const i=-S.money*.06;S.money-=i;add('happy',-3);S.debtY=(S.debtY||0)+i;if((S.q||0)===3){log(`Bu yıl borç yüzünden ${fmtS(S.debtY)} kredi kartı faizi ödedin. Kasanı artıya geçirmelisin.`,'bad');S.debtY=0}}
  S.lastY=b}
@@ -3089,7 +3089,7 @@ const _shH10=shHayat;shHayat=function(){const T=SUB&&SUB.t;featInit();if(FPAGES[
  return h+sec('Şöhret ve yaşam')+L('fame','⭐','Şöhret','Talk show, dergi kapağı, reklam, kitap, podcast')+L('fan','💜','Hayran kulübü',S.fc?`"${esc(S.fc.n)}" · ${num(S.fc.mem)} üye`:'Hayranlarına isim ver')+L('looks','🔥','Görünüş',`%${Math.round(S.looks)} · spor, diyet, bakım, estetik`)+
   L('sec','🛡','Güvenlik',SEC[S.sec||0][0])+L('lux','✈️','Lüks varlıklar',`${S.lux.length} varlık · jet, yat, açık artırma`)+(S.age>=18?L('gamb','🎰','Kumar',`Kumarhane, at yarışı, maç bahsi${S.gamb>40?' · ⚠️ bağımlılık':''}`):'')+L('law','⚖️','Hukuk',`${LAWR[S.lawyer||0][0]} · ${(S.cases||[]).length} dava`)+L('vak','🤝','Vakıf',S.vak?esc(S.vak.n):'Kendi vakfını kur')};
 const _aq10=ageUpQ;ageUpQ=function(){_aq10();if(!S||!S.alive)return;featInit();if(S.pod){const inc=Math.round(S.pod.subs*RF(3,6));income(inc,'brand');S.pod.subs=Math.round(S.pod.subs*RF(.97,1.06))}if(S.fc){S.fc.mem=Math.round(S.fc.mem*RF(1,1.05)+S.fol*.001);S.fc.love=clamp(S.fc.love-1)}};
-const _yt10=yearTick;yearTick=function(){_yt10();if(!S||!S.alive)return;featInit();let c=SEC[S.sec][1]+LAWR[S.lawyer][1];S.lux.forEach(x=>{if(x.k==='arac'){c+=x.val*x.up;x.val=Math.round(x.val*.92)}else x.val=Math.round(x.val*RF(.95,1.15));add('happy',1)});if(c>0){S.money-=c;log(`Yıllık giderler: güvenlik, avukat ve lüks varlık bakımı ${fmtS(c)}.`,'dim')}
+const _yt10=yearTick;yearTick=function(){_yt10();if(!S||!S.alive)return;featInit();S.lux.forEach(x=>{if(x.k==='arac')x.val=Math.round(x.val*.92);else x.val=Math.round(x.val*RF(.95,1.15));add('happy',1)});
  if(S.age>40)S.looks=clamp(S.looks-R(0,2));S.gamb=Math.max(0,S.gamb-5);if(S.vak){S.vak.rep=clamp(S.vak.rep-2);if(S.vak.rep>50)add('happy',3)}};
 const _ei10=extInit;extInit=function(){_ei10();featInit()};
 const _inh10=inherit;inherit=function(id){const P=S;_inh10(id);if(S&&S!==P){S.fc=null;S.pod=null;S.sec=0;S.lawyer=0;S.cases=[];S.gamb=0;S.looks=R(40,75);S.fm={};save();render()}};
@@ -3462,7 +3462,7 @@ function mkLoan(P,n){const r=loanR(),i=r/4,inst=Math.round(P*i/(1-Math.pow(1+i,-
 const debt=()=>(S.loans||[]).reduce((a,l)=>a+l.bal+l.od,0);
 function assets(){let a=0;const T=g=>{try{const v=g();if(isFinite(v))a+=Math.max(0,v)}catch(e){}};
  T(()=>S.money);T(()=>S.bank);T(()=>S.gv||0);T(()=>(S.vad||[]).reduce((x,d)=>x+d.amt,0));T(()=>FUNDS.reduce((x,f)=>x+fVal(f.id),0));T(()=>portVal());
- T(()=>(S.houses||[]).reduce((x,id)=>{const h=HOUSES.find(y=>y.id===id);return x+(h&&!h.rent?h.p*.9:0)},0));T(()=>(S.cars||[]).reduce((x,id)=>{const c=CARS.find(y=>y.id===id);return x+(c?c.p*.6:0)},0));
+ T(()=>(S.houses||[]).reduce((x,id)=>{const h=HOUSES.find(y=>y.id===id);return x+(h&&!h.rent?h.p*.9:0)},0));T(()=>(S.cars||[]).reduce((x,id)=>{const c=CARS.find(y=>y.id===id);return x+(c?carVal(id):0)},0));
  T(()=>S.lab?labValue():0);['film','rest'].forEach(t=>T(()=>{const C=coGet(t);return C?coValue(t)*(C.ipo?C.ipo.mine/IPO_N:1):0}));return Math.round(a)}
 const netW=()=>assets()-debt();
 const limMul=()=>.15+Math.max(0,S.cscore-600)/1300*.45;
@@ -3732,10 +3732,33 @@ const folK=f=>.6*Math.min(1,Math.pow(5e4/Math.max(5e4,f),.28));
 function folDamp(){if(S.star){S._f0=S.fol;return}const f0=S._f0==null?S.fol:S._f0,g=S.fol-f0;if(g>0){S.fol=Math.round(f0+g*folK(f0));calcFame()}S._f0=S.fol}
 {const _aq=ageUpQ;ageUpQ=function(){if(S&&S.alive)folDamp();_aq();if(S&&S.alive)folDamp()}}
 {const _yt=yearTick;yearTick=function(){if(S&&!S.star&&S.genre&&S.age>=16){const rel=released().filter(s=>s.ra===S.age).length,loss=rel?.03:.08;const l=Math.round(S.fol*loss);if(l>0){S.fol-=l;S._f0=S.fol;calcFame();log(`📉 Yıl içinde ${num(l)} takipçi kaybettin${rel?'':' (hiç şarkı çıkarmadın)'}.`,'dim')}}_yt()}}
-/* 3) Ünlü olmanın masrafı: menajer, PR, stilist, asistan, şoför, güvenlik, kuaför — şöhretle büyür */
-function teamCost(){if(!S||S.age<18)return 0;const f=S.fame||0;if(f<40)return 0;return Math.round(Math.pow(Math.max(0,f-35)/10,2.8)*170000/1e4)*1e4}
-const TEAMN=f=>f>=85?'menajer, PR ajansı, stilist, asistan, şoför, güvenlik ekibi, kuaför-makyöz ve yol ekibi':f>=65?'menajer, PR, stilist, asistan, şoför ve güvenlik':f>=45?'menajer, stilist ve asistan':'menajer ve stilist';
-{const _yt=yearTick;yearTick=function(){if(S&&S.alive&&!S.star&&S.age>=18&&teamCost()>0)log(`💼 Ekip ve ünlü yaşam giderleri (${TEAMN(S.fame)}) bu yıl toplam ${fmtS(teamCost())} tuttu.`,'dim');_yt()}}
+/* 3) Sahip olduğun her şeyin 3 aylık gideri: yaşam, ev, araba, jet/yat/helikopter bakımı, sanat-mücevher sigortası, güvenlik, avukat, ekip maaşları */
+function upkeepQ(){featInit&&featInit();const lux=(S.lux||[]).reduce((a,x)=>a+x.val*(x.k==='arac'?x.up:.01),0)/4,sec=(SEC[S.sec||0][1]+LAWR[S.lawyer||0][1])/4;return {lux:Math.round(lux),sec:Math.round(sec)}}
+function teamNow(){if(!S.team||typeof TEAM==='undefined')return 0;return Object.keys(TEAM).filter(k=>S.team[k]).reduce((a,k)=>a+FS(TEAM[k][3]),0)}
+{const _aq=ageUpQ;ageUpQ=function(){if(!S||!S.alive)return _aq();const u=upkeepQ(),tm=S.star?0:teamNow();if(!S.star)S.money-=u.lux+u.sec;_aq();if(!S||!S.alive||S.age<18)return;
+ const e=(S.lastY&&S.lastY.exp)||{yasam:0,ev:0,araba:0},parts=[['yaşam',e.yasam],['ev',e.ev],['araba',e.araba],['jet/yat bakımı ve sigorta',S.star?0:u.lux],['güvenlik ve avukat',S.star?0:u.sec],['ekip maaşları',tm]].filter(x=>x[1]>=1),t=parts.reduce((a,x)=>a+x[1],0);
+ if(t>0){S.qOut={t,parts,age:S.age,q:S.q};log(`🧾 3 aylık giderler ${fmtS(t)}: ${parts.map(x=>x[0]+' '+fmtS(x[1])).join(' · ')}`,'dim')}}}
+/* 4) Yaşayan ekonomi: ülkelere göre konut ve kira endeksi, yeni araba fiyatları; arabaların değer kaybı ve yaşlandıkça artan bakım */
+const ECOP={tr:{h:[.07,.13],r:[.08,.07],c:[.04,.06]},us:{h:[.04,.07],r:[.035,.03],c:[.025,.03]},uk:{h:[.035,.07],r:[.04,.03],c:[.025,.03]},de:{h:[.03,.06],r:[.03,.025],c:[.025,.03]},kr:{h:[.04,.09],r:[.03,.03],c:[.02,.03]},fr:{h:[.03,.06],r:[.03,.025],c:[.025,.03]}};
+function eco(ct){S.eco=S.eco||{};if(!S.eco[ct])S.eco[ct]={h:1,r:1,c:1};return S.eco[ct]}
+const gaussE=()=>{let u=0,v=0;while(!u)u=Math.random();while(!v)v=Math.random();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v)};
+function ecoApply(){if(!S)return;HOUSES.forEach(h=>{if(h.p0==null){h.p0=h.p;h.up0=h.up;h.rent0=h.rent}const e=eco(h.c||'tr');h.p=Math.round(h.p0*e.h/1e4)*1e4;h.up=Math.round(h.up0*e.h/1e3)*1e3;h.rent=Math.round(h.rent0*e.r/1e3)*1e3})}
+{const _ac=applyCountry;applyCountry=function(ct){_ac(ct);if(!S)return;const e=eco(ct||'tr');CARS.forEach(c=>{c.p=Math.round(c.p*e.c/1e4)*1e4;c.up=Math.round(c.up*e.c/1e3)*1e3});ecoApply()}}
+/* araba değeri: ilk yıl %15, sonra her yıl ~%9 düşer; pahalı arabalar 20 yaşından sonra klasikleşip değer kazanır */
+function carB(id){S.carB=S.carB||{};const c=CARS.find(x=>x.id===id);if(!S.carB[id]&&c)S.carB[id]={a:S.age,buy:c.p};return S.carB[id]}
+function carVal(id){const c=CARS.find(x=>x.id===id),b=carB(id);if(!c||!b)return 0;const y=Math.max(0,S.age-b.a);let v=b.buy*(y<1?.85:.85*Math.pow(.91,y-1));if(b.buy>=1e7&&y>=20)v=b.buy*.85*Math.pow(.91,19)*Math.pow(1.05,y-19);return Math.round(Math.max(v,b.buy*.05)/1e3)*1e3}
+function carUpF(id){const b=(S.carB||{})[id];const y=b?Math.max(0,S.age-b.a):0;return 1+Math.min(1.5,y*.06)}
+{const _c=ACT.car;ACT.car=id=>{const had=S.cars.includes(id);_c(id);if(!had&&S.cars.includes(id)){const c=CARS.find(x=>x.id===id);S.carB=S.carB||{};S.carB[id]={a:S.age,buy:c.p}}}}
+ACT.sellCar=id=>{const c=CARS.find(x=>x.id===id),b=carB(id),v=carVal(id);S.cars=S.cars.filter(x=>x!==id);if(S.car===id)S.car=S.cars[0]||null;S.money+=v;if(S.carB)delete S.carB[id];log(`${c.n} satıldı: ${fmtS(v)} (${fmtS(b.buy)}'ye almıştın, ${Math.max(0,S.age-b.a)} yıl kullandın).`);sheet('hayat')};
+/* ev alış fiyatını sakla, satışta kâr/zararı göster */
+{const _h=ACT.house;ACT.house=id=>{const had=S.houses.includes(id);_h(id);if(!had&&S.houses.includes(id)){const h=HOUSES.find(x=>x.id===id);if(!h.rent){S.hbuy=S.hbuy||{};S.hbuy[id]=h.p}}}}
+{const _sh=ACT.sellHouse;ACT.sellHouse=id=>{const h=HOUSES.find(x=>x.id===id),bp=(S.hbuy||{})[id];_sh(id);if(!S.houses.includes(id)&&h&&!h.rent&&bp){const d=h.p*.9-bp;log(`🏠 ${h.n}: ${fmtS(bp)}'ye almıştın, piyasa değeri ${fmtS(h.p)}. ${d>=0?'Kâr':'Zarar'}: ${fmtS(Math.abs(d))}.`,d>=0?'good':'bad');delete S.hbuy[id]}}}
+function ecoYear(){const out={};Object.keys(CTRY).forEach(ct=>{const P=ECOP[ct]||ECOP.us,e=eco(ct),o={h:e.h,r:e.r,c:e.c};let dh=P.h[0]+P.h[1]*gaussE();if(ch(.06))dh=-RF(.08,.2);e.h=clamp(e.h*(1+dh),.4,50);e.r=clamp(e.r*(1+P.r[0]+P.r[1]*gaussE()),.4,50);e.c=clamp(e.c*(1+P.c[0]+P.c[1]*gaussE()),.5,50);out[ct]={h:e.h/o.h-1,r:e.r/o.r-1,c:e.c/o.c-1,crash:dh<-.07}});
+ applyCountry(S.ct||'tr');const ct=S.ct||'tr',x=out[ct],pc=v=>(v>=0?'+':'−')+'%'+Math.abs(Math.round(v*100));
+ const own=S.houses.map(id=>HOUSES.find(h=>h.id===id)).filter(h=>h&&!h.rent),ov=own.reduce((a,h)=>a+h.p,0);
+ log(`${x.crash?'📉 Emlak piyasası çöktü!':'🏘'} ${CTRY[ct].fl} Bu yıl konut fiyatları ${pc(x.h)}, kiralar ${pc(x.r)}, sıfır araba fiyatları ${pc(x.c)}.${own.length?` Evlerinin toplam piyasa değeri: ${fmtS(ov)}.`:''}`,x.crash?'bad':'dim');S.ecoH=(S.ecoH||[]).concat({age:S.age,ct,...x}).slice(-30)}
+{const _yt=yearTick;yearTick=function(){_yt();if(S&&S.alive){try{ecoYear()}catch(e){console.error(e)}}}}
+{const _ei=extInit;extInit=function(){_ei();applyCountry(S.ct||'tr');(S.cars||[]).forEach(carB);(S.houses||[]).forEach(id=>{const h=HOUSES.find(x=>x.id===id);if(h&&!h.rent){S.hbuy=S.hbuy||{};if(S.hbuy[id]==null)S.hbuy[id]=h.p}})}}
 actKeep();
 
 boot();

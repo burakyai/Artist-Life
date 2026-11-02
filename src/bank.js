@@ -13,7 +13,7 @@ function mkLoan(P,n){const r=loanR(),i=r/4,inst=Math.round(P*i/(1-Math.pow(1+i,-
 const debt=()=>(S.loans||[]).reduce((a,l)=>a+l.bal+l.od,0);
 function assets(){let a=0;const T=g=>{try{const v=g();if(isFinite(v))a+=Math.max(0,v)}catch(e){}};
  T(()=>S.money);T(()=>S.bank);T(()=>S.gv||0);T(()=>(S.vad||[]).reduce((x,d)=>x+d.amt,0));T(()=>FUNDS.reduce((x,f)=>x+fVal(f.id),0));T(()=>portVal());
- T(()=>(S.houses||[]).reduce((x,id)=>{const h=HOUSES.find(y=>y.id===id);return x+(h&&!h.rent?h.p*.9:0)},0));T(()=>(S.cars||[]).reduce((x,id)=>{const c=CARS.find(y=>y.id===id);return x+(c?c.p*.6:0)},0));
+ T(()=>(S.houses||[]).reduce((x,id)=>{const h=HOUSES.find(y=>y.id===id);return x+(h&&!h.rent?h.p*.9:0)},0));T(()=>(S.cars||[]).reduce((x,id)=>{const c=CARS.find(y=>y.id===id);return x+(c?carVal(id):0)},0));
  T(()=>S.lab?labValue():0);['film','rest'].forEach(t=>T(()=>{const C=coGet(t);return C?coValue(t)*(C.ipo?C.ipo.mine/IPO_N:1):0}));return Math.round(a)}
 const netW=()=>assets()-debt();
 const limMul=()=>.15+Math.max(0,S.cscore-600)/1300*.45;
