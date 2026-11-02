@@ -20,9 +20,9 @@ for i,n in enumerate(names):
     for yy in range(H):
         row=cand[yy]
         if yy<CUT: keep[yy]=row;continue
-        s=np.where(skin[yy])[0]
+        s=np.where(skin[yy,40:138])[0]+40 if n in('dread',) else np.where(skin[yy])[0]
         if len(s): 
-            L,Rr=s.min()-8,s.max()+8
+            L,Rr=(s.min()-3,s.max()+3) if n=='dread' else (s.min()-8,s.max()+8)
             m=row.copy();m[max(0,L):Rr+1]=False;keep[yy]=m
         else: keep[yy]=row if yy<150 else False
     # above cutoff remove components fully surrounded by skin (forehead lines): keep components touching bg
