@@ -43,6 +43,11 @@ for i,n in enumerate(names):
     for k,s_ in enumerate(sz,1):
         if s_<40:m[lab==k]=False
     # do not keep text; label strip at bottom: drop rows>178 inside face span already removed
+    if n=='orgu':
+        reg=nd.binary_fill_holes(nd.binary_closing(m,iterations=4))
+        reg[MAXY[n]:]=False
+        gap=reg&~m
+        a=a.copy();a[gap]=[48,31,23];m=reg
     al=(m*255).astype(float)
     if n=='dread':
         for yy in range(150,H): al[yy]*=max(0,1-(yy-150)/45)
