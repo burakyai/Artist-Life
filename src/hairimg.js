@@ -5,7 +5,7 @@ function himgFilter(c){const k=c.replace('#',''),n=parseInt(k,16),r=(n>>16)/255,
 Object.keys(HIMG).forEach(k=>{const H=HAIR3[k]||(HAIR3[k]={n:k,g:'x'});H.back=null;H.front=c=>{const nat=c.toLowerCase()==='#4b2f1f';const [d,f]=nat?['','']:himgFilter(c);return d+`<image href="${HIMG[k]}" x="28" y="0" width="44.25" height="50" preserveAspectRatio="none" ${f}/>`}});
 
 /* afro: kafa çevresinde boşluk kalmasın diye arkaya dolgu */
-HAIR3.afro.back=c=>`<ellipse cx="50" cy="22.4" rx="15.6" ry="14" fill="${shade(c,-12)}" stroke="none"/>`;
+HAIR3.afro.back=c=>`<path d="M29.6 20 Q30 2 50 1.6 Q70 2 70.4 20 Q70.8 34 64 41.6 Q58 44.8 50 44.6 Q42 44.8 36 41.6 Q29.2 34 29.6 20Z" fill="${shade(c,-14)}" stroke="${OL2}" stroke-width=".8"/>`;
 /* uzun dread kaldırıldı */
 delete HAIR3.locs;[HAIR_E,HAIR_K].forEach(L=>{const i=L.findIndex(x=>x[0]==='locs');if(i>=0)L.splice(i,1)});
 {const _ei=extInit;extInit=function(){_ei();if(S&&S.look&&S.look.hair==='locs')S.look.hair='dread'}}
