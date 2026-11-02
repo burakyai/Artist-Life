@@ -253,7 +253,7 @@ body.monob .tab.on,body[data-th="monokrom"] .tab.on,body[data-th="monokrom"] .bt
 <div class="mod" id="confirm"><div class="box"><h2>Yeni hayat?</h2><p>Mevcut hayatın silinecek ve baştan başlayacaksın.</p><button class="btn" onclick="$('confirm').classList.remove('on');restart()">Evet, baştan başla</button><button class="btn sec" onclick="$('confirm').classList.remove('on')">Vazgeç</button></div></div>
 <script>
 try{if('serviceWorker' in navigator&&/github\.io$/.test(location.hostname))navigator.serviceWorker.register('sw.js').catch(()=>{})}catch(e){}
-const APPV='2026.11.02-075627';
+const APPV='2026.11.02-080018';
 (function(){try{if(!/github\.io$/.test(location.hostname))return;const chk=()=>fetch(location.pathname+'?nc='+Date.now(),{cache:'no-store'}).then(r=>r.text()).then(t=>{const m=t.match(/const APPV='([^']+)'/);if(m&&m[1]!==APPV&&!sessionStorage.getItem('upd'+m[1])){sessionStorage.setItem('upd'+m[1],'1');location.replace(location.pathname+'?v='+encodeURIComponent(m[1]))}}).catch(()=>{});chk();document.addEventListener('visibilitychange',()=>{if(!document.hidden)chk()})}catch(e){}})();
 /* ============ Yardımcılar ============ */
 const $=id=>document.getElementById(id);
@@ -3935,6 +3935,10 @@ delete HAIR3.locs;[HAIR_E,HAIR_K].forEach(L=>{const i=L.findIndex(x=>x[0]==='loc
 /* kaldırılan modeller */
 ['curlfade','frofade'].forEach(k=>{delete HAIR3[k];[HAIR_E,HAIR_K].forEach(L=>{const i=L.findIndex(x=>x[0]===k);if(i>=0)L.splice(i,1)})});
 {const _ei=extInit;extInit=function(){_ei();if(S&&S.look&&['curlfade','frofade','locs'].includes(S.look.hair))S.look.hair='bukle'}}
+/* Kısa kesim + kontur: BitLife tarzı keskin çizgili kısa saç */
+HAIR3.crew.front=c=>{const[d,u]=h3grad(c);const hi=shade(c,46),lo=shade(c,-30);
+ return d+`<path d="M37 30 Q35.8 10.4 50 9.6 Q64.2 10.4 63 30 L60.4 30 L60.4 21.6 L59 20 L41 20 L39.6 21.6 L39.6 30Z" fill="${u}" stroke="${OL2}" stroke-width=".8" stroke-linejoin="round"/>`+
+  `<path d="M40.4 18.8 Q50 15.6 59.6 18.8 L59.2 19.5 Q50 16.8 40.8 19.5Z" fill="${lo}" opacity=".55"/><path d="M41.6 13.4 Q50 10.8 57 11.8" stroke="${hi}" stroke-width="1" fill="none" stroke-linecap="round" opacity=".55"/><path d="M39.6 24 L39.6 28.6 M60.4 24 L60.4 28.6" stroke="${lo}" stroke-width=".45" opacity=".6"/>`};
 
 boot();
 </script>
