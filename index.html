@@ -253,7 +253,7 @@ body.monob .tab.on,body[data-th="monokrom"] .tab.on,body[data-th="monokrom"] .bt
 <div class="mod" id="confirm"><div class="box"><h2>Yeni hayat?</h2><p>Mevcut hayatın silinecek ve baştan başlayacaksın.</p><button class="btn" onclick="$('confirm').classList.remove('on');restart()">Evet, baştan başla</button><button class="btn sec" onclick="$('confirm').classList.remove('on')">Vazgeç</button></div></div>
 <script>
 try{if('serviceWorker' in navigator&&/github\.io$/.test(location.hostname))navigator.serviceWorker.register('sw.js').catch(()=>{})}catch(e){}
-const APPV='2026.11.01-154455';
+const APPV='2026.11.02-041400';
 (function(){try{if(!/github\.io$/.test(location.hostname))return;const chk=()=>fetch(location.pathname+'?nc='+Date.now(),{cache:'no-store'}).then(r=>r.text()).then(t=>{const m=t.match(/const APPV='([^']+)'/);if(m&&m[1]!==APPV&&!sessionStorage.getItem('upd'+m[1])){sessionStorage.setItem('upd'+m[1],'1');location.replace(location.pathname+'?v='+encodeURIComponent(m[1]))}}).catch(()=>{});chk();document.addEventListener('visibilitychange',()=>{if(!document.hidden)chk()})}catch(e){}})();
 /* ============ Yardımcılar ============ */
 const $=id=>document.getElementById(id);
@@ -2805,7 +2805,7 @@ function shMove(){const cur=ctId();let h=note('Taşındığın ülkede para biri
  Object.entries(CTRY).forEach(([k,C])=>{h+=`<div class="card"><div class="ch"><b>${C.fl} ${C.n}</b><span class="pill">${C.cur} · dinlenme ×${String(C.stream).replace('.',',')} · pazar ×${String(C.market).replace('.',',')}</span></div>${note(C.taxD+(C.carF!==1?` Araçlar Türkiye'ye göre %${Math.round((1-C.carF)*100)} daha ucuz.`:''))}<div class="tabs wrap">${C.cities.map(c=>`<button class="tab sm ${k===cur&&S.city===c[0]?'on':''}" onclick="ACT.moveTo('${k}','${c[0].replace(/'/g,"\\'")}')">${c[0]}${c[2]!=null&&k==='us'?` · %${(c[2]*100).toFixed(1).replace('.0','').replace('.',',')}`:''}</button>`).join('')}</div>${note(k===cur?'Şu an buradasın. Şehir değiştir: 1 hak.':'Uluslararası taşınma: 2 hak.')}</div>`});return h}
 /* ---------- Karakter oluşturma: ülke ve şehir ---------- */
 const _dc7=drawCreate;drawCreate=function(){if(CR&&!CR.ct){CR.ct='tr';CR.city='İstanbul'}_dc7();if(!CR)return;if(!CR.ct){CR.ct='tr';CR.city='İstanbul'}const w=document.querySelector('#create .names');if(!w)return;const C=CTRY[CR.ct];
- w.insertAdjacentHTML('afterend',`<div class="crct"><div class="tabs">${Object.entries(CTRY).map(([k,c])=>`<button class="tab ${CR.ct===k?'on':''}" onclick="crCt('${k}')">${c.fl} ${c.n}</button>`).join('')}</div><select class="inp" onchange="CR.city=this.value">${C.cities.map(c=>`<option ${CR.city===c[0]?'selected':''}>${c[0]}</option>`).join('')}</select></div>`)};
+ w.insertAdjacentHTML('afterend',`<div class="crct"><div class="tabs wrap">${Object.entries(CTRY).map(([k,c])=>`<button class="tab ${CR.ct===k?'on':''}" onclick="crCt('${k}')">${c.fl} ${c.n}</button>`).join('')}</div><select class="inp" onchange="CR.city=this.value">${C.cities.map(c=>`<option ${CR.city===c[0]?'selected':''}>${c[0]}</option>`).join('')}</select></div>`)};
 function crCt(k){applyCountry(k);CR.ct=k;CR.city=CTRY[k].cities[0][0];CR.first=pick(CR.g==='k'?NM_K:NM_E);CR.last=pick(SURN);drawCreate()}
 const _nl7=newLife;newLife=function(c){const ct=c.ct||'tr',city=c.city||CTRY[ct].cities[0][0];applyCountry(ct);_nl7(c);S.ct=ct;S.city=city;applyCountry(ct);const cl=CTRY[ct].cities.find(x=>x[0]===city)||CTRY[ct].cities[0];
  S.log.forEach(y=>(y.it||[]).forEach(it=>{if(typeof it.t==='string')it.t=it.t.replace("İstanbul'da dünyaya geldin",cl[1]+' dünyaya geldin')}));save();render()};
@@ -3020,7 +3020,7 @@ function shLux(){if(!S.lots||S.lotY!==S.age)lotsGen();let h='';if(S.lux.length){
  h+=sec('Açık artırma')+note('Sanat eserleri ve efsane enstrümanlar yıllar içinde değer kazanabilir. Yüksek teklif kazanma şansını artırır.');S.lots.forEach(l=>h+=`<div class="card"><div class="ch"><b>${l.ic} ${esc(l.n)}</b><span class="pill">tahmini ${fmtS(l.est)}</span></div><div class="tabs wrap"><button class="tab sm" onclick="ACT.bid(${l.id},1)">Tahmini fiyat</button><button class="tab sm" onclick="ACT.bid(${l.id},1.3)">+%30</button><button class="tab sm" onclick="ACT.bid(${l.id},1.6)">+%60</button></div></div>`);return h}
 const _stil8=stil;stil=function(){return _stil8()+Math.round(((S.looks||50)-50)/8)+(S.lux||[]).filter(x=>x.k==='arac').length*2};
 /* ---------- 7. Kumar ---------- */
-const casN=()=>({tr:"Kıbrıs'taki kumarhane",us:'Las Vegas',uk:'Londra kumarhanesi'}[(S.ct||'tr')]);
+const CASN={tr:"Kıbrıs'taki kumarhane",us:'Las Vegas',uk:'Londra kumarhanesi',de:'Baden-Baden kumarhanesi',kr:'Kangwon Land kumarhanesi',fr:'Monte Carlo kumarhanesi'};const casN=()=>CASN[(S.ct||'tr')]||CASN.tr;
 let GBET=0;
 const gbV=()=>{const v=amtV('gb_a');if(v)GBET=v;return GBET};
 ACT.gbSet=v=>{GBET=v==='all'?Math.max(0,Math.floor(S.money)):Math.round(v);drawSheet()};
@@ -3554,7 +3554,7 @@ STOCKS.forEach(x=>{if(!x.ex)x.ex=['ALTN','KRPT'].includes(x.id)||(typeof LSTK!==
 [{id:'SKYW',n:'SkyWave Networks',mu:.13,sg:.3,ex:'us'},{id:'LMTR',n:'Liberty Motors',mu:.09,sg:.28,ex:'us'},{id:'CRNT',n:'Current Energy',mu:.11,sg:.35,ex:'us'},{id:'STRM',n:'StreamCo Media',mu:.12,sg:.33,ex:'us'},{id:'PCFB',n:'Pacific Bancorp',mu:.07,sg:.18,ex:'us'},{id:'NOVX',n:'NovaX Biotech',mu:.16,sg:.5,ex:'us'},
  {id:'CRWN',n:'Crown Telecom',mu:.06,sg:.16,ex:'uk'},{id:'ALBN',n:'Albion Bank',mu:.07,sg:.2,ex:'uk'},{id:'NRTH',n:'Northline Rail',mu:.05,sg:.15,ex:'uk'},{id:'SOHO',n:'Soho Media Group',mu:.1,sg:.3,ex:'uk'},{id:'WSTR',n:'Westerly Energy',mu:.09,sg:.3,ex:'uk'},{id:'KNGS',n:'Kingsway Retail',mu:.06,sg:.22,ex:'uk'}].forEach(x=>{if(!STOCKS.some(s=>s.id===x.id))STOCKS.push(x)});
 const stEx=x=>x.ex||(x.xs?(x.ct||'tr'):'tr');
-const _shB20=shBorsa;shBorsa=function(){stkInit();const ct=S.ct||'tr',all=STOCKS.slice(),vis=all.filter(x=>stEx(x)===ct||stEx(x)==='global'||S.port[x.id]);STOCKS.splice(0,STOCKS.length,...vis.map(x=>stEx(x)!==ct&&stEx(x)!=='global'?{...x,n:x.n+' · '+({tr:'🇹🇷',us:'🇺🇸',uk:'🇬🇧'}[stEx(x)])+' yurt dışı'}:x));let h;try{h=_shB20()}finally{STOCKS.splice(0,STOCKS.length,...all)}
+const _shB20=shBorsa;shBorsa=function(){stkInit();const ct=S.ct||'tr',all=STOCKS.slice(),vis=all.filter(x=>stEx(x)===ct||stEx(x)==='global'||S.port[x.id]);STOCKS.splice(0,STOCKS.length,...vis.map(x=>stEx(x)!==ct&&stEx(x)!=='global'?{...x,n:x.n+' · '+(CTRY[stEx(x)]||{fl:'🌍'}).fl+' yurt dışı'}:x));let h;try{h=_shB20()}finally{STOCKS.splice(0,STOCKS.length,...all)}
  return `<div class="tbar"><span>${EXN[ct]}</span><b>${vis.filter(x=>stEx(x)===ct).length} şirket</b></div>`+note('Başka ülkeye taşınınca o ülkenin borsası açılır. Yurt dışındaki eski hisselerini her yerden satabilirsin ama yeni alım sadece bulunduğun ülkenin borsasından ve küresel plak şirketlerinden yapılır.')+h.replace('Fiyatlar her yıl sonunda değişir.','Fiyatlar her 3 ayda değişir.')};
 const _buy20=ACT.buy;ACT.buy=(id,x)=>{const s=STOCKS.find(z=>z.id===id);if(s&&stEx(s)!=='global'&&stEx(s)!==(S.ct||'tr')){toast('Bu hisse başka ülkenin borsasında. Almak için o ülkede olmalısın.');return}_buy20(id,x)};
 /* satılan şirketin borsası: satıldığı ülke */
@@ -3567,6 +3567,160 @@ const _shAcq20=shAcq;shAcq=function(){const X=l2();if((X.acqCt||'tr')!==(S.ct||'
 const RIV2={us:['Jay Rivers','Kayla Storm','Lil Vega','Marcus Gold','Nova Blake','Tyler Kane','Skye Monroe','Dre Carter','Aaliyah Rose','King Malik','Jade West','Cole Harper'],uk:['Theo Black','Ruby Lane','Kai Mercer','Poppy Grace','Reece Knight','Isla Moon','Jamal Stone','Freya Hart','Callum Rae','Niamh Blue','Archie Vale','Millie Fox']};
 const _ri20=rivInit;rivInit=function(){const ct=S.ct||'tr';if(S.rivals&&S.rivCt&&S.rivCt!==ct)S.rivals=null;if(S.rivals){S.rivCt=S.rivCt||ct;return}if(ct==='tr'){_ri20();S.rivCt='tr';return}
  const keep=ARTISTS2.slice();ARTISTS2.splice(0,ARTISTS2.length,...RIV2[ct]);try{_ri20();S.rivals.forEach(r=>{r.g=['Kayla Storm','Nova Blake','Skye Monroe','Aaliyah Rose','Jade West','Ruby Lane','Poppy Grace','Isla Moon','Freya Hart','Niamh Blue','Millie Fox'].includes(r.name)?'k':'e';r.look=randLook(r.g)})}finally{ARTISTS2.splice(0,ARTISTS2.length,...keep)}S.rivCt=ct;genChart()};
+actKeep();
+
+/* ============ Yeni ülkeler: Almanya, Güney Kore, Fransa — para birimi, vergi, banka, borsa, evler, isimler, şarkı adları ============ */
+Object.assign(CTRY,{
+ de:{n:'Almanya',fl:'🇩🇪',cur:'€',rate:49,stream:1.5,market:1.5,carF:.6,
+  cities:[['Berlin',"Berlin'de"],['Hamburg',"Hamburg'da"],['Münih',"Münih'te"],['Köln',"Köln'de"],['Frankfurt',"Frankfurt'ta"]],
+  tax:y=>y<12096?[0,'vergisiz dilim']:y<68480?[.3,'%14–42 kademeli']:y<277826?[.42,'%42 gelir vergisi']:[.45,'%45 gelir vergisi'],
+  taxD:'Gelir vergisi kademeli: €12 B\'ye kadar vergisiz, €68 B\'ye kadar %14\'ten %42\'ye yükselir, €278 B\'ye kadar %42, üstü %45. Yıl içinde sanatçı ödemelerinden %16 kesilir.'},
+ kr:{n:'Güney Kore',fl:'🇰🇷',cur:'₩',rate:.03,stream:1.2,market:1.3,carF:.5,
+  cities:[['Seul',"Seul'de"],['Busan',"Busan'da"],['Incheon',"Incheon'da"],['Daegu',"Daegu'da"]],
+  tax:y=>y<14e6?[.06,'%6 gelir vergisi']:y<50e6?[.15,'%15 gelir vergisi']:y<88e6?[.24,'%24 gelir vergisi']:y<150e6?[.35,'%35 gelir vergisi']:y<300e6?[.38,'%38 gelir vergisi']:y<500e6?[.4,'%40 gelir vergisi']:y<1e9?[.42,'%42 gelir vergisi']:[.45,'%45 gelir vergisi'],
+  taxD:'Gelir vergisi 8 kademeli: ₩14 Mn\'a kadar %6, ₩50 Mn\'a kadar %15, ₩88 Mn\'a kadar %24, ₩150 Mn\'a kadar %35, ₩300 Mn\'a kadar %38, ₩500 Mn\'a kadar %40, ₩1 Mr\'a kadar %42, üstü %45. Serbest sanatçı ödemelerinden yıl içinde sadece %3,3 kesilir; büyük fark yıl sonu beyannamesinde çıkar.'},
+ fr:{n:'Fransa',fl:'🇫🇷',cur:'€',rate:49,stream:1.35,market:1.3,carF:.65,
+  cities:[['Paris',"Paris'te"],['Marsilya',"Marsilya'da"],['Lyon',"Lyon'da"],['Nice',"Nice'te"],['Bordeaux',"Bordeaux'da"]],
+  tax:y=>y<11497?[0,'vergisiz dilim']:y<29315?[.11,'%11 gelir vergisi']:y<83823?[.3,'%30 gelir vergisi']:y<180294?[.41,'%41 gelir vergisi']:[.45,'%45 gelir vergisi'],
+  taxD:'Gelir vergisi kademeli: €11,5 B\'ye kadar vergisiz, €29 B\'ye kadar %11, €84 B\'ye kadar %30, €180 B\'ye kadar %41, üstü %45. Yıl içinde sanatçı ödemelerinden %15 kesilir.'}});
+Object.assign(NAMES,{
+ de:{e:['Lukas','Leon','Finn','Jonas','Max','Paul','Elias','Noah','Felix','Tim','Ben','Luca','Moritz','Niklas','Jan','Tom'],k:['Mia','Emma','Hannah','Lena','Leonie','Sophie','Lea','Anna','Lara','Marie','Lina','Nele','Johanna','Clara','Amelie','Luisa'],s:['Müller','Schmidt','Schneider','Fischer','Weber','Meyer','Wagner','Becker','Schulz','Hoffmann','Koch','Richter','Klein','Wolf','Neumann','Schwarz']},
+ kr:{e:['Min-jun','Seo-jun','Do-yun','Ji-ho','Ha-jun','Ye-jun','Si-woo','Ju-won','Jun-seo','Hyun-woo','Tae-yang','Ji-hoon','Dong-hyun','Sung-min','Ki-tae','Woo-jin'],k:['Seo-yeon','Ji-woo','Ha-eun','Min-seo','Ji-min','Su-a','Ye-rin','Chae-won','Da-eun','Yu-na','Ha-yoon','So-mi','Eun-ji','Na-rae','Ji-a','Hye-jin'],s:['Kim','Lee','Park','Choi','Jung','Kang','Cho','Yoon','Jang','Lim','Han','Oh','Seo','Shin','Kwon','Hwang']},
+ fr:{e:['Lucas','Hugo','Léo','Gabriel','Louis','Nathan','Jules','Théo','Enzo','Mathis','Noah','Tom','Raphaël','Arthur','Adam','Maël'],k:['Emma','Léa','Chloé','Manon','Camille','Inès','Louise','Jade','Zoé','Lina','Sarah','Juliette','Alice','Lola','Anaïs','Clara'],s:['Martin','Bernard','Dubois','Thomas','Robert','Richard','Petit','Durand','Leroy','Moreau','Simon','Laurent','Lefebvre','Michel','Garcia','Roux']}});
+['de','kr','fr'].forEach(k=>{NAMES[k].ae=NAMES[k].e;NAMES[k].ak=NAMES[k].k});
+/* vergi (tax.js) */
+Object.assign(BR,{de:[[12096,0],[17443,.14],[68480,.3],[277825,.42],[Infinity,.45]],kr:[[14e6,.06],[50e6,.15],[88e6,.24],[150e6,.35],[300e6,.38],[500e6,.4],[1e9,.42],[Infinity,.45]],fr:[[11497,0],[29315,.11],[83823,.3],[180294,.41],[Infinity,.45]]});
+Object.assign(CORP,{de:.3,kr:.21,fr:.25});Object.assign(WH,{de:.16,kr:.033,fr:.15});
+/* banka */
+Object.assign(BANKS,{de:['Rhein Bank','#1a3a8a','#2b6cb0'],kr:['Hanbit Bank','#0a6e5a','#16a085'],fr:['Banque Lumière','#1d3c8f','#7b3fb8']});
+Object.assign(RATES,{de:{loan:.07,dep:.015,vad:.03,gv:.025},kr:{loan:.06,dep:.02,vad:.035,gv:.03},fr:{loan:.065,dep:.015,vad:.03,gv:.025}});
+FUNDS.forEach(f=>{f.mu.de=f.mu.uk;f.mu.fr=f.mu.uk;f.mu.kr=f.mu.us});
+/* borsa */
+Object.assign(EXN,{de:'🇩🇪 Frankfurt Borsası (DAX)',kr:'🇰🇷 Kore Borsası (KOSPI)',fr:'🇫🇷 Paris Borsası (Euronext)'});
+[{id:'RHNB',n:'Rhein Bank AG',mu:.06,sg:.18,ex:'de'},{id:'AUTW',n:'Autowerk AG',mu:.08,sg:.25,ex:'de'},{id:'BRLN',n:'Berlin Tech SE',mu:.12,sg:.33,ex:'de'},{id:'NRDW',n:'Nordwind Energie',mu:.1,sg:.3,ex:'de'},{id:'MDMX',n:'MediaMax Gruppe',mu:.09,sg:.28,ex:'de'},{id:'HNSA',n:'Hansa Logistik',mu:.06,sg:.2,ex:'de'},
+ {id:'HANB',n:'Hanbit Electronics',mu:.11,sg:.3,ex:'kr'},{id:'SEOM',n:'Seoul Motors',mu:.08,sg:.26,ex:'kr'},{id:'KSTR',n:'K-Star Entertainment',mu:.14,sg:.42,ex:'kr'},{id:'GLXY',n:'Galaxy Chem',mu:.09,sg:.3,ex:'kr'},{id:'BSAN',n:'Busan Shipbuilding',mu:.07,sg:.28,ex:'kr'},{id:'NAVR',n:'Navi Web',mu:.13,sg:.36,ex:'kr'},
+ {id:'LUMB',n:'Banque Lumière',mu:.06,sg:.18,ex:'fr'},{id:'ELGN',n:'Élégance Luxe',mu:.1,sg:.26,ex:'fr'},{id:'PRSA',n:'Paris Aéro',mu:.08,sg:.3,ex:'fr'},{id:'VNCO',n:'Vinco Énergie',mu:.09,sg:.28,ex:'fr'},{id:'MDSN',n:'Média Seine',mu:.1,sg:.32,ex:'fr'},{id:'RDFR',n:'Rail de France',mu:.05,sg:.16,ex:'fr'}].forEach(x=>{if(!STOCKS.some(s=>s.id===x.id))STOCKS.push(x)});
+/* şirket satın alma ve rakipler */
+Object.assign(ACQN2,{de:['Rheinklang Records','Berlin Beats GmbH','Hansa Sound','Schwarzwald Music','Elbe Records','Alpen Tonstudio','Spree Music Group','Ruhrpott Records'],
+ kr:['Hangang Entertainment','Seoul Star Ent.','Blue Ocean Music','Namsan Records','K-Wave Entertainment','Gangnam Sound','Jeju Music House','Han River Ent.'],
+ fr:['Lumière Records','Seine Musique','Riviera Sound','Montmartre Records','Bastille Beats','Atlantique Music','Éclat Musique','Provence Records']});
+Object.assign(RIV2,{de:['Leon Krüger','Mia Stern','Finn Nacht','Lena Wolf','Jonas Blitz','Hannah Licht','Max Beton','Sophie Berg','Elias Falk','Lara Nova','Paul Donner','Nele Rose'],
+ kr:['Taeyang','Jisoo','Minho','Yuna','Ji-ho Kang','Haneul','Jiwoo','Seo-jun Park','Lee Haru','Kim Dahyun','Choi Jiho','Han Seol'],
+ fr:['Lucas Noir','Léa Lune','Hugo Soleil','Chloé Rivière','Théo Flamme','Manon Étoile','Enzo Ciel','Camille Rose','Jules Marbre','Inès Nuit','Gabriel Orage','Zoé Vague']});
+const RIVF2=new Set(['Mia Stern','Lena Wolf','Hannah Licht','Sophie Berg','Lara Nova','Nele Rose','Jisoo','Yuna','Haneul','Jiwoo','Lee Haru','Kim Dahyun','Han Seol','Léa Lune','Chloé Rivière','Manon Étoile','Camille Rose','Inès Nuit','Zoé Vague']);
+{const _ri=rivInit;rivInit=function(){const ct=S.ct||'tr',had=!!(S.rivals&&S.rivCt===ct);_ri();if(!had&&S.rivals&&['de','kr','fr'].includes(ct)){S.rivals.forEach(r=>{const g=RIVF2.has(r.name)?'k':'e';if(r.g!==g){r.g=g;r.look=randLook(g)}});genChart()}}}
+/* konser pazarları */
+if(!MARKETS.some(m=>m[0]==='fr'))MARKETS.push(['fr','Fransa','🇫🇷',35,1.3]);if(!MARKETS.some(m=>m[0]==='kr'))MARKETS.push(['kr','Güney Kore','🇰🇷',50,1.7]);
+/* evler */
+HOUSES.push({id:'de_apt',c:'de',n:'Kiralık daire',loc:'Kreuzberg, Berlin',ic:'🏢',rent:1.4e6,p:0,up:0,hap:5},{id:'de_loft',c:'de',n:'Loft daire',loc:'Mitte, Berlin',ic:'🏙',rent:3.5e6,p:0,up:0,hap:9},
+ {id:'de_altbau',c:'de',n:'Altbau daire',loc:'Prenzlauer Berg',ic:'🏘',rent:0,p:60e6,up:1.2e6,hap:14},{id:'de_villa',c:'de',n:'Elbe villası',loc:'Blankenese, Hamburg',ic:'🏡',rent:0,p:700e6,up:12e6,hap:26},
+ {id:'de_alp',c:'de',n:'Alp dağ evi',loc:'Garmisch',ic:'🏔',rent:0,p:220e6,up:3.5e6,hap:13,second:true},{id:'de_schloss',c:'de',n:'Bavyera şatosu',loc:'Münih yakını',ic:'🏰',rent:0,p:1.6e9,up:24e6,hap:35},
+ {id:'kr_off',c:'kr',n:'Officetel',loc:'Gangnam, Seul',ic:'🏢',rent:1.2e6,p:0,up:0,hap:5},{id:'kr_han',c:'kr',n:'Han Nehri manzaralı daire',loc:'Yongsan, Seul',ic:'🏙',rent:3.2e6,p:0,up:0,hap:9},
+ {id:'kr_apt',c:'kr',n:'Gangnam apartmanı',loc:'Gangnam, Seul',ic:'🏘',rent:0,p:70e6,up:1.4e6,hap:14},{id:'kr_villa',c:'kr',n:'Hannam-dong villası',loc:'Hannam-dong, Seul',ic:'🏡',rent:0,p:600e6,up:11e6,hap:25},
+ {id:'kr_jeju',c:'kr',n:'Jeju adası evi',loc:'Jeju',ic:'🏝',rent:0,p:180e6,up:3e6,hap:13,second:true},{id:'kr_mans',c:'kr',n:'Seongbuk-dong malikanesi',loc:'Seongbuk-dong, Seul',ic:'🏛',rent:0,p:1.5e9,up:22e6,hap:34},
+ {id:'fr_apt',c:'fr',n:'Kiralık daire',loc:'Le Marais, Paris',ic:'🏢',rent:1.6e6,p:0,up:0,hap:5},{id:'fr_loft',c:'fr',n:'Loft daire',loc:'Bastille, Paris',ic:'🏙',rent:3.8e6,p:0,up:0,hap:9},
+ {id:'fr_hauss',c:'fr',n:'Haussmann daire',loc:'8. arrondissement, Paris',ic:'🏘',rent:0,p:110e6,up:2e6,hap:15},{id:'fr_chateau',c:'fr',n:'Bordeaux şatosu',loc:'Bordeaux bağları',ic:'🏰',rent:0,p:350e6,up:6e6,hap:18},
+ {id:'fr_riviera',c:'fr',n:'Côte d\'Azur villası',loc:'Saint-Tropez',ic:'🏖',rent:0,p:500e6,up:8e6,hap:14,second:true},{id:'fr_hotel',c:'fr',n:'Hôtel particulier',loc:'16. arrondissement, Paris',ic:'🏛',rent:0,p:1.4e9,up:21e6,hap:34});
+RET.push(['de_flat','Daire',['Kreuzberg','Mitte','Schwabing','Altona'],[20e6,70e6],.04,'🏢','de'],['de_villa','Villa',['Grünwald','Blankenese','Dahlem'],[120e6,500e6],.03,'🏡','de'],['de_shop','Dükkân',['Kurfürstendamm','Maximilianstraße','Zeil'],[50e6,300e6],.055,'🏪','de'],
+ ['kr_apt','Apartman dairesi',['Gangnam','Mapo','Songpa','Haeundae'],[25e6,90e6],.035,'🏢','kr'],['kr_villa','Villa',['Hannam-dong','Pyeongchang-dong','Seongbuk-dong'],[150e6,700e6],.03,'🏡','kr'],['kr_shop','Dükkân',['Myeongdong','Garosu-gil','Hongdae'],[40e6,250e6],.06,'🏪','kr'],
+ ['fr_flat','Daire',['Le Marais','Montmartre','Saint-Germain','Vieux Lyon'],[25e6,90e6],.035,'🏢','fr'],['fr_villa','Villa',['Saint-Tropez','Cap Ferrat','Neuilly'],[150e6,650e6],.03,'🏡','fr'],['fr_shop','Dükkân',['Champs-Élysées','Rue Saint-Honoré','La Canebière'],[50e6,300e6],.055,'🏪','fr']);
+/* şarkı isimleri: ülkenin dilinde */
+const WORDS_L={
+ de:{rap:[['Beton','Mitternacht','Kalte','Echte','Schwarze','Goldene','Block','Loyal','Graue','Harte'],['Könige','Straßen','Flow','Geld','Spiel','Leben','Regeln','Bars','Nächte','Jungs']],
+  pop:[['Neon','Sommer','Goldene','Elektrische','Süße','Wilde','Letzte','Ewige','Rote','Blaue'],['Nacht','Liebe','Träume','Lichter','Stadt','Herzen','Tage','Sterne','Zeit','Küsse']],
+  arabesk:[['Gebrochenes','Stille','Letzte','Bittere','Verlorene','Einsame','Kalte','Ferne'],['Herz','Tränen','Nacht','Regen','Sehnsucht','Abschied','Erinnerung','Liebe']],
+  rock:[['Donner','Eisen','Schwarze','Wilde','Brennende','Rebellen','Letzte','Freie'],['Straße','Sturm','Revolution','Maschine','Feuer','Seele','Nacht','Himmel']],
+  turku:[['Berg','Fluss','Alte','Heimat','Dorf','Nordische','Ferne','Grüne'],['Lied','Wind','Weg','Felder','Ballade','Geschichte','Heimkehr','Weide']]},
+ fr:{rap:[['Rues','Minuit','Béton','Argent','Rois','Flow','Bloc','Jeu','Nuits','Vie'],['de la cité','sans règles','de minuit','en or','du bloc','sans pitié','de la rue','du ghetto','en bas','sans fin']],
+  pop:[['Nuit','Cœur','Lumière','Été','Rêve','Ville','Étoile','Amour','Danse','Soleil'],['de Paris','sans fin','de néon','en feu','électrique','du sud','infini','sans toi','de minuit','en or']],
+  arabesk:[['Larmes','Cœur','Nuit','Adieu','Pluie','Silence','Lettre','Chagrin'],['sans toi','de novembre','du dernier soir','en silence','sans fin','de l\'exil','d\'hiver','sans retour']],
+  rock:[['Tonnerre','Route','Tempête','Machine','Feu','Révolution','Cri','Moteur'],['de fer','sans fin','du nord','en feu','de minuit','sauvage','de la nuit','sans frein']],
+  turku:[['Chanson','Vent','Chemin','Vallée','Ballade','Terre','Rivière','Berger'],['du village','des montagnes','de la rivière','du nord','des champs','de chez nous','d\'automne','du pays']]},
+ kr:{rap:[['거리의','차가운','검은','황금','미친','진짜','밤의','우리'],['왕','돈','밤','게임','이야기','불꽃','규칙','형제']],
+  pop:[['밤의','여름','네온','달빛','첫','마지막','푸른','우리','빛나는','전기'],['사랑','꿈','노래','별','바다','약속','기억','춤','심장','도시']],
+  arabesk:[['이별의','슬픈','마지막','조용한','잊은','차가운','먼'],['눈물','비','밤','편지','그리움','안녕','기억']],
+  rock:[['천둥','검은','거친','불타는','철의','자유의','마지막'],['길','폭풍','혁명','심장','엔진','하늘','밤']],
+  turku:[['산의','강의','옛','고향의','북쪽','푸른','먼'],['노래','바람','길','들','이야기','아리랑','봄']]}};
+{const _gt=genTitle;genTitle=function(g){const ct=S&&S.ct;if(ct&&WORDS_L[ct]){const w=WORDS_L[ct][g]||WORDS_L[ct].pop;return pick(w[0])+' '+pick(w[1])}return _gt(g)}}
+
+/* ============ Yıl sonu özeti (Wrapped): en çok dinlenen şarkılar, gelir, takipçi, şöhret ============ */
+const WRAP_CSS=`.wrap{border-radius:18px;padding:16px 14px;color:#fff;background:linear-gradient(160deg,#1a0b2e 0%,#5b1fa6 45%,#ff4fa3 100%);text-align:left;position:relative;overflow:hidden}
+.wrap:before{content:'';position:absolute;inset:-40%;background:radial-gradient(circle at 70% 20%,rgba(255,255,255,.18),transparent 40%),radial-gradient(circle at 20% 80%,rgba(255,230,0,.18),transparent 40%);pointer-events:none}
+.wrap *{position:relative}.wrap .wy{font:900 13px/1 var(--cond);letter-spacing:.2em;opacity:.8;text-transform:uppercase}.wrap h3{margin:4px 0 10px;font-size:22px;line-height:1.1}
+.wrap .wbig{font:900 34px/1 var(--cond);letter-spacing:.02em;margin:2px 0}.wrap .wsm{font-size:12px;opacity:.85;margin-bottom:10px}
+.wrap .wl{background:rgba(0,0,0,.28);border-radius:12px;padding:8px 10px;margin:6px 0}.wrap .wl div{display:flex;justify-content:space-between;gap:8px;font-size:13px;padding:3px 0;border-bottom:1px solid rgba(255,255,255,.08)}.wrap .wl div:last-child{border:0}
+.wrap .wl b{font-family:var(--cond);letter-spacing:.03em;white-space:nowrap}.wrap .wg{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:8px}.wrap .wg div{background:rgba(255,255,255,.12);border-radius:10px;padding:7px 9px;font-size:11px;opacity:.95}.wrap .wg b{display:block;font:900 17px/1.2 var(--cond)}
+.wrap .wq{font-size:12px;font-style:italic;opacity:.9;margin-top:10px}`;
+if(!document.getElementById('wrapcss')){const st=document.createElement('style');st.id='wrapcss';st.textContent=WRAP_CSS;document.head.appendChild(st)}
+function wrapBuild(){const age=S.age,rel=released();const top=rel.map(s=>{const h=(s.hy||[]).find(x=>x.age===age);return {t:s.t,st:h?h.st:0,r:h?h.r:null,gr:h?h.gr:null,nw:s.ra===age}}).filter(x=>x.st>0).sort((a,b)=>b.st-a.st);
+ const streams=S.yr.streams||0,rels=rel.filter(s=>s.ra===age).length,alb=(S.albums||[]).filter(a=>a.age===age||a.ra===age).length;
+ const w0=S.wr0||{fol:S.fol,fame:S.fame,money:S.money+S.bank};const best=top.reduce((m,x)=>x.r&&(!m||x.r<m)?x.r:m,null),bestG=top.reduce((m,x)=>x.gr&&(!m||x.gr<m)?x.gr:m,null);
+ const inc={stream:S.yr.stream||0,gig:S.yr.gig||0,brand:S.yr.brand||0,alb:S.yr.alb||0,pro:S.yr.pro||0};const tot=Object.values(inc).reduce((a,b)=>a+b,0);
+ const lis=Math.round(streams/38),min=streams*3.3;
+ return {age,ct:S.ct||'tr',city:S.city,streams,top:top.slice(0,5),rels,alb,inc,tot,fol:Math.round(S.fol),dFol:Math.round(S.fol-w0.fol),fame:Math.round(S.fame),dFame:Math.round(S.fame-w0.fame),best,bestG,lis,min,viral:rel.filter(s=>s.viral&&s.ra===age).length,awards:(S.awards||[]).filter(a=>a.age===age).length}}
+function wrapHTML(w,inModal){const C=CTRY[w.ct]||CTRY.tr;
+ const topH=w.top.length?`<div class="wl">${w.top.map((x,i)=>`<div><span>${i+1}. ${esc(x.t)}${x.nw?' <small>yeni</small>':''}</span><b>${num(x.st)}</b></div>`).join('')}</div>`:note('Bu yıl hiç dinlenmen olmadı.');
+ const incH=`<div class="wl">${[['🎧 Streaming (net)',w.inc.stream],['🎤 Konserler',w.inc.gig],['📣 Reklam & marka',w.inc.brand],['💿 Albüm',w.inc.alb],['🎼 Telif kuruluşu',w.inc.pro]].filter(x=>x[1]>0).map(x=>`<div><span>${x[0]}</span><b>${fmtS(x[1])}</b></div>`).join('')||'<div><span>Müzik geliri yok</span><b>—</b></div>'}</div>`;
+ const quote=w.streams>5e7?'Bu yıl senin yılındı. Dünya seni dinledi.':w.streams>5e6?'Milyonlar seni dinledi. Sahne artık senin.':w.streams>5e5?'Kulaktan kulağa yayılıyorsun.':w.streams>0?'Her büyük hikâye küçük başlar.':'Stüdyoya dönme vakti.';
+ return `<div class="wrap"><div class="wy">${C.fl} ${esc(w.city||C.n)} · ${w.age} yaş</div><h3>${esc(S.stage||S.first)}, işte yılın özeti</h3>
+ <div class="wsm">Toplam dinlenme</div><div class="wbig">${num(w.streams)}</div><div class="wsm">≈ ${num(w.lis)} farklı dinleyici · ${w.min>=6e7?Math.round(w.min/6e7)+' Mn saat':num(Math.round(w.min/60))+' saat'} müzik${w.viral?` · ${w.viral} viral şarkı`:''}</div>
+ <div class="wsm" style="font-weight:800;opacity:1">🏆 En çok dinlenen şarkıların</div>${topH}
+ <div class="wsm" style="font-weight:800;opacity:1;margin-top:8px">💰 Müzikten kazandıkların · ${fmtS(w.tot)}</div>${incH}
+ <div class="wg"><div>Takipçi<b>${num(w.fol)}</b>${w.dFol>=0?'+':''}${num(w.dFol)} bu yıl</div><div>Şöhret<b>${w.fame}</b>${w.dFame>=0?'+':''}${w.dFame} bu yıl</div><div>Yayınlanan<b>${w.rels} şarkı</b>${w.alb?w.alb+' albüm':'albüm yok'}</div><div>Liste<b>${w.best?'#'+w.best:'—'}</b>${w.bestG?'Global #'+w.bestG:w.best?(w.best<=10?'🔥 hit yılı':'listeye girdin'):'listeye giremedin'}</div></div>
+ <div class="wq">"${quote}"</div></div>${inModal?`<button class="btn" style="margin-top:10px" onclick="wrapClose()">Devam</button>`:''}`}
+function wrapClose(){S.evq.shift();$('mod').classList.remove('on');save();render();if(S.evq.length)setTimeout(showEvent,150)}
+EVENTS.push({id:'wrap',min:99,c:()=>false,title:'Yılın özeti',text:()=>'',ch:[{t:'Devam',fn:()=>{}}]});
+{const _se=showEvent;showEvent=function(){const q=S.evq[0];if(q&&q.id==='wrap'){$('mod').innerHTML=`<div class="box" style="padding:12px">${wrapHTML(q.p,true)}</div>`;$('mod').classList.add('on');return}_se()}}
+{const _yt=yearTick;yearTick=function(){if(S&&S.alive&&S.genre&&S.age>=14){try{const w=wrapBuild();if(w.streams>0||w.rels>0||w.tot>0){S.wraps=(S.wraps||[]).concat(w).slice(-25);S.evq.push({id:'wrap',p:w})}}catch(e){console.error(e)}}_yt();if(S)S.wr0={fol:S.fol,fame:S.fame,money:S.money+(S.bank||0)}}}
+function shWraps(){const L=(S.wraps||[]).slice().reverse();if(!L.length)return note('Henüz yıl özetin yok. Şarkı yayınladığın her yılın sonunda özet çıkar.');
+ const sel=SUB&&SUB.age!=null?L.find(w=>w.age===SUB.age):L[0];let h=`<div class="tabs wrap">${L.map(w=>`<button class="tab sm ${w===sel?'on':''}" onclick="SUB.age=${w.age};drawSheet()">${w.age} yaş</button>`).join('')}</div>`;return h+wrapHTML(sel,false)}
+{const _sk=shKariyer;shKariyer=function(){if(SUB&&SUB.t==='wraps')return shWraps();let h=_sk();if(SUB||S.age<16)return h;const L=S.wraps||[],l=L[L.length-1];
+ const r=row("sheet('kariyer',{t:'wraps',title:'Yıl özetlerin'})",'🎁','Yıl özetlerin',l?`Son yıl ${num(l.streams)} dinlenme · ${fmtS(l.tot)} gelir`:'Her yıl sonunda dinlenme, gelir ve takipçi özeti','›');const i=h.indexOf(sec('Sahne'));return i>=0?h.slice(0,i)+r+h.slice(i):r+h}}
+actKeep();
+
+/* ============ Telif kuruluşları: MSG/MESAM, ASCAP/BMI, PRS/PPL, GEMA/GVL, KOMCA/FKMP, SACEM/SPEDIDAM — ülkeye göre telif sistemi ============ */
+const PRO={
+ tr:[{id:'msg',n:'MSG',full:'Musiki Eseri Sahipleri Grubu',kom:.18,pw:1,fee:15000,pay:'yılda 2 ödeme'},{id:'mesam',n:'MESAM',full:'Türkiye Musiki Eseri Sahipleri Meslek Birliği',kom:.15,pw:.9,fee:12000,pay:'yılda 1 ödeme'}],
+ us:[{id:'ascap',n:'ASCAP',full:'American Society of Composers, Authors and Publishers',kom:.11,pw:1.15,fee:50*42,pay:'yılda 4 ödeme'},{id:'bmi',n:'BMI',full:'Broadcast Music, Inc.',kom:.10,pw:1.05,fee:0,pay:'yılda 4 ödeme'}],
+ uk:[{id:'prs',n:'PRS for Music',full:'Performing Right Society',kom:.12,pw:1.1,fee:100*55,pay:'yılda 4 ödeme'},{id:'ppl',n:'PPL',full:'Phonographic Performance Limited',kom:.14,pw:.95,fee:0,pay:'yılda 2 ödeme'}],
+ de:[{id:'gema',n:'GEMA',full:'Gesellschaft für musikalische Aufführungs- und mechanische Vervielfältigungsrechte',kom:.15,pw:1.25,fee:90*49,pay:'yılda 4 ödeme'},{id:'gvl',n:'GVL',full:'Gesellschaft zur Verwertung von Leistungsschutzrechten',kom:.13,pw:.9,fee:0,pay:'yılda 1 ödeme'}],
+ kr:[{id:'komca',n:'KOMCA',full:'Korea Music Copyright Association',kom:.12,pw:1,fee:2e5*.03,pay:'yılda 4 ödeme'},{id:'fkmp',n:'FKMP',full:'Federation of Korean Music Performers',kom:.10,pw:.85,fee:0,pay:'yılda 2 ödeme'}],
+ fr:[{id:'sacem',n:'SACEM',full:'Société des auteurs, compositeurs et éditeurs de musique',kom:.16,pw:1.2,fee:154*49,pay:'yılda 4 ödeme'},{id:'spedidam',n:'SPEDIDAM',full:'Société de perception et de distribution des droits des artistes-interprètes',kom:.12,pw:.9,fee:0,pay:'yılda 2 ödeme'}]};
+/* ülkenin radyo-TV-mekân telif seviyesi: Türkiye'de telif düşük, Almanya/ABD'de yüksek */
+const PRO_MUL={tr:.6,us:1.4,uk:1.3,de:1.5,kr:1,fr:1.4};
+const PRO_D={tr:'Türkiye\'de radyo, TV ve mekân telifleri düşüktür; MSG ve MESAM yayıncılardan tahsil edip yılda bir-iki kez öder.',us:'ABD\'de radyo ve TV yayınları için ASCAP/BMI tahsilatı güçlüdür; dijital radyo telifleri de buna eklenir.',uk:'İngiltere\'de PRS for Music yazar telifini, PPL ise icracı telifini toplar; sistem Avrupa\'nın en düzenli olanlarındandır.',de:'Almanya\'da GEMA Avrupa\'nın en güçlü telif kuruluşudur; radyo, TV, konser mekânı ve hatta kuaförden bile telif toplar.',kr:'Güney Kore\'de KOMCA dijital ve yayın teliflerini toplar; K-pop pazarında telif oranı orta seviyededir.',fr:'Fransa\'da SACEM dünyanın en eski telif kuruluşudur; radyo kotası sayesinde yerel sanatçılara telif yüksektir.'};
+function proInit(){if(!S.pro)S.pro={mem:{},hist:[]};S.pro.mem=S.pro.mem||{};S.pro.hist=S.pro.hist||[]}
+const proSoc=(ct,id)=>(PRO[ct]||[]).find(x=>x.id===id);
+function proMem(){proInit();const ct=S.ct||'tr';if(S.pro.mem[ct])return {ct,soc:proSoc(ct,S.pro.mem[ct]),far:false};const k=Object.keys(S.pro.mem)[0];if(k)return {ct:k,soc:proSoc(k,S.pro.mem[k]),far:true};return null}
+/* şarkı başına telif: dijital yayın payı + radyo/TV (liste başarısına göre) · söz-müzik payı */
+function proItems(){const rel=released(),out=[],age=S.age;const wsh=s=>1-((WRITERS[(s.meta||{}).writer]||WRITERS.kendim).pct||0);
+ rel.forEach(s=>{const n=Math.max(0,age-(s.ra||age)),st=s.ly||0,dig=st*.006,radio=(s.peak?(51-s.peak)*1000*Math.pow(.5,n):0)+(s.gpeak?(51-s.gpeak)*4000*Math.pow(.5,n):0);out.push({s,v:(dig+radio)*wsh(s),sold:false})});
+ (S.soldCat||[]).forEach(c=>(c.songs||[]).forEach(s=>{const st=s.ly||0;if(st>0)out.push({s,v:st*.006*wsh(s)*.35,sold:true})}));return out}
+function proCalc(){const ct=S.ct||'tr',C=CTRY[ct]||CTRY.tr,it=proItems();const songs=it.filter(x=>!x.sold).reduce((a,x)=>a+x.v,0),sold=it.filter(x=>x.sold).reduce((a,x)=>a+x.v,0),live=(S.yr.gig||0)*.02;
+ const mul=(PRO_MUL[ct]||1)*C.stream;return {songs:songs*mul,sold:sold*mul,live:live*mul,gross:(songs+sold+live)*mul,n:it.length}}
+function proYear(){proInit();const P=proCalc(),ct=S.ct||'tr';(S.soldCat||[]).forEach(c=>(c.songs||[]).forEach(s=>{s.ly=Math.round((s.ly||0)*.55)}));if(P.gross<500)return;const M=proMem();
+ if(!M){log(`🎼 Hiçbir telif kuruluşuna üye olmadığın için bu yıl ${fmtS(P.gross)} radyo, TV ve mekân telifi tahsil edilemedi. Kariyer → Telif kuruluşu'ndan üye ol.`,'bad');S.pro.hist.push({age:S.age,ct,soc:null,gross:P.gross,net:0,lost:true});S.pro.hist=S.pro.hist.slice(-20);return}
+ const soc=M.soc,col=P.gross*soc.pw*(M.far?.85:1),kom=col*soc.kom,b4=col-kom,w=taxR(b4),tax=b4*w,net=Math.round(b4-tax);
+ S.bank=(S.bank||0)+net;if(typeof btx==='function')btx(`Telif ödemesi · ${soc.n}`,net);S.tot.all+=net;S.yr.pro=(S.yr.pro||0)+net;
+ S.pro.hist.push({age:S.age,ct,soc:soc.n,gross:P.gross,col,kom,tax,net,far:M.far,sold:P.sold});S.pro.hist=S.pro.hist.slice(-20);
+ log(`🎼 ${soc.n} telif ödemesi: ${P.n} eser için tahsilat ${fmtS(col)}${M.far?` (${CTRY[M.ct].fl} üzerinden yurt dışı tahsilat, %15 kesinti)`:''}, komisyon ${fmtS(kom)}, stopaj ${fmtS(tax)} → banka hesabına net ${fmtS(net)} yattı.${P.sold>0?` Sattığın katalogdan yazar payı: ${fmtS(P.sold*soc.pw*(1-soc.kom))}.`:''}`,'good')}
+ACT.proJoin=(ct,id)=>{proInit();const soc=proSoc(ct,id);if(!soc)return;if(ct!==(S.ct||'tr')){toast(`${soc.n}'e üye olmak için ${CTRY[ct].n}'de olmalısın.`);return}if(S.pro.mem[ct]===id)return;
+ if(S.age<18){toast('Telif kuruluşuna üyelik için 18 yaşını doldurmalısın.');return}if(!released().length&&!S.star){toast('Üyelik için en az 1 yayınlanmış eserin olmalı.');return}
+ if(soc.fee&&!canPay(soc.fee)){toast('Giriş ücreti '+fmtS(soc.fee));return}if(!useM(1))return;if(soc.fee)S.money-=soc.fee;const old=S.pro.mem[ct];S.pro.mem[ct]=id;
+ log(`🎼 ${soc.n}'e (${soc.full}) üye oldun${old?`; ${proSoc(ct,old).n} üyeliğin sona erdi`:''}.${soc.fee?` Giriş ücreti ${fmtS(soc.fee)}.`:''} Artık ${CTRY[ct].n}'deki radyo, TV, dijital yayın ve mekân teliflerin ${soc.pay.replace('ödeme','halinde')} toplanıp banka hesabına yatacak.`,'good');drawSheet()};
+ACT.proLeave=ct=>{proInit();const id=S.pro.mem[ct];if(!id)return;delete S.pro.mem[ct];log(`🎼 ${proSoc(ct,id).n} üyeliğinden ayrıldın.`,'dim');drawSheet()};
+function shPro(){proInit();const ct=S.ct||'tr',C=CTRY[ct],P=proCalc(),M=proMem();
+ let h=`<div class="hero2"><small>Bu yıl birikmiş telif (tahmini)</small><div class="big">${fmtS(P.gross)}</div><span>${P.n} eser · dijital yayın ${fmtS(P.songs)} · canlı performans ${fmtS(P.live)}${P.sold>0?` · satılan katalog yazar payı ${fmtS(P.sold)}`:''}</span></div>`;
+ h+=note(`${C.fl} ${PRO_D[ct]} Bu ülkede telif seviyesi: <b>×${String(PRO_MUL[ct]).replace('.',',')}</b>. Telif, şarkının streaming gelirinden ayrıdır: radyo, TV, dijital yayın ve konser mekânlarından toplanan söz-müzik payıdır; az ama her yıl düzenli gelir. Söz yazarı tuttuğun şarkılarda payın azalır. Sattığın kataloğun şarkılarından da küçük bir yazar payı gelmeye devam eder.`);
+ h+=note(M?(M.far?`Şu an ${C.n}'de üyeliğin yok; teliflerin ${CTRY[M.ct].fl} ${M.soc.n} üzerinden karşılıklı anlaşmayla toplanıyor (%15 yurt dışı kesintisi). Yerel kuruluşa üye olursan kesinti kalkar.`:`Teliflerini ${M.soc.n} topluyor: %${Math.round(M.soc.kom*100)} komisyon, tahsilat gücü ×${String(M.soc.pw).replace('.',',')}, ${M.soc.pay}.`):'⚠️ Hiçbir telif kuruluşuna üye değilsin: radyo, TV ve mekân teliflerin tahsil edilmiyor, yanıyor.');
+ h+=sec(`${C.fl} ${C.n}'deki telif kuruluşları`);
+ (PRO[ct]||[]).forEach(s=>{const on=S.pro.mem[ct]===s.id;h+=`<div class="card" ${on?'style="border-color:var(--good)"':''}><div class="ch"><b>🎼 ${s.n}</b><span class="pill ${on?'gold':''}">${on?'Üyesin':'Üye değilsin'}</span></div>${note(`${s.full}. Komisyon %${Math.round(s.kom*100)} · tahsilat gücü ×${String(s.pw).replace('.',',')} · ${s.pay} · giriş ücreti ${s.fee?fmtS(s.fee):'yok'}.`)}${on?`<button class="mini sec" onclick="ACT.proLeave('${ct}')">Üyelikten ayrıl</button>`:`<button class="btn" onclick="ACT.proJoin('${ct}','${s.id}')">Üye ol${s.fee?' · '+fmtS(s.fee):''} · 1 hak</button>`}</div>`});
+ const others=Object.keys(S.pro.mem).filter(k=>k!==ct);if(others.length)h+=sec('Diğer ülkelerdeki üyeliklerin')+others.map(k=>row(`ACT.proLeave('${k}')`,CTRY[k].fl,proSoc(k,S.pro.mem[k]).n,`${CTRY[k].n} · yurt dışı tahsilatta %15 kesinti`,'Ayrıl')).join('');
+ if(S.pro.hist.length)h+=sec('Telif ödemeleri')+S.pro.hist.slice().reverse().map(x=>x.lost?row('','⚠️',`${x.age} yaş · ${CTRY[x.ct].fl} üyelik yok`,`${fmtS(x.gross)} telif tahsil edilemedi`,'—'):row('','🎼',`${x.age} yaş · ${x.soc}${x.far?' (yurt dışı)':''}`,`Tahsilat ${fmtS(x.col)} · komisyon ${fmtS(x.kom)} · stopaj ${fmtS(x.tax)}${x.sold>0?' · satılan katalog dahil':''}`,`<b class="gold">${fmtS(x.net)}</b>`)).join('');
+ return h}
+{const _sk=shKariyer;shKariyer=function(){if(SUB&&SUB.t==='pro')return shPro();let h=_sk();if(SUB||S.age<16)return h;proInit();const M=proMem(),ct=S.ct||'tr';
+ const r=row("sheet('kariyer',{t:'pro',title:'Telif kuruluşu'})",'🎼','Telif kuruluşu',M?`${M.soc.n}${M.far?' · yurt dışı tahsilat':''} · bu yıl ~${fmtS(proCalc().gross)}`:`Üye değilsin · ${(PRO[ct]||[]).map(s=>s.n).join(' / ')}`,'›');const i=h.indexOf(sec('Sahne'));return i>=0?h.slice(0,i)+r+h.slice(i):r+h}}
+{const _yt=yearTick;yearTick=function(){if(S&&S.alive&&S.genre&&S.age>=14){try{proYear()}catch(e){console.error(e)}}_yt()}}
 actKeep();
 
 boot();

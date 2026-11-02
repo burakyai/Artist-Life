@@ -49,7 +49,7 @@ function shLux(){if(!S.lots||S.lotY!==S.age)lotsGen();let h='';if(S.lux.length){
  h+=sec('Açık artırma')+note('Sanat eserleri ve efsane enstrümanlar yıllar içinde değer kazanabilir. Yüksek teklif kazanma şansını artırır.');S.lots.forEach(l=>h+=`<div class="card"><div class="ch"><b>${l.ic} ${esc(l.n)}</b><span class="pill">tahmini ${fmtS(l.est)}</span></div><div class="tabs wrap"><button class="tab sm" onclick="ACT.bid(${l.id},1)">Tahmini fiyat</button><button class="tab sm" onclick="ACT.bid(${l.id},1.3)">+%30</button><button class="tab sm" onclick="ACT.bid(${l.id},1.6)">+%60</button></div></div>`);return h}
 const _stil8=stil;stil=function(){return _stil8()+Math.round(((S.looks||50)-50)/8)+(S.lux||[]).filter(x=>x.k==='arac').length*2};
 /* ---------- 7. Kumar ---------- */
-const casN=()=>({tr:"Kıbrıs'taki kumarhane",us:'Las Vegas',uk:'Londra kumarhanesi'}[(S.ct||'tr')]);
+const CASN={tr:"Kıbrıs'taki kumarhane",us:'Las Vegas',uk:'Londra kumarhanesi',de:'Baden-Baden kumarhanesi',kr:'Kangwon Land kumarhanesi',fr:'Monte Carlo kumarhanesi'};const casN=()=>CASN[(S.ct||'tr')]||CASN.tr;
 let GBET=0;
 const gbV=()=>{const v=amtV('gb_a');if(v)GBET=v;return GBET};
 ACT.gbSet=v=>{GBET=v==='all'?Math.max(0,Math.floor(S.money)):Math.round(v);drawSheet()};
