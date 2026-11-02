@@ -20,3 +20,10 @@ delete HAIR3.locs;[HAIR_E,HAIR_K].forEach(L=>{const i=L.findIndex(x=>x[0]==='loc
 HAIR3.crew.front=c=>{const[d,u]=h3grad(c);const hi=shade(c,46),lo=shade(c,-30);
  return d+`<path d="M37 30 Q35.8 10.4 50 9.6 Q64.2 10.4 63 30 L60.4 30 L60.4 21.6 L59 20 L41 20 L39.6 21.6 L39.6 30Z" fill="${u}" stroke="${OL2}" stroke-width=".8" stroke-linejoin="round"/>`+
   `<path d="M40.4 18.8 Q50 15.6 59.6 18.8 L59.2 19.5 Q50 16.8 40.8 19.5Z" fill="${lo}" opacity=".55"/><path d="M41.6 13.4 Q50 10.8 57 11.8" stroke="${hi}" stroke-width="1" fill="none" stroke-linecap="round" opacity=".55"/><path d="M39.6 24 L39.6 28.6 M60.4 24 L60.4 28.6" stroke="${lo}" stroke-width=".45" opacity=".6"/>`};
+/* Kısa kesim + kontur: yanlar kısadan (fade) yukarı doğru uzuna */
+HAIR3.crew.front=c=>{const[d,u]=h3grad(c);const hi=shade(c,46),lo=shade(c,-30),id=h3id('cf');
+ return d+`<defs><linearGradient id="${id}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${c}" stop-opacity=".95"/><stop offset=".4" stop-color="${c}" stop-opacity=".7"/><stop offset=".75" stop-color="${c}" stop-opacity=".3"/><stop offset="1" stop-color="${c}" stop-opacity=".05"/></linearGradient></defs>`+
+  `<path d="M37.6 31.5 Q37.2 16 44 15 L42.2 20.6 L41.4 23 L40.6 31.5Z M62.4 31.5 Q62.8 16 56 15 L57.8 20.6 L58.6 23 L59.4 31.5Z" fill="url(#${id})" stroke="none"/>`+
+  `<path d="M38.2 17.4 Q37.4 10.6 50 9.6 Q62.6 10.6 61.8 17.4 Q61 19.6 59.2 20.4 L40.8 20.4 Q39 19.6 38.2 17.4Z" fill="${u}" stroke="none"/><path d="M38.2 17.4 Q37.4 10.6 50 9.6 Q62.6 10.6 61.8 17.4" stroke="${OL2}" stroke-width=".8" fill="none" stroke-linecap="round"/>`+
+  `<path d="M40.8 20.4 L59.2 20.4" stroke="${lo}" stroke-width=".7" opacity=".9" stroke-linecap="round"/><path d="M41.6 13.4 Q50 10.8 57 11.8" stroke="${hi}" stroke-width="1" fill="none" stroke-linecap="round" opacity=".55"/>`+
+  `<g stroke="${lo}" stroke-width=".35" opacity=".5">${[39.2,40,40.8,59.2,60,60.8].map(x=>`<path d="M${x} 22 L${x-(x<50?.3:-.3)} 28"/>`).join('')}</g>`};
