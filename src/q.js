@@ -113,7 +113,7 @@ function marketQ(){STOCKS.forEach(x=>{const m=S.mkt[x.id],sg=x.sg/2;let r=x.mu/4
 function quarterEnd(){
  const pl={spo:0,tube:0,fizzy:0,pear:0};let total=0;const per=[],rel=released();
  rel.forEach(s=>{if(s.rq==null)s.rq=S.qt-Math.max(0,(S.age-s.ra))*4-1;const k=S.qt-s.rq,sb=subOf(s);let f=Math.max(.38*Math.pow(.72,k),.0125)*(k>=4?1+sb.tail:1);
-  let v=s.pot*f+S.fol*.004/Math.max(1,Math.sqrt(rel.length/5));
+  let v=s.pot*f+S.fol*(S.star?.004:.0015)/Math.max(1,Math.sqrt(rel.length/5));
   if(k<=6&&ch((.03+sb.vir+Math.max(0,s.q-60)/500+(S.tiktok||s.vb===S.qt-1||s.vb===S.qt?.08:0))/3)){v*=RF(2.5,5);s.pot*=1.6;s.viral=true;log(`"${s.t}" viral oldu! Her yerde bu şarkı çalıyor.`,'gold')}
   const sh=shares(s.g),ps={};let tot=0,g=0;PLAT.forEach(p=>{const x=Math.round(v*sh[p.id]*(p.id==='tube'?s.clipM:1));ps[p.id]=x;pl[p.id]+=x;s.tot[p.id]+=x;tot+=x;g+=x*p.rate});
   s.lq=tot;s.q4=(s.q4||[]).concat(tot).slice(-4);s.ly=s.q4.reduce((a,b)=>a+b,0);s.total+=tot;total+=tot;
@@ -135,7 +135,7 @@ function quarterEnd(){
  PLAT.forEach(p=>S.pend[p.id]+=(b.net+b.tax)*(b.gross?b.pl[p.id].tl/b.gross:0));S.yr.stream+=b.net;S.yr.streams=(S.yr.streams||0)+total;S.yr.spo=(S.yr.spo||0)+pl.spo;S.tot.stream+=b.net;S.tot.all+=b.net;
  if(total>0)log(`Dijital gelir: ${num(total)} dinlenme → brüt ${fmtS(b.gross)}, net ${fmtS(b.net)} platform hesaplarında birikti.${S.contract&&b.rec>0?` (${fmtS(b.rec)} avans borcuna mahsup edildi)`:''}`);
  S.fol+=Math.max(0,total*.0025*(1-S.fol/4e7));
- let exp={yasam:0,ev:0,araba:0};if(S.age>=18){exp.yasam=(S.house?120000+S.fame*9000:40000+S.fame*4000)/4}
+ let exp={yasam:0,ev:0,araba:0};if(S.age>=18){exp.yasam=(S.house?120000+S.fame*9000:40000+S.fame*4000)/4+(S.star?0:teamCost()/4)}
  S.houses.forEach(id=>{const h=HOUSES.find(x=>x.id===id);exp.ev+=(h.rent?(id===S.house?h.rent:0):h.up)/4});S.cars.forEach(id=>{const c=CARS.find(x=>x.id===id);if(c)exp.araba+=c.up/4});
  b.exp=exp;S.money-=exp.yasam+exp.ev+exp.araba;
  if(S.money<0&&S.age>=18){const i=-S.money*.06;S.money-=i;add('happy',-3);S.debtY=(S.debtY||0)+i;if((S.q||0)===3){log(`Bu yıl borç yüzünden ${fmtS(S.debtY)} kredi kartı faizi ödedin. Kasanı artıya geçirmelisin.`,'bad');S.debtY=0}}
