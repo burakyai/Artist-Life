@@ -153,7 +153,7 @@ const EVSTAR={diss:['Herkesi susturan efsane cevap',p=>{addF(Math.round(S.fol*.2
  aile:['Babanı ikna et',()=>{S.fam[1].yak=clamp(S.fam[1].yak+10);log('Baban seni dinledi ve destek olmaya karar verdi.','good')}],
  sirket:['Şirketi ikna et, süre al',()=>{log('Şirket sana ek süre verdi.','good')}]};
 ACT.starT=()=>{S.star=!S.star;log(S.star?'⭐ Süperstar modu açıldı.':'Süperstar modu kapatıldı.','gold');sheet('hayat')};
-ACT.selfEd=(k,d)=>{if(!S.star)return;if(k==='fol'){S.fol=Math.max(0,d==='x2'?S.fol*2:S.fol+d)}else if(k==='money')S.money+=d;else S[k]=clamp(S[k]+d);calcFame();sheet('hayat')};
+ACT.selfEd=(k,d)=>{if(!S.star)return;if(k==='fol'){S.fol=Math.max(0,d==='x2'?S.fol*2:S.fol+d)}else if(k==='money')S.money+=d;else S[k]=clamp(S[k]+d);calcFame();if(SHEET==='ayar'&&SUB&&SUB.t==='self')drawSheet();else sheet('ayar',{t:'self',title:'Kendini düzenle'})};
 
 /* ---------- Plak görünümü ---------- */
 function vinylSVG(s,label){const m=(s.meta&&s.meta.cover)||{p:0,m:'plak'},[a,b]=CPAL[m.p]||CPAL[0];let x=`<svg viewBox="0 0 124 100" xmlns="http://www.w3.org/2000/svg"><circle cx="78" cy="50" r="45" fill="#0c0c0e"/>`+[40,34,28,22].map(r=>`<circle cx="78" cy="50" r="${r}" fill="none" stroke="#26262a" stroke-width="1"/>`).join('')+`<path d="M60 18 A38 38 0 0 1 112 40" stroke="#fff" stroke-opacity=".08" stroke-width="6" fill="none"/><circle cx="78" cy="50" r="15" fill="${a}"/><circle cx="78" cy="50" r="15" fill="${b}" opacity=".35"/><circle cx="78" cy="50" r="2" fill="#0c0c0e"/>`;
