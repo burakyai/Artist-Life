@@ -9,3 +9,10 @@ HAIR3.afro.back=c=>`<path d="M29.6 20 Q30 2 50 1.6 Q70 2 70.4 20 Q70.8 34 64 41.
 /* uzun dread kaldırıldı */
 delete HAIR3.locs;[HAIR_E,HAIR_K].forEach(L=>{const i=L.findIndex(x=>x[0]==='locs');if(i>=0)L.splice(i,1)});
 {const _ei=extInit;extInit=function(){_ei();if(S&&S.look&&S.look.hair==='locs')S.look.hair='dread'}}
+/* dread: alt kısım yüzün arkasında (yanaklara binmez), üst kısım önde */
+{const img=f=>`<image href="${HIMG.dread}" x="28" y="0" width="44.25" height="50" preserveAspectRatio="none" ${f}/>`;
+ HAIR3.dread.back=c=>{const nat=c.toLowerCase()==='#4b2f1f';const [d,f]=nat?['','']:himgFilter(c);return d+img(f)};
+ HAIR3.dread.front=c=>{const nat=c.toLowerCase()==='#4b2f1f';const [d,f]=nat?['','']:himgFilter(c);const id=h3id('dc');return d+`<defs><clipPath id="${id}"><path d="M28 0 H72.3 V21 Q50 27 28 21Z"/></clipPath></defs><g clip-path="url(#${id})">${img(f)}</g>`}}
+/* kaldırılan modeller */
+['curlfade','frofade'].forEach(k=>{delete HAIR3[k];[HAIR_E,HAIR_K].forEach(L=>{const i=L.findIndex(x=>x[0]===k);if(i>=0)L.splice(i,1)})});
+{const _ei=extInit;extInit=function(){_ei();if(S&&S.look&&['curlfade','frofade','locs'].includes(S.look.hair))S.look.hair='bukle'}}
