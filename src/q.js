@@ -115,7 +115,7 @@ function quarterEnd(){
  rel.forEach(s=>{if(s.rq==null)s.rq=S.qt-Math.max(0,(S.age-s.ra))*4-1;const k=S.qt-s.rq,sb=subOf(s);let f=Math.max(.38*Math.pow(.72,k),.0125)*(k>=4?1+sb.tail:1);
   let v=s.pot*f+S.fol*(S.star?.004:.0015)/Math.max(1,Math.sqrt(rel.length/5));
   if(k<=6&&ch((.03+sb.vir+Math.max(0,s.q-60)/500+(S.tiktok||s.vb===S.qt-1||s.vb===S.qt?.08:0))/3)){v*=RF(2.5,5);s.pot*=1.6;s.viral=true;log(`"${s.t}" viral oldu! Her yerde bu şarkı çalıyor.`,'gold')}
-  const sh=shares(s.g),ps={};let tot=0,g=0;PLAT.forEach(p=>{const x=Math.round(v*sh[p.id]*(p.id==='tube'?s.clipM:1));ps[p.id]=x;pl[p.id]+=x;s.tot[p.id]+=x;tot+=x;g+=x*p.rate});
+  if(typeof capStream==='function')v=capStream(s,v);const sh=shares(s.g),ps={};let tot=0,g=0;PLAT.forEach(p=>{const x=Math.round(v*sh[p.id]*(p.id==='tube'?s.clipM:1));ps[p.id]=x;pl[p.id]+=x;s.tot[p.id]+=x;tot+=x;g+=x*p.rate});
   s.lq=tot;s.q4=(s.q4||[]).concat(tot).slice(-4);s.ly=s.q4.reduce((a,b)=>a+b,0);s.total+=tot;total+=tot;
   const r=trRank(tot/13),gr=glRank(tot/13);
   if(r&&(!s.peak||r<s.peak)){s.peak=r;if(r<=20)log(`"${s.t}" Türkiye Top 50'de #${r}'e yükseldi!`,'good');if(!S.best.tr||r<S.best.tr)S.best.tr=r}

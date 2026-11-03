@@ -253,7 +253,7 @@ body.monob .tab.on,body[data-th="monokrom"] .tab.on,body[data-th="monokrom"] .bt
 <div class="mod" id="confirm"><div class="box"><h2>Yeni hayat?</h2><p>Mevcut hayatın silinecek ve baştan başlayacaksın.</p><button class="btn" onclick="$('confirm').classList.remove('on');restart()">Evet, baştan başla</button><button class="btn sec" onclick="$('confirm').classList.remove('on')">Vazgeç</button></div></div>
 <script>
 try{if('serviceWorker' in navigator&&/github\.io$/.test(location.hostname))navigator.serviceWorker.register('sw.js').catch(()=>{})}catch(e){}
-const APPV='2026.11.03-055003';
+const APPV='2026.11.03-124511';
 (function(){try{if(!/github\.io$/.test(location.hostname))return;const chk=()=>fetch(location.pathname+'?nc='+Date.now(),{cache:'no-store'}).then(r=>r.text()).then(t=>{const m=t.match(/const APPV='([^']+)'/);if(m&&m[1]!==APPV&&!sessionStorage.getItem('upd'+m[1])){sessionStorage.setItem('upd'+m[1],'1');location.replace(location.pathname+'?v='+encodeURIComponent(m[1]))}}).catch(()=>{});chk();document.addEventListener('visibilitychange',()=>{if(!document.hidden)chk()})}catch(e){}})();
 /* ============ Yardımcılar ============ */
 const $=id=>document.getElementById(id);
@@ -1547,7 +1547,7 @@ function quarterEnd(){
  rel.forEach(s=>{if(s.rq==null)s.rq=S.qt-Math.max(0,(S.age-s.ra))*4-1;const k=S.qt-s.rq,sb=subOf(s);let f=Math.max(.38*Math.pow(.72,k),.0125)*(k>=4?1+sb.tail:1);
   let v=s.pot*f+S.fol*(S.star?.004:.0015)/Math.max(1,Math.sqrt(rel.length/5));
   if(k<=6&&ch((.03+sb.vir+Math.max(0,s.q-60)/500+(S.tiktok||s.vb===S.qt-1||s.vb===S.qt?.08:0))/3)){v*=RF(2.5,5);s.pot*=1.6;s.viral=true;log(`"${s.t}" viral oldu! Her yerde bu şarkı çalıyor.`,'gold')}
-  const sh=shares(s.g),ps={};let tot=0,g=0;PLAT.forEach(p=>{const x=Math.round(v*sh[p.id]*(p.id==='tube'?s.clipM:1));ps[p.id]=x;pl[p.id]+=x;s.tot[p.id]+=x;tot+=x;g+=x*p.rate});
+  if(typeof capStream==='function')v=capStream(s,v);const sh=shares(s.g),ps={};let tot=0,g=0;PLAT.forEach(p=>{const x=Math.round(v*sh[p.id]*(p.id==='tube'?s.clipM:1));ps[p.id]=x;pl[p.id]+=x;s.tot[p.id]+=x;tot+=x;g+=x*p.rate});
   s.lq=tot;s.q4=(s.q4||[]).concat(tot).slice(-4);s.ly=s.q4.reduce((a,b)=>a+b,0);s.total+=tot;total+=tot;
   const r=trRank(tot/13),gr=glRank(tot/13);
   if(r&&(!s.peak||r<s.peak)){s.peak=r;if(r<=20)log(`"${s.t}" Türkiye Top 50'de #${r}'e yükseldi!`,'good');if(!S.best.tr||r<S.best.tr)S.best.tr=r}
@@ -1738,7 +1738,7 @@ ACT.renewArt=id=>{const L=S.lab,a=L.arts.find(x=>x.id===id),x=Math.round(askBase
 
 function labTick(){const L=S.lab;if(!L)return;let gT=0,netL=0,merch=0;
  L.songs.forEach(s=>{const k=S.qt-s.rq,a=L.arts.find(x=>x.id===s.aid)||{type:'',fol:1000};let v=s.pot*Math.max(.38*Math.pow(.72,k),.0125)+a.fol*.002;if(k<=6&&ch((.03+(a.type==='hitmaker'?.06:0)+Math.max(0,s.q-60)/500)/3)){v*=RF(2.5,5);s.pot*=1.6;s.viral=true;log(`${L.n}: "${s.t}" (${a.name||'eski sanatçın'}) viral oldu!`,'gold')}
-  v=Math.round(v*(s.clip>1?1.1:1));s.lq=v;s.total+=v;const g=v*.135;s.gross+=g;gT+=g;
+  v=Math.round(v*(s.clip>1?1.1:1));if(typeof capStream==='function')v=Math.round(capStream(s,v,.8));s.lq=v;s.total+=v;const g=v*.135;s.gross+=g;gT+=g;
   if(a.con){const dist=hasLF('dagitim')?0:g*.15,base=g-dist,art=base*a.con.roy/100;let lbl=base-art;const rc=a.con.rec?Math.min(art,a.con.unrec):0;a.con.unrec-=rc;lbl+=rc;a.earn+=art-rc;netL+=lbl}else netL+=g*.5;
   if(a.fol!=null&&a.con)a.fol+=Math.round(v*.003)});
  L.arts.forEach(a=>{if(hasLF('merch'))merch+=a.fol*.4;if(hasLF('prova'))a.tal=clamp(a.tal+RF(.5,1.5));if(a.type==='yildiz')a.tal=clamp(a.tal+.5);a.happy=clamp(a.happy+(hasLF('lounge')?2:0)-(a.type==='diva'?R(2,5):R(0,2)));
@@ -4301,6 +4301,18 @@ function caughtFug(){const yrs=R(3,6);S.cr.jail={left:yrs*4,tot:yrs*4,c:'kapkac'
 /* rapçilerde sokak geçmişi şarkılara biraz güç katar */
 {const _pf=potFor;potFor=function(s,b){let v=_pf(s,b);if(S.genre==='rap'&&S.cr&&S.cr.cred)v*=1+Math.min(.15,S.cr.cred/200);return v}}
 actKeep();
+
+/* ============ Gerçekçi dinlenme tavanları: ülke pazarına göre şarkı başı yıllık / ömür boyu ve sanatçı başı yıllık sınırlar ============ */
+const STRCAP={tr:{n:'Türkiye',y:2.4e8,life:1.1e9,art:2.2e9},us:{n:'ABD',y:1.5e9,life:5e9,art:2.5e10},uk:{n:'İngiltere',y:1.0e9,life:4e9,art:1.5e10},de:{n:'Almanya',y:3e8,life:9e8,art:3e9},kr:{n:'Güney Kore',y:8e8,life:2.5e9,art:1e10},fr:{n:'Fransa',y:4.5e8,life:1.5e9,art:5e9}};
+function capGlob(){let g=1;if(S.intl)g+=Object.values(S.intl).reduce((a,b)=>a+(b||0),0)/400;if(S.star)g*=3;return g}
+function capStream(s,v,k){const C=STRCAP[S.ct||'tr']||STRCAP.tr,g=capGlob()*(k||1);if(!s._cj)s._cj=RF(.85,1.15);
+ const qcap=C.y*g/4*s._cj;v=qcap*(1-Math.exp(-v/qcap));
+ const life=C.life*g;v*=clamp(1-Math.pow((s.total||0)/life,2),.04,1);
+ const ay=C.art*g;v*=1/(1+((S.yr&&S.yr.streams)||0)/ay);return v}
+/* panelde pazar bilgisi */
+{const _sp=shPanel;shPanel=function(){let h=_sp();if(SUB)return h;const C=STRCAP[S.ct||'tr']||STRCAP.tr,g=capGlob();
+ return h.replace('<div class="sec">',note(`🌍 ${C.n} pazarı: bir şarkı yılda en fazla ~${num(C.y*g)} dinlenme, ömür boyu ~${num(C.life*g)} alabilir; sanatçının yıllık toplamı ~${num(C.art*g)} civarında doyar.${g>1.05?' Uluslararası popülerliğin bu tavanları yükseltiyor.':' Yurt dışı tanıtım ve turneler tavanı yükseltir.'}`)+'<div class="sec">')}}
+if(typeof MROOT!=='undefined')MROOT.STRCAP=()=>STRCAP;
 
 boot();
 </script>

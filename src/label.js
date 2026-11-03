@@ -41,7 +41,7 @@ ACT.renewArt=id=>{const L=S.lab,a=L.arts.find(x=>x.id===id),x=Math.round(askBase
 
 function labTick(){const L=S.lab;if(!L)return;let gT=0,netL=0,merch=0;
  L.songs.forEach(s=>{const k=S.qt-s.rq,a=L.arts.find(x=>x.id===s.aid)||{type:'',fol:1000};let v=s.pot*Math.max(.38*Math.pow(.72,k),.0125)+a.fol*.002;if(k<=6&&ch((.03+(a.type==='hitmaker'?.06:0)+Math.max(0,s.q-60)/500)/3)){v*=RF(2.5,5);s.pot*=1.6;s.viral=true;log(`${L.n}: "${s.t}" (${a.name||'eski sanatçın'}) viral oldu!`,'gold')}
-  v=Math.round(v*(s.clip>1?1.1:1));s.lq=v;s.total+=v;const g=v*.135;s.gross+=g;gT+=g;
+  v=Math.round(v*(s.clip>1?1.1:1));if(typeof capStream==='function')v=Math.round(capStream(s,v,.8));s.lq=v;s.total+=v;const g=v*.135;s.gross+=g;gT+=g;
   if(a.con){const dist=hasLF('dagitim')?0:g*.15,base=g-dist,art=base*a.con.roy/100;let lbl=base-art;const rc=a.con.rec?Math.min(art,a.con.unrec):0;a.con.unrec-=rc;lbl+=rc;a.earn+=art-rc;netL+=lbl}else netL+=g*.5;
   if(a.fol!=null&&a.con)a.fol+=Math.round(v*.003)});
  L.arts.forEach(a=>{if(hasLF('merch'))merch+=a.fol*.4;if(hasLF('prova'))a.tal=clamp(a.tal+RF(.5,1.5));if(a.type==='yildiz')a.tal=clamp(a.tal+.5);a.happy=clamp(a.happy+(hasLF('lounge')?2:0)-(a.type==='diva'?R(2,5):R(0,2)));
