@@ -1,0 +1,18 @@
+/* ============ Plak şirketi giderleri: personel, pazarlama, A&R, hukuk, ofis, beklenmedik masraflar (süperstar hariç) ============ */
+const LSTAFF={ofis:[2,100000],plaza:[8,150000],bina:[20,170000],kampus:[45,190000]};
+const LEXP_EV=[['⚖️','Telif davası','Bir şarkı için açılan intihal davasını sulh yoluyla kapattın',.04],['🖥','Stüdyo ekipmanı arızası','Kayıt stüdyosunun mikserleri yenilendi',.02],['🎉','Lansman partisi','Yeni sezon için basına parti verildi',.025],['📉','Kampanya tutmadı','Büyük bir dijital kampanya beklenen ilgiyi getirmedi',.05],['🚨','Kriz yönetimi','Bir sanatçının skandalı için PR ajansı tutuldu',.03],['💧','Su baskını','Ofiste su borusu patladı, tadilat yapıldı',.015]];
+function labInfl(){try{return Math.max(1,(typeof eco==='function'?eco(S.ct||'tr').r:1))}catch(e){return 1}}
+function labExpQ(L){const q=L.lastQ||{gross:0,net:0,merch:0,exp:0},rev=Math.max(0,q.net+q.merch),inf=labInfl(),b=(typeof labBld==='function'?labBld():{id:'ofis'}),st=LSTAFF[b.id]||LSTAFF.ofis,na=L.arts.length;
+ const it=[['👥 Personel maaşları ve primler',(st[0]*st[1]+na*120000)*inf+rev*.07,`${st[0]+na+Math.floor(rev/8e6)} çalışan`],['📣 Pazarlama ve tanıtım',rev*.28,'reklam, influencer, playlist kampanyaları'],['🎚 A&R ve prodüksiyon',rev*.12+na*60000*inf,'yetenek avı, stüdyo, aranjör'],['💻 Dağıtım ve teknik',q.gross*.035,'platform, veri, yazılım'],['🧾 Hukuk, muhasebe, sigorta',(120000*inf)+rev*.04,'sözleşmeler, denetim'],['✈️ Seyahat ve temsil',(60000*inf)+rev*.02,'fuarlar, toplantılar']];
+ if(ch(.1)){const e=pick(LEXP_EV),amt=Math.max(300000*inf,rev*4*e[3]);it.push([e[0]+' '+e[1],amt,e[2]])}
+ return it.map(x=>[x[0],Math.round(x[1]),x[2]])}
+{const _lt=labTick;labTick=function(){const L=S.lab;if(!L)return _lt();_lt();if(S.star||!S.lab)return;const q=L.lastQ;if(!q)return;const it=labExpQ(L),tot=it.reduce((a,x)=>a+x[1],0);
+ L.cash-=tot;L.tot.net-=tot;q.exp0=q.exp;q.exp+=tot;q.items=[['🏢 Bina gideri',Math.round(labBld().up/4),''],['🎤 Sanatçı bakımı',L.arts.length*150000,'']].concat(it);
+ const blk=S.log[S.log.length-1];if(blk){const i=blk.it.findIndex(x=>typeof x.t==='string'&&x.t.startsWith(`${L.n} 3 aylık rapor`));const net=q.net+q.merch-q.exp;const t=`${L.n} 3 aylık rapor: brüt ${fmtS(q.gross)}, şirkete kalan ${fmtS(q.net+q.merch)}, giderler ${fmtS(q.exp)} → ${net>=0?'kâr':'zarar'} ${fmtS(Math.abs(net))}. Kasa: ${fmtS(L.cash)}`;if(i>=0)blk.it[i].t=t;else if(q.gross>0)log(t,'dim');
+  const ev=it.find(x=>LEXP_EV.some(e=>x[0]===e[0]+' '+e[1]));if(ev)log(`${ev[0]}: ${ev[2]}. ${L.n} kasasından ${fmtS(ev[1])} çıktı.`,'bad')}
+ if(L.cash<0&&!S.evq.some(e=>e.id==='labneg'))log(`${L.n} kasası ekside (${fmtS(L.cash)}). Para aktarmazsan sanatçılar maaşsız kalır.`,'bad')}}
+/* panelde gider dökümü */
+{const _lp=labPanel;labPanel=function(){let h=_lp();const L=S.lab;if(!L||!L.lastQ||!L.lastQ.items)return h;const q=L.lastQ,net=q.net+q.merch-q.exp;
+ const tbl=sec('Son 3 ayın gelir-gider tablosu')+`<table class="tbl"><tr><td>Şirkete kalan gelir</td><td class="pos">+${fmtS(q.net+q.merch)}</td></tr>${q.items.filter(x=>x[1]>0).map(x=>`<tr><td>${x[0]}${x[2]?`<br><small style="opacity:.6">${x[2]}</small>`:''}</td><td class="neg">−${fmtS(x[1])}</td></tr>`).join('')}<tr><td><b>${net>=0?'Net kâr':'Net zarar'}</b></td><td class="${net>=0?'pos':'neg'}"><b>${net>=0?'+':'−'}${fmtS(Math.abs(net))}</b></td></tr></table>`+note(`Kâr marjı: %${q.net+q.merch>0?Math.round(net/(q.net+q.merch)*100):0}. Yıl sonunda kâr üzerinden kurumlar vergisi ayrıca kesilir. Personel ve ofis giderleri enflasyonla artar.`);
+ const k=h.indexOf('<div class="kv">');return k>=0?h.slice(0,k)+tbl+h.slice(k):h+tbl}}
+actKeep();
