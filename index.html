@@ -253,7 +253,7 @@ body.monob .tab.on,body[data-th="monokrom"] .tab.on,body[data-th="monokrom"] .bt
 <div class="mod" id="confirm"><div class="box"><h2>Yeni hayat?</h2><p>Mevcut hayatın silinecek ve baştan başlayacaksın.</p><button class="btn" onclick="$('confirm').classList.remove('on');restart()">Evet, baştan başla</button><button class="btn sec" onclick="$('confirm').classList.remove('on')">Vazgeç</button></div></div>
 <script>
 try{if('serviceWorker' in navigator&&/github\.io$/.test(location.hostname))navigator.serviceWorker.register('sw.js').catch(()=>{})}catch(e){}
-const APPV='2026.11.02-082831';
+const APPV='2026.11.03-034702';
 (function(){try{if(!/github\.io$/.test(location.hostname))return;const chk=()=>fetch(location.pathname+'?nc='+Date.now(),{cache:'no-store'}).then(r=>r.text()).then(t=>{const m=t.match(/const APPV='([^']+)'/);if(m&&m[1]!==APPV&&!sessionStorage.getItem('upd'+m[1])){sessionStorage.setItem('upd'+m[1],'1');location.replace(location.pathname+'?v='+encodeURIComponent(m[1]))}}).catch(()=>{});chk();document.addEventListener('visibilitychange',()=>{if(!document.hidden)chk()})}catch(e){}})();
 /* ============ Yardımcılar ============ */
 const $=id=>document.getElementById(id);
@@ -4027,6 +4027,42 @@ actKeep();
 function slimSave(){if(!S||!S.songs)return;S.songs.forEach(s=>{if(!s.hy)return;if(s.hy.length>40)s.hy.splice(0,s.hy.length-40);s.hy.forEach(h=>{h.st=Math.round(h.st||0);h.g=Math.round(h.g||0);h.net=Math.round(h.net||0);if(h.pl)Object.keys(h.pl).forEach(k=>h.pl[k]=Math.round(h.pl[k]||0))});if(s.mon)Object.keys(s.mon).forEach(k=>s.mon[k]=Math.round(s.mon[k]||0));if(s.tot)Object.keys(s.tot).forEach(k=>s.tot[k]=Math.round(s.tot[k]||0));s.total=Math.round(s.total||0);s.ly=Math.round(s.ly||0);s.lq=Math.round(s.lq||0)});
  if(S.mkt)Object.values(S.mkt).forEach(m=>{if(m.h&&m.h.length>24)m.h.splice(0,m.h.length-24)});if(S.fnav)Object.values(S.fnav).forEach(m=>{if(m.h&&m.h.length>24)m.h.splice(0,m.h.length-24)})}
 {const _sv=save;save=function(){try{slimSave()}catch(e){}_sv()}}
+
+/* ============ Demoları sola kaydırıp silme · Süperstar: ön ayarla tek tuşla yayın ============ */
+const QP0={st:3,writer:'unlu',mix:2,dist:'yuzde',promo:2,pitch:true,hit:true};
+const qp=()=>(S.relP=Object.assign({},QP0,S.relP||{}));
+ACT.delDemo=id=>{const s=S.songs.find(x=>x.id===id);if(!s||s.st==='yayin')return;S.songs=S.songs.filter(x=>x.id!==id);toast(`🗑 "${s.t}" silindi.`);if(SUB&&SUB.t==='song'&&SUB.id===id)SUB=null;save();drawSheet()};
+function qpStudio(){const P=qp();if(P.st===-1&&S.contract)return -1;if(P.st===-2&&hasF('studyo'))return -2;return P.st<0?3:P.st}
+ACT.quickRel=id=>{if(!S.star){toast('Tek tuşla yayın süperstar modunda.');return}const s=S.songs.find(x=>x.id===id);if(!s||s.st==='yayin')return;const P=qp();
+ if(s.st==='demo'){ACT.rec(id,qpStudio());if(s.st!=='kayit'){toast('Kayıt yapılamadı.');return}}
+ const m=s.meta;m.writer=P.writer;m.mix=P.mix;if(!S.contract)m.dist=(P.dist==='kendi'&&!S.lab)?'yuzde':P.dist;m.promo=P.promo;m.pitch=!!P.pitch;m.hit=!!P.hit;s.t=(s.t||'').trim()||genTitle(s.g);
+ const n0=released().length;ACT.release(id);if(released().length>n0)toast(`⚡ "${s.t}" yayınlandı.`);if(SUB&&SUB.t==='song'&&SUB.id===id)SUB=null;drawSheet()};
+ACT.quickAll=()=>{if(!S.star)return;const L=S.songs.filter(s=>s.st==='demo'||s.st==='kayit').map(s=>s.id);if(!L.length){toast('Yayınlanacak demo yok.');return}let n=0;const d0=drawSheet;drawSheet=()=>{};try{L.forEach(id=>{const k=released().length;ACT.quickRel(id);if(released().length>k)n++})}finally{drawSheet=d0}toast(`⚡ ${n} şarkı yayınlandı.`);drawSheet()};
+ACT.qpSet=(k,v)=>{const P=qp();P[k]=v;S.relP=P;save();drawSheet()};
+function shQP(){const P=qp();const tab=(k,opts)=>`<div class="tabs wrap">${opts.map(([v,n])=>`<button class="tab sm ${P[k]===v?'on':''}" onclick="ACT.qpSet('${k}',${typeof v==='string'?`'${v}'`:v})">${n}</button>`).join('')}</div>`;
+ let h=note('⭐ Burada seçtiklerin, şarkılardaki ⚡ tuşuna basınca otomatik uygulanır: stüdyo, söz yazarı, mix, dağıtım, tanıtım, editoryal liste ve hit garantisi. Şarkı adı ve alt tür demodaki gibi kalır.');
+ const st=[[0,'Ev (laptop)'],[1,'Mahalle'],[2,'Profesyonel'],[3,'Hit yapımcı']];if(S.contract)st.unshift([-1,S.contract.n]);if(hasF('studyo'))st.unshift([-2,'Ev stüdyon']);
+ h+=sec('Stüdyo')+tab('st',st)+sec('Söz & müzik')+tab('writer',Object.entries(WRITERS).map(([k,x])=>[k,x.n.replace('Söz-müzik: ','')]))+sec('Mix & mastering')+tab('mix',MIX.map((x,i)=>[i,x.n]));
+ if(!S.contract)h+=sec('Dağıtımcı')+tab('dist',Object.entries(DIST).filter(([k])=>k!=='kendi'||S.lab).map(([k,x])=>[k,k==='kendi'?'Kendi şirketin':x.n]));
+ h+=sec('Tanıtım bütçesi')+tab('promo',PROMO.map((p,i)=>[i,p?fmtS(p):'Yok']))+sec('Diğer')+tab('pitch',[[true,'Editörlere gönder'],[false,'Gönderme']])+tab('hit',[[true,'⭐ Hit garantisi'],[false,'Hit garantisi yok']]);
+ const n=S.songs.filter(s=>s.st==='demo'||s.st==='kayit').length;h+=`<button class="btn" style="margin-top:10px" onclick="ACT.quickAll()" ${n?'':'disabled'}>⚡ Bütün demoları yayınla (${n})</button>`;return h}
+/* kariyer listesi: satırları kaydırılabilir yap, süperstarda ⚡ */
+function swWrap(h){return h.replace(/<button class="row"\s*onclick="sheet\('kariyer',\{t:'song',id:(\d+),title:'(Stüdyo|Yayına hazırla)'\}\)">([\s\S]*?)<\/button>/g,(m,id)=>`<div class="swp" data-sid="${id}"><button class="swdel" onclick="ACT.delDemo(${id})">🗑<span>Sil</span></button><div class="swf">${m}</div>${S.star?`<button class="swq" onclick="ACT.quickRel(${id})" aria-label="Tek tuşla yayınla">⚡</button>`:''}</div>`)}
+{const _sk=shKariyer;shKariyer=function(){if(SUB&&SUB.t==='qpre')return shQP();let h=_sk();if(SUB&&SUB.t==='song'){const s=S.songs.find(x=>x.id===SUB.id);if(s&&s.st!=='yayin'){const top=(S.star?`<button class="btn" style="margin-bottom:6px" onclick="ACT.quickRel(${s.id})">⚡ Ön ayarla tek tuşla yayınla</button><button class="mini sec" style="margin-bottom:10px" onclick="sheet('kariyer',{t:'qpre',title:'Tek tuş yayın ön ayarı'})">Ön ayarı düzenle</button>`:'');h=top+h+`<button class="mini red" style="margin-top:12px" onclick="ACT.delDemo(${s.id})">🗑 ${s.st==='demo'?'Demoyu':'Kaydı'} sil</button>`}return h}
+ if(SUB)return h;h=swWrap(h);if(S.star&&S.songs.some(s=>s.st==='demo'||s.st==='kayit')){const r=row("sheet('kariyer',{t:'qpre',title:'Tek tuş yayın ön ayarı'})",'⚡','Tek tuş yayın ön ayarı','Demolardaki ⚡ tuşu bu ayarlarla yayınlar · hepsini birden yayınla','›');const i=h.indexOf('<div class="swp"');if(i>=0){const j=h.lastIndexOf('<div class="sec">',i);h=j>=0?h.slice(0,j)+r+h.slice(j):r+h}}
+ if(h.includes('class="swp"')&&!S._swTip){h=h.replace('<div class="swp"',note('💡 Kullanmayacağın demoyu sola kaydırıp silebilirsin.')+'<div class="swp"')}return h}}
+if(!document.getElementById('swcss')){const st=document.createElement('style');st.id='swcss';st.textContent=`.swp{position:relative;overflow:hidden;border-radius:14px;margin-bottom:8px}.swp>.swf{position:relative;z-index:1;transition:transform .2s ease;touch-action:pan-y}.swp>.swf>.row{margin:0!important}.swp.drag>.swf{transition:none}
+.swdel{position:absolute;right:0;top:0;bottom:0;width:96px;border:0;background:#e5484d;color:#fff;font-weight:800;font-size:20px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;border-radius:0 14px 14px 0;z-index:0}.swdel span{font-size:12px}
+.swq{position:absolute;right:96px;top:50%;transform:translateY(-50%);z-index:2;width:38px;height:38px;border-radius:50%;border:0;background:linear-gradient(135deg,var(--acc),var(--acc2));color:#fff;font-size:18px;box-shadow:0 2px 8px #0006;display:none}
+.swp>.swq{right:84px;display:block}.swp.open>.swq{display:none}`;document.head.appendChild(st)}
+/* kaydırma hareketi */
+{let cur=null,x0=0,y0=0,dx=0,lock=null;const W=96;
+ const closeAll=ex=>document.querySelectorAll('.swp.open').forEach(e=>{if(e!==ex){e.classList.remove('open');e.querySelector('.swf').style.transform=''}});
+ document.addEventListener('touchstart',e=>{const f=e.target.closest&&e.target.closest('.swp>.swf');if(!f){if(!(e.target.closest&&e.target.closest('.swdel')))closeAll();return}cur=f.parentElement;closeAll(cur);x0=e.touches[0].clientX;y0=e.touches[0].clientY;dx=cur.classList.contains('open')?-W:0;lock=null},{passive:true});
+ document.addEventListener('touchmove',e=>{if(!cur)return;const t=e.touches[0],mx=t.clientX-x0,my=t.clientY-y0;if(lock===null&&(Math.abs(mx)>8||Math.abs(my)>8))lock=Math.abs(mx)>Math.abs(my)?'x':'y';if(lock!=='x')return;e.preventDefault();cur.classList.add('drag');const base=cur.classList.contains('open')?-W:0;dx=Math.max(-W-30,Math.min(0,base+mx));cur.querySelector('.swf').style.transform=`translateX(${dx}px)`},{passive:false});
+ document.addEventListener('touchend',()=>{if(!cur)return;const c=cur;cur=null;c.classList.remove('drag');if(lock!=='x')return;const f=c.querySelector('.swf');if(dx<-W/2){c.classList.add('open');f.style.transform=`translateX(${-W}px)`;S._swTip=1}else{c.classList.remove('open');f.style.transform=''}c._sw=Date.now()});
+ document.addEventListener('click',e=>{const p=e.target.closest&&e.target.closest('.swp');if(!p||e.target.closest('.swdel')||e.target.closest('.swq'))return;if(p.classList.contains('open')||(p._sw&&Date.now()-p._sw<350)){e.preventDefault();e.stopPropagation();if(p.classList.contains('open')&&!(p._sw&&Date.now()-p._sw<350)){p.classList.remove('open');p.querySelector('.swf').style.transform=''}}},true)}
+actKeep();
 
 boot();
 </script>
