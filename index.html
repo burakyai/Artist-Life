@@ -253,7 +253,7 @@ body.monob .tab.on,body[data-th="monokrom"] .tab.on,body[data-th="monokrom"] .bt
 <div class="mod" id="confirm"><div class="box"><h2>Yeni hayat?</h2><p>Mevcut hayatın silinecek ve baştan başlayacaksın.</p><button class="btn" onclick="$('confirm').classList.remove('on');restart()">Evet, baştan başla</button><button class="btn sec" onclick="$('confirm').classList.remove('on')">Vazgeç</button></div></div>
 <script>
 try{if('serviceWorker' in navigator&&/github\.io$/.test(location.hostname))navigator.serviceWorker.register('sw.js').catch(()=>{})}catch(e){}
-const APPV='2026.11.03-124511';
+const APPV='2026.11.03-132348';
 (function(){try{if(!/github\.io$/.test(location.hostname))return;const chk=()=>fetch(location.pathname+'?nc='+Date.now(),{cache:'no-store'}).then(r=>r.text()).then(t=>{const m=t.match(/const APPV='([^']+)'/);if(m&&m[1]!==APPV&&!sessionStorage.getItem('upd'+m[1])){sessionStorage.setItem('upd'+m[1],'1');location.replace(location.pathname+'?v='+encodeURIComponent(m[1]))}}).catch(()=>{});chk();document.addEventListener('visibilitychange',()=>{if(!document.hidden)chk()})}catch(e){}})();
 /* ============ Yardımcılar ============ */
 const $=id=>document.getElementById(id);
@@ -4313,6 +4313,61 @@ function capStream(s,v,k){const C=STRCAP[S.ct||'tr']||STRCAP.tr,g=capGlob()*(k||
 {const _sp=shPanel;shPanel=function(){let h=_sp();if(SUB)return h;const C=STRCAP[S.ct||'tr']||STRCAP.tr,g=capGlob();
  return h.replace('<div class="sec">',note(`🌍 ${C.n} pazarı: bir şarkı yılda en fazla ~${num(C.y*g)} dinlenme, ömür boyu ~${num(C.life*g)} alabilir; sanatçının yıllık toplamı ~${num(C.art*g)} civarında doyar.${g>1.05?' Uluslararası popülerliğin bu tavanları yükseltiyor.':' Yurt dışı tanıtım ve turneler tavanı yükseltir.'}`)+'<div class="sec">')}}
 if(typeof MROOT!=='undefined')MROOT.STRCAP=()=>STRCAP;
+
+/* ============ Mekan tarama suçu · cezaevi olayları (normal olaylar kapalı) · süperstar tahliye · okul: lise ve üniversite ============ */
+/* ---------- yeni suç ---------- */
+CRIMES.push({id:'tarama',n:'Mekan tarama',ic:'🔫',age:18,risk:.42,loot:[300000,500000],heat:28,yrs:[4,5],cred:9,d:'Rakip çetenin mekanını tara · korkutma parası · çok ağır ceza'});
+/* ---------- cezaevi olayları ---------- */
+const JEV=[
+ {id:'j_kogus',title:'Koğuş kavgası',text:()=>'Koğuşta iki grup birbirine girdi. Bir taraf senin de katılmanı bekliyor.',ch:[{t:'Kenarda dur',fn:()=>{add('happy',-2);log('Kavgaya karışmadın. Kimse sana bulaşmadı ama "korkak" diye fısıldayanlar oldu.','dim')}},{t:'Katıl',fn:()=>{add('health',-R(6,14));S.cr.resp=(S.cr.resp||0)+R(5,10);if(ch(.35)){S.cr.jail.left+=2;S.cr.jail.tot+=2;log('Kavgaya karıştın, disiplin cezası: 6 ay uzadı.','bad')}else log('Kavgada ayakta kaldın. Koğuşta saygı kazandın.','dim')}}]},
+ {id:'j_gardiyan',title:'Gardiyanla sorun',text:()=>'Bir gardiyan sürekli seninle uğraşıyor; hücrene baskın yapıp eşyalarını dağıtıyor.',ch:[{t:'Sessiz kal',fn:()=>{add('happy',-4);log('Sessiz kaldın. Birkaç hafta sonra bıktı.','dim')}},{t:'Şikayet et',fn:()=>{if(ch(.5)){log('Şikayetin işe yaradı, gardiyan başka bloğa alındı.','good')}else{S.cr.jail.left+=1;log('Şikayetin kendine döndü; "disiplinsizlik" tutanağıyla 3 ay eklendi.','bad')}}},{t:'Rüşvet ver (₺50 B)',fn:()=>{S.money-=50000;log('Gardiyanı para ile sakinleştirdin.','dim')}}]},
+ {id:'j_dinleyici',title:'Koğuşta hayranın var',text:()=>S.fame>15?'Koğuştakiler şarkılarını biliyor. Akşamları senden söylemeni istiyorlar.':'Koğuştaki biri sesini duydu, akşam herkese bir şey söylemeni istiyor.',ch:[{t:'Söyle',fn:()=>{add('happy',6);S.skill=clamp(S.skill+.8);S.cr.resp=(S.cr.resp||0)+4;log('Koğuşta mini konser verdin. Herkes sessizce dinledi.','good')}},{t:'Söyleme',fn:()=>{add('happy',-2);log('Keyfin yoktu, söylemedin.','dim')}}]},
+ {id:'j_ziyaret',title:'Ziyaret günü',text:()=>S.partner?`${S.partner.name.split(' ')[0]} ziyarete geldi.`:'Annen ziyarete geldi, gözleri doluydu.',ch:[{t:'Sarıl, konuş',fn:()=>{add('happy',8);if(S.partner)S.partner.yak=clamp(S.partner.yak+5);log('Ziyaret iyi geldi. Dışarıdaki hayat seni bekliyor.','good')}}]},
+ {id:'j_mektup',title:'Hayran mektupları',c:()=>S.fame>=20,text:()=>'Cezaevine yüzlerce hayran mektubu geliyor. Gardiyanlar paketleri saymaktan yoruldu.',ch:[{t:'Hepsini oku',fn:()=>{add('happy',7);S.fol=Math.round(S.fol*1.02);log('Mektuplar moralini düzeltti. Dışarıda unutulmamışsın.','good')}}]},
+ {id:'j_muzik',title:'Cezaevi müzik atölyesi',text:()=>'Cezaevinde gitar ve kayıt cihazı olan bir müzik atölyesi açıldı. Haftada iki gün girebilirsin.',ch:[{t:'Katıl',fn:()=>{S.skill=clamp(S.skill+RF(1.5,3));add('happy',4);log('Atölyede saatlerce çaldın. Parmakların eski gücüne kavuştu.','good')}},{t:'Boş ver',fn:()=>{}}]},
+ {id:'j_dedikodu',title:'Dışarıdan haber',c:()=>S.fame>=15,text:()=>pick(['Magazin "cezaevinde zor günler" diye uydurma haber yapmış.','Bir rakip rapçi senin hakkında diss şarkısı çıkarmış; sen cevap veremiyorsun.','Eski şarkın dizide kullanılmış, herkes seni konuşuyor.']),ch:[{t:'Kafana takma',fn:()=>{add('happy',-3);log('Dışarıda olanlara karışamıyorsun. Çıkınca hesap görürsün.','dim')}}]},
+ {id:'j_kacak',title:'Kaçak telefon',text:()=>'Koğuştan biri kaçak telefonla sana canlı yayın açma teklif ediyor.',ch:[{t:'Yayın aç',fn:()=>{if(ch(.6)){S.fol=Math.round(S.fol*1.05+2000);add('happy',5);log('Cezaevinden canlı yayın açtın; binlerce kişi izledi. Yayın kapanana kadar yakalanmadın.','gold')}else{S.cr.jail.left+=2;S.cr.jail.tot+=2;log('Yayın sırasında gardiyanlar bastı. Telefon ele geçti, 6 ay ceza eklendi.','bad')}}},{t:'Riske girme',fn:()=>{}}]},
+ {id:'j_hastalik',title:'Revir',text:()=>'Koğuşta grip salgını var, sen de yattın.',ch:[{t:'Revire git',fn:()=>{add('health',-3);log('Revirde birkaç gün kaldın.','dim')}},{t:'Yatakta geçir',fn:()=>{add('health',-7);log('Günlerce ateşle yattın.','bad')}}]},
+ {id:'j_aile',title:'Koğuş "ailesi"',text:()=>'Koğuşun ağırları seni yanlarına almak istiyor: koruma karşılığında dışarıda bazı işlerine yarayacaksın.',ch:[{t:'Kabul et',fn:()=>{S.cr.resp=(S.cr.resp||0)+10;S.cr.heat=clamp(S.cr.heat+10);S.maf=S.maf||{on:true,rep:5,heat:5,earn:0};log('Artık koğuşta kimse sana dokunamıyor. Ama dışarıda bir borcun var.','dim')}},{t:'Reddet',fn:()=>{if(ch(.4)){add('health',-8);log('Reddettin; ertesi hafta avluda "mesaj" aldın.','bad')}else log('Reddettin, kendi başına kaldın.','dim')}}]}];
+JEV.forEach(e=>EVENTS.push({id:e.id,min:0,c:()=>false,title:e.title,text:e.text,ch:e.ch,_jail:1,_c:e.c}));
+{const _pe=pickEvents;pickEvents=function(){if(!S||!S.cr||!S.cr.jail)return _pe();S.evSeen=S.evSeen||{};const pool=JEV.filter(e=>(!e._c||e._c())&&!recentEv(e.id));if(pool.length&&ch(.7)){const e=pick(pool);S.evSeen[e.id]=S.qt;S.evq.push({id:e.id,p:{}})}}}
+/* cezaevindeyken normal olaylar kuyrukta kalmasın */
+{const _aq=ageUpQ;ageUpQ=function(){_aq();if(S&&S.cr&&S.cr.jail)S.evq=S.evq.filter(q=>JEV.some(e=>e.id===q.id)||q.id==='wrap'||q.id==='beyan')}}
+/* süperstar: tahliye */
+ACT.starFree=()=>{if(!S.star||!S.cr||!S.cr.jail)return;S.cr.jail=null;S.cr.heat=0;S.cr.fug=0;log('⭐ Üst mahkeme kararı bozdu: tahliye edildin. Kapıda kameralar seni bekliyordu.','gold');sheet('hayat')};
+{const _sj=shJail;shJail=function(){let h=_sj();if(S.star)h=`<button class="btn star" onclick="ACT.starFree()">⭐ Süperstar: hemen tahliye ol</button>`+h;return h}}
+/* ---------- okul: lise ve üniversite ---------- */
+const HS=[['fen','Fen lisesi','Zor · yetenek az, disiplin çok · üniversiteye kolay'],['anadolu','Anadolu lisesi','Dengeli'],['guzel','Güzel sanatlar lisesi','Müzik ağırlıklı · yetenek ↑↑'],['meslek','Meslek lisesi','Rahat · erken iş']];
+const UNI=[['kons','Konservatuvar','Müzik · yetenek ↑↑ · şarkı kalitesi kalıcı +5',4],['iletisim','İletişim fakültesi','Medya çevresi · takipçi ve PR ↑',4],['isletme','İşletme','Şirket yönetimi · şirket giderleri %5 az',4],['hukuk','Hukuk fakültesi','Sözleşmelerde avantaj · mahkemede şans ↑',4],['muhendislik','Ses mühendisliği','Mix kalitesi ↑ · stüdyo indirimi',4],['acik','Açıköğretim','Az hak · sadece diploma',4],['yok','Üniversiteye gitme','Doğrudan müziğe odaklan',0]];
+function schInit(){S.sch=S.sch||{}}
+EVENTS.push({id:'lise_sec',min:99,c:()=>false,title:'Lise tercihi',text:()=>'Ortaokul bitti. Liseye başlıyorsun; hangi liseye gideceksin?',ch:HS.map(([k,n,d])=>({t:n,fn:()=>{schInit();S.sch.hs=k;S.sch.hsLeft=16;log(`🏫 ${n}'ne başladın. ${d}.`,'good')}}))});
+EVENTS.push({id:'uni_sec',min:99,c:()=>false,title:'Üniversite sınavı sonucu',text:()=>{schInit();const p=S.sch.puan||0;return `Sınav puanın ${p}. ${p>=400?'İstediğin bölüme girebilirsin.':p>=300?'Çoğu bölüm açık, konservatuvar için yetenek sınavı gerekecek.':'Puanın düşük; açıköğretim ve bazı bölümler açık.'}`},
+ ch:UNI.map(([k,n,d,y])=>({t:n,fn:()=>{schInit();const p=S.sch.puan||0;if(k==='yok'){log('Üniversiteye gitmedin. Bütün zamanın müziğe.','dim');S.sch.uni='yok';return}
+  if(k==='kons'){if(S.skill+R(0,30)<45){log('Konservatuvar yetenek sınavını geçemedin. Seneye tekrar girebilirsin.','bad');S.sch.retry=S.qt+4;return}}else if(k!=='acik'&&p<300){log(`${n} için puanın yetmedi.`,'bad');S.sch.retry=S.qt+4;return}else if(k==='hukuk'&&p<400){log('Hukuk için puanın yetmedi.','bad');S.sch.retry=S.qt+4;return}
+  S.sch.uni=k;S.sch.uniLeft=y*4;log(`🎓 ${n}'ne kaydoldun. ${y} yıl sürecek; her 3 ayda ${k==='acik'?1:2} hakkın derslere gidecek.`,'good')}}))});
+EVSTAR.uni_sec=['İstediğin bölüme burslu gir',()=>{schInit();S.sch.uni='kons';S.sch.uniLeft=16;log('⭐ Konservatuvara tam burslu girdin.','gold')}];
+function schoolQ(){schInit();const J=S.cr&&S.cr.jail;
+ if(S.sch.hs&&!S.sch.hsDone){if(J){log('🏫 Cezaevinde olduğun için okula gidemiyorsun; dönem kaybı.','bad');return}S.months=Math.max(0,S.months-2);S.sch.hsLeft--;const k=S.sch.hs;
+  if(k==='guzel')S.skill=clamp(S.skill+RF(.8,1.6));else if(k==='fen'){S.skill=clamp(S.skill+.1);add('happy',-1)}else if(k==='anadolu')S.skill=clamp(S.skill+.4);else S.skill=clamp(S.skill+.2);
+  if(S.sch.hsLeft<=0){S.sch.hsDone=true;const base={fen:380,anadolu:330,guzel:300,meslek:260}[k];S.sch.puan=clamp(Math.round(base+R(-60,80)+(S.happy-50)*.4),150,560);log(`🎓 Liseden mezun oldun! Üniversite sınavından ${S.sch.puan} puan aldın.`,'gold')}}
+ if(S.sch.uni&&S.sch.uni!=='yok'&&S.sch.uniLeft>0){if(J){log('🎓 Cezaevinde olduğun için üniversite dondu.','bad');return}const k=S.sch.uni;S.months=Math.max(0,S.months-(k==='acik'?1:2));S.sch.uniLeft--;
+  if(k==='kons')S.skill=clamp(S.skill+RF(1.2,2));if(k==='muhendislik')S.skill=clamp(S.skill+.5);if(k==='iletisim'&&ch(.3))S.fol+=R(100,800);
+  if(S.sch.uniLeft<=0){S.sch.uniDone=k;const U=UNI.find(u=>u[0]===k);log(`🎓 ${U[1]} mezunu oldun!`,'gold');if(k==='kons'){S.grad=true;S.eduQ=(S.eduQ||0)+5}if(k==='hukuk')S.lawyer=Math.max(S.lawyer||0,1);S.edu=S.edu||[];S.edu.push('uni_'+k)}}}
+{const _aq=ageUpQ;ageUpQ=function(){_aq();if(S&&S.alive){try{schoolQ();schInit();const J=S.cr&&S.cr.jail;if(!J&&S.age>=14&&S.age<16&&!S.sch.hs&&!S.evq.some(q=>q.id==='lise_sec'))S.evq.unshift({id:'lise_sec',p:{}});if(!J&&S.sch.hsDone&&!S.sch.uni&&S.age<=22&&(!S.sch.retry||S.qt>=S.sch.retry)&&!S.evq.some(q=>q.id==='uni_sec'))S.evq.unshift({id:'uni_sec',p:{}});if(S.evq.length&&!$('mod').classList.contains('on')&&!S._skipEv)showEvent()}catch(e){console.error(e)}}}}
+/* diploma etkileri */
+{const _lx=typeof labExpQ==='function'?labExpQ:null;if(_lx)labExpQ=function(L){const it=_lx(L);if(S.sch&&S.sch.uniDone==='isletme')it.forEach(x=>x[1]=Math.round(x[1]*.95));return it}}
+{const _v=verdict;verdict=function(p,yrs,pre){if(S.sch&&S.sch.uniDone==='hukuk'&&yrs>0&&ch(.3)){yrs=Math.max(0,yrs-1);pre+='Hukuk bilgin işe yaradı, ceza bir yıl azaldı. '}_v(p,yrs,pre)}}
+/* durum: hayat → eğitim sayfasına okul kartı */
+{const _se=shEdu;shEdu=function(){schInit();let h='';const s=S.sch;
+ if(s.hs&&!s.hsDone)h+=`<div class="card"><b>🏫 ${HS.find(x=>x[0]===s.hs)[1]}</b>${note(`${Math.ceil(s.hsLeft/4)} yıl kaldı · her 3 ayda 2 hak derslere gidiyor`)}</div>`;
+ else if(s.hsDone)h+=note(`🎓 Lise: ${HS.find(x=>x[0]===s.hs)[1]} mezunu · sınav puanı ${s.puan}`);
+ if(s.uni&&s.uni!=='yok'&&s.uniLeft>0)h+=`<div class="card"><b>🎓 ${UNI.find(x=>x[0]===s.uni)[1]}</b>${note(`${Math.ceil(s.uniLeft/4)} yıl kaldı`)}<button class="mini red" onclick="ACT.uniDrop()">Okulu bırak</button></div>`;
+ else if(s.uniDone)h+=note(`🎓 Üniversite: ${UNI.find(x=>x[0]===s.uniDone)[1]} mezunu`);
+ if(S.age<14)h+=note('🏫 14 yaşında lise tercihi, 18 yaşında üniversite sınavı var.');return h+_se()}}
+ACT.uniDrop=()=>{schInit();const k=S.sch.uni;if(!k||k==='yok')return;S.sch.uni='yok';S.sch.uniLeft=0;log(`🎓 ${UNI.find(x=>x[0]===k)[1]}'ni bıraktın.`,'dim');drawSheet()};
+/* mevcut kayıtlar: yaşı geçmişse lise tamamlanmış sayılır */
+{const _ei=extInit;extInit=function(){_ei();if(!S)return;schInit();if(S.age>=18&&!S.sch.hs){S.sch.hs='anadolu';S.sch.hsDone=true;S.sch.puan=S.sch.puan||330;if(S.age>18&&!S.sch.uni)S.sch.uni='yok'}else if(S.age>=15&&!S.sch.hs){S.sch.hs='anadolu';S.sch.hsLeft=Math.max(1,(18-S.age)*4)}}}
+actKeep();
 
 boot();
 </script>
