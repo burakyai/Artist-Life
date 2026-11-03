@@ -15,7 +15,9 @@ reps=[("s+=G(body2(o,(L.oc||{})[o]));","s+=tat2Neck(accs,id)+G(bodyM(o,(L.oc||{}
 ("fill=\"${hc}\" stroke=\"${OL2}\" stroke-width=\".35\"/>","fill=\"${bc}\" stroke=\"${OL2}\" stroke-width=\".35\"/>"),
 ("if(adult)s+=beard2(L.beard,hc);","if(adult)s+=beard2(L.beard,bc);"),
 ("s+=G(`<path d=\"M44.2 44 L43.8 56.4 Q50 59.6 56.2 56.4 L55.8 44Z\" fill=\"${skin}\"/>`)+`<path d=\"M44.1 47 Q50 54 55.9 47 L56 51.4 Q50 56 44 51.4Z\" fill=\"${sd}\"/><path d=\"M53.4 52 L54.4 57\" stroke=\"${sd}\" stroke-width=\".8\"/>`;",
- "s+=G(`<path d=\"M46.4 44 Q45.6 50 44.6 56.6 Q50 59.8 55.4 56.6 Q54.4 50 53.6 44Z\" fill=\"${skin}\"/>`)+`<path d=\"M46.2 46 Q50 53.4 53.8 46 L54.2 50.8 Q50 55.4 45.8 50.8Z\" fill=\"${sd}\" opacity=\".9\"/><path d=\"M53 52.4 L53.8 57\" stroke=\"${sd}\" stroke-width=\".7\"/>`;")]
+ "s+=G(`<path d=\"M46.4 44 Q45.6 50 44.6 56.6 Q50 59.8 55.4 56.6 Q54.4 50 53.6 44Z\" fill=\"${skin}\"/>`)+`<path d=\"M46.2 46 Q50 53.4 53.8 46 L54.2 50.8 Q50 55.4 45.8 50.8Z\" fill=\"${sd}\" opacity=\".9\"/><path d=\"M53 52.4 L53.8 57\" stroke=\"${sd}\" stroke-width=\".7\"/>`;"),
+("<g clip-path=\"url(#${id}nk)\">${neckTat(accs)}</g>","<g clip-path=\"url(#${id}nk)\"><g transform=\"translate(50 1) scale(.76 1) translate(-50 0)\">${neckTat(accs)}</g></g>"),
+("<clipPath id=\"${id}nk\"><path d=\"M44.3 44 L43.9 56.3 Q50 59.4 56.1 56.3 L55.7 44Z\"/>","<clipPath id=\"${id}nk\"><path d=\"M46.4 44 Q45.6 50 44.6 56.6 Q50 59.8 55.4 56.6 Q54.4 50 53.6 44Z\"/>")]
 for a,b in reps:
     assert av.count(a)==1,a
     av=av.replace(a,b)

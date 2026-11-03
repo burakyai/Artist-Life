@@ -66,8 +66,8 @@ function tat2Neck(accs,id){let t='';if(accs.includes('alev'))t+=`<g fill="${INK}
  if(accs.includes('dikenli'))t+=`<g stroke="${INK}" stroke-width=".55" fill="none" opacity=".88"><path d="M44 52.4 Q50 55.4 56 52.4"/><path d="M44 53.6 Q50 51.6 56 53.6"/><path d="M46 52.4 l.6 1.4 M48.4 53.2 l-.4 1.2 M51 53.4 l.5 1.2 M53.6 53 l-.4 1.2"/></g>`;
  if(accs.includes('boyunyazi'))t+=`<text x="50" y="52.4" text-anchor="middle" font-size="2.4" font-family="Georgia,serif" font-style="italic" fill="${INK}" opacity=".85">Aile</text>`;
  if(accs.includes('roma'))t+=`<text x="53.6" y="50" font-size="1.9" font-family="Georgia,serif" fill="${INK}" opacity=".85" transform="rotate(80 53.6 50)">MMXXVI</text>`;
- return t?`<defs><clipPath id="${id}nk2"><path d="M44.3 44 L43.9 56.3 Q50 59.4 56.1 56.3 L55.7 44Z"/></clipPath></defs><g clip-path="url(#${id}nk2)">${t}</g>`:''}
-const _am2=accM;accM=function(L,accs){let s='';FTATS.forEach(a=>{if(accs.includes(a))s+=faceTat(a)});s+=_am2(L,accs);NHATS.forEach(a=>{if(accs.includes(a))s+=hatM2(a)});return s};
+ return t?`<defs><clipPath id="${id}nk2"><path d="M46.4 44 Q45.6 50 44.6 56.6 Q50 59.8 55.4 56.6 Q54.4 50 53.6 44Z"/></clipPath></defs><g clip-path="url(#${id}nk2)"><g transform="translate(50 1) scale(.76 1) translate(-50 0)">${t}</g></g>`:''}
+const _am2=accM;accM=function(L,accs){let s='',ft='';FTATS.forEach(a=>{if(accs.includes(a))ft+=faceTat(a)});if(ft){const cid='fc'+(++uid);s+=`<defs><clipPath id="${cid}"><path d="M37.6 27.6 Q37.2 13.4 50 13 Q62.8 13.4 62.4 27.6 L62.3 34 Q62 41.4 58.6 45.6 L54 49.6 Q50 51.8 46 49.6 L41.4 45.6 Q38 41.4 37.7 34Z" transform="translate(50 30) scale(.96) translate(-50 -30)"/></clipPath></defs><g clip-path="url(#${cid})">${ft}</g>`}s+=_am2(L,accs);NHATS.forEach(a=>{if(accs.includes(a))s+=hatM2(a)});return s};
 /* --- katalog --- */
 ACCS.forEach(a=>{if(['boyun','boyun2','yildiz','kasust','elmacikgul','cizgi3'].includes(a.id))a.grp='dovme'});
 ACCS.push(
