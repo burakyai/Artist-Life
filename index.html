@@ -253,7 +253,7 @@ body.monob .tab.on,body[data-th="monokrom"] .tab.on,body[data-th="monokrom"] .bt
 <div class="mod" id="confirm"><div class="box"><h2>Yeni hayat?</h2><p>Mevcut hayatın silinecek ve baştan başlayacaksın.</p><button class="btn" onclick="$('confirm').classList.remove('on');restart()">Evet, baştan başla</button><button class="btn sec" onclick="$('confirm').classList.remove('on')">Vazgeç</button></div></div>
 <script>
 try{if('serviceWorker' in navigator&&/github\.io$/.test(location.hostname))navigator.serviceWorker.register('sw.js').catch(()=>{})}catch(e){}
-const APPV='2026.11.04-183324';
+const APPV='2026.11.04-184034';
 (function(){try{if(!/github\.io$/.test(location.hostname))return;const chk=()=>fetch(location.pathname+'?nc='+Date.now(),{cache:'no-store'}).then(r=>r.text()).then(t=>{const m=t.match(/const APPV='([^']+)'/);if(m&&m[1]!==APPV&&!sessionStorage.getItem('upd'+m[1])){sessionStorage.setItem('upd'+m[1],'1');location.replace(location.pathname+'?v='+encodeURIComponent(m[1]))}}).catch(()=>{});chk();document.addEventListener('visibilitychange',()=>{if(!document.hidden)chk()})}catch(e){}})();
 /* ============ Yardımcılar ============ */
 const $=id=>document.getElementById(id);
@@ -4389,6 +4389,10 @@ if(typeof MROOT!=='undefined')MROOT.CRIMES=()=>CRIMES;
 /* ---------- emlakçı: ilan listesini yenile ---------- */
 ACT.reRefresh=()=>{if(!useM(1))return;reList();log('🏘 Emlakçıdan yeni ilanlar istedin.','dim');drawSheet()};
 {const _sr=shRe;shRe=function(){let h=_sr();const a='İlanlar her yıl yenilenir.';if(h.includes(a))h=h.replace(a,'İlanlar her yıl kendiliğinden yenilenir; istersen emlakçıdan hemen yeni ilan isteyebilirsin.').replace(/(<p class="note">[^<]*emlak vergisi kesilir\.<\/p>)/,'$1'+`<button class="mini sec" style="margin:4px 0 10px" onclick="ACT.reRefresh()">🔄 Yeni ilanlar getir · 1 hak</button>`);return h}}
+/* ---------- borsa ve fonlarda "tüm parayla al" ---------- */
+ACT.fBuyAll=id=>{const el=document.getElementById('fd_'+id);if(el)el.value=fmtIn(String(Math.floor(S.bank)));if(S.bank<1){toast('Vadesiz hesabında para yok.');return}ACT.fBuy(id)};
+{const _sb=shBorsa;shBorsa=function(){let h=_sb();return h.replace(/<button class="mini" onclick="ACT\.buy\('([^']+)',amtV\('st_[^']+'\)\)">Al<\/button>/g,(m,id)=>m+`<button class="mini" onclick="ACT.buy('${id}','all')" style="background:var(--gold);color:#111">Tüm parayla al</button>`)}}
+{const _sbk=shBank;shBank=function(){let h=_sbk();return h.replace(/<button class="mini" onclick="ACT\.fBuy\('([^']+)'\)">Al<\/button>/g,(m,id)=>m+`<button class="mini" onclick="ACT.fBuyAll('${id}')" style="background:var(--gold);color:#111">Tüm bakiyeyle al</button>`)}}
 
 /* ============ Bot çiftliği: telefon al, şarkılarını bot dinlemeleriyle şişir; platform tespiti, para iadesi, hesap kapatma, mahkeme ============ */
 const BOT_PH=10000,BOT_IP=45000,BOT_RUN=2500,BOT_SUB=1050,BOT_PER=40000;

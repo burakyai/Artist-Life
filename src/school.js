@@ -73,3 +73,7 @@ if(typeof MROOT!=='undefined')MROOT.CRIMES=()=>CRIMES;
 /* ---------- emlakçı: ilan listesini yenile ---------- */
 ACT.reRefresh=()=>{if(!useM(1))return;reList();log('🏘 Emlakçıdan yeni ilanlar istedin.','dim');drawSheet()};
 {const _sr=shRe;shRe=function(){let h=_sr();const a='İlanlar her yıl yenilenir.';if(h.includes(a))h=h.replace(a,'İlanlar her yıl kendiliğinden yenilenir; istersen emlakçıdan hemen yeni ilan isteyebilirsin.').replace(/(<p class="note">[^<]*emlak vergisi kesilir\.<\/p>)/,'$1'+`<button class="mini sec" style="margin:4px 0 10px" onclick="ACT.reRefresh()">🔄 Yeni ilanlar getir · 1 hak</button>`);return h}}
+/* ---------- borsa ve fonlarda "tüm parayla al" ---------- */
+ACT.fBuyAll=id=>{const el=document.getElementById('fd_'+id);if(el)el.value=fmtIn(String(Math.floor(S.bank)));if(S.bank<1){toast('Vadesiz hesabında para yok.');return}ACT.fBuy(id)};
+{const _sb=shBorsa;shBorsa=function(){let h=_sb();return h.replace(/<button class="mini" onclick="ACT\.buy\('([^']+)',amtV\('st_[^']+'\)\)">Al<\/button>/g,(m,id)=>m+`<button class="mini" onclick="ACT.buy('${id}','all')" style="background:var(--gold);color:#111">Tüm parayla al</button>`)}}
+{const _sbk=shBank;shBank=function(){let h=_sbk();return h.replace(/<button class="mini" onclick="ACT\.fBuy\('([^']+)'\)">Al<\/button>/g,(m,id)=>m+`<button class="mini" onclick="ACT.fBuyAll('${id}')" style="background:var(--gold);color:#111">Tüm bakiyeyle al</button>`)}}
