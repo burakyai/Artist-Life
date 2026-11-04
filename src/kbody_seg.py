@@ -29,7 +29,7 @@ for k, f in FILES.items():
     lx, ly = lips(a); dx, dy = bx - lx, by - ly
     fshift = ndimage.shift(face.astype(float), (-dy, -dx), order=0) > .5
     fshift = ndimage.binary_erosion(fshift, iterations=3)
-    fshift[int(735 - dy):] = False  # boyun gövdeye dahil (yüz görseliyle örtüşür, dikiş görünmez)
+    fshift[int(700 - dy):] = False  # boyun gövdeye dahil (yüz görseliyle örtüşür, dikiş görünmez)
     white = a.min(2) > 232
     # arka plan: üst/sol/sağ kenarlara bağlı beyaz (alt kenara değen beyaz gömlek arka plan sayılmaz)
     wl, wn = ndimage.label(white); border = set(wl[0, :]) | set(wl[:, 0]) | set(wl[:, -1]); border.discard(0)
