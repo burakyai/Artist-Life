@@ -70,3 +70,6 @@ function crRisk(c){const sk=crSkill();return clamp((c.risk+S.cr.heat/250+(S.fame
 /* listede gerçek (ustalıklı) risk yazsın */
 {const _sj2=shJC;shJC=function(){if(jailed())return _sj2();const keep=CRIMES.map(c=>c.risk);CRIMES.forEach(c=>{c.risk=crRisk(c)-S.cr.heat/250-(S.fame>40?.08:0)+(S.star?.5:0)});try{return _sj2()}finally{CRIMES.forEach((c,i)=>c.risk=keep[i])}}}
 if(typeof MROOT!=='undefined')MROOT.CRIMES=()=>CRIMES;
+/* ---------- emlakçı: ilan listesini yenile ---------- */
+ACT.reRefresh=()=>{if(!useM(1))return;reList();log('🏘 Emlakçıdan yeni ilanlar istedin.','dim');drawSheet()};
+{const _sr=shRe;shRe=function(){let h=_sr();const a='İlanlar her yıl yenilenir.';if(h.includes(a))h=h.replace(a,'İlanlar her yıl kendiliğinden yenilenir; istersen emlakçıdan hemen yeni ilan isteyebilirsin.').replace(/(<p class="note">[^<]*emlak vergisi kesilir\.<\/p>)/,'$1'+`<button class="mini sec" style="margin:4px 0 10px" onclick="ACT.reRefresh()">🔄 Yeni ilanlar getir · 1 hak</button>`);return h}}
