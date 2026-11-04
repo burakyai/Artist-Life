@@ -47,7 +47,7 @@ for k, f in FILES.items():
     light = np.clip((vv - 34) / 110, 0, 1); dark = np.clip((16 - vv) / 16, 0, 1)
     det = np.zeros(sub.shape[:2] + (4,)); det[..., :3] = np.where(light[..., None] > 0, 255, 0)
     det[..., 3] = np.where(light > 0, light * .55, dark * .8) * sil
-    w = x1 - x0; h = y1 - y0; sc = min(1, 520 / max(w, h)); W, H = int(w * sc), int(h * sc)
+    w = x1 - x0; h = y1 - y0; sc = min(1, 820 / max(w, h)); W, H = int(w * sc), int(h * sc)
     Image.fromarray(np.dstack([np.full(mm.shape + (3,), 255), sil * 255]).astype(np.uint8), 'RGBA').resize((W, H), Image.LANCZOS).save(f'{OUT}/{k}_sil.webp', quality=88)
     Image.fromarray(np.clip(det, 0, 255).astype(np.uint8), 'RGBA').resize((W, H), Image.LANCZOS).save(f'{OUT}/{k}_det.webp', quality=88)
     meta[k] = dict(n=NAMES[k], x=round(float(OX + (x0 + dx) * SC), 2), y=round(float(OY + (y0 + dy) * SC), 2), w=round(float(w * SC), 2), h=round(float(h * SC), 2))
