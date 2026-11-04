@@ -19,8 +19,8 @@ function femHead(id,skin,age,sad){const X=33.4,Y=12,W=33.3,H=47.3;
   /* boyun görselin içinde; boyun dövmesi */
   if(accs.some(a=>a==='boyun'||a==='boyun2'||a==='boyun3'))s+=`<defs><clipPath id="${id}nk"><path d="M44 44 Q43.6 50 43.4 57 Q50 60 56.6 57 Q56.4 50 56 44Z"/></clipPath></defs><g clip-path="url(#${id}nk)"><g transform="translate(50 1) scale(.9 1) translate(-50 0)">${neckTat(accs)}</g></g>`;
   /* gövde: kadın için daha dar omuz */
-  s+=`<g transform="translate(50 0) scale(.88 1) translate(-50 0)">`+tat2Neck(accs,id)+G(bodyM(o,(L.oc||{})[o]))+`</g>`;
-  ['zincir','kartal','bayrak'].forEach(a=>{if(accs.includes(a))s+=`<g transform="translate(50 0) scale(.88 1) translate(-50 0)">${acc2(a)}</g>`});
+  s+=tat2Neck(accs,id)+((typeof KBODY!=='undefined'&&KBODY[o])?kbodySVG(o,skin):G(bodyM(o,(L.oc||{})[o])));
+  ['zincir','kartal','bayrak'].forEach(a=>{if(accs.includes(a))s+=acc2(a)});
   s+=femHead(id,skin,age,sad);
   s+=G(hair2(L.hair,hc)+hairM(L.hair,hc));
   if(age>=40&&age<58&&!['kel','asker'].includes(L.hair)&&!['gri','beyaz'].includes(L.hairColor))s+=`<path d="M37.8 30 Q37.4 25 38.6 21.6 M62.2 30 Q62.6 25 61.4 21.6" stroke="#c4c4c4" stroke-width="1.4" opacity=".6" fill="none" stroke-linecap="round"/>`;
