@@ -52,3 +52,6 @@ ACT.uniDrop=()=>{schInit();const k=S.sch.uni;if(!k||k==='yok')return;S.sch.uni='
 /* mevcut kayıtlar: yaşı geçmişse lise tamamlanmış sayılır */
 {const _ei=extInit;extInit=function(){_ei();if(!S)return;schInit();if(S.age>=18&&!S.sch.hs){S.sch.hs='anadolu';S.sch.hsDone=true;S.sch.puan=S.sch.puan||330;if(S.age>18&&!S.sch.uni)S.sch.uni='yok'}else if(S.age>=15&&!S.sch.hs){S.sch.hs='anadolu';S.sch.hsLeft=Math.max(1,(18-S.age)*4)}}}
 actKeep();
+/* eylemden hemen sonra ana ekrandaki günlük güncellensin */
+{Object.keys(ACT).forEach(k=>{const f=ACT[k];if(typeof f!=='function'||f._rr)return;const w=function(...a){const r=f.apply(this,a);try{if(S&&S.alive)render()}catch(e){}return r};w._rr=1;w._kp=f._kp;ACT[k]=w})}
+{const _cs=closeSheet;closeSheet=function(){_cs();try{if(S)render()}catch(e){}}}
