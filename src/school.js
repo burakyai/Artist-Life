@@ -55,3 +55,18 @@ actKeep();
 /* eylemden hemen sonra ana ekrandaki günlük güncellensin */
 {Object.keys(ACT).forEach(k=>{const f=ACT[k];if(typeof f!=='function'||f._rr)return;const w=function(...a){const r=f.apply(this,a);try{if(S&&S.alive)render()}catch(e){}return r};w._rr=1;w._kp=f._kp;ACT[k]=w})}
 {const _cs=closeSheet;closeSheet=function(){_cs();try{if(S)render()}catch(e){}}}
+/* ---------- suç ustalığı: işledikçe artar, yakalanma riskini düşürür ---------- */
+const crSkill=()=>clamp((S.cr&&S.cr.sk)||0);
+const crLvl=v=>v>=90?'Efsane':v>=70?'Usta':v>=50?'Profesyonel':v>=30?'Tecrübeli':v>=12?'Çırak':'Acemi';
+function crRisk(c){const sk=crSkill();return clamp((c.risk+S.cr.heat/250+(S.fame>40?.08:0))*(1-sk/100*.6)-(S.star?.5:0),.02,.9)}
+{const _c=ACT.crime;ACT.crime=id=>{jcInit();const c=CRIMES.find(x=>x.id===id);if(!c||jailed()||S.age<c.age)return _c(id);
+ const n0=S.cr.done,j0=!!S.cr.jail,ev0=S.evq.length;const risk0=c.risk;c.risk=crRisk(c)-S.cr.heat/250-(S.fame>40?.08:0)+(S.star?.5:0);try{_c(id)}finally{c.risk=risk0}
+ if(S.cr.done>n0&&!S.cr.jail&&S.evq.length===ev0){const g=RF(1.5,3.5)*(c.cred/4+.5)*(1-crSkill()/130);const o=crSkill();S.cr.sk=clamp(o+g);if(crLvl(S.cr.sk)!==crLvl(o))log(`🕶 Suç ustalığın yükseldi: ${crLvl(S.cr.sk)}.`,'dim')}
+ else if(S.cr.done>n0){S.cr.sk=clamp(crSkill()-R(2,5))}}}
+{const _sj=shJC;shJC=function(){let h=_sj();if(jailed())return h;const sk=crSkill();
+ const bar=`<div class="card"><div class="ch"><b>🕶 Suç ustalığı</b><span class="pill">${crLvl(sk)}</span></div><div class="bar" style="height:12px"><i style="width:${sk}%;background:${sk>=70?'#ff5fa2':sk>=30?'#ffc24b':'#9a90b0'}"></i></div>${note(`${Math.round(sk)}/100 · Her başarılı iş ustalığını artırır; büyük işler daha çok. Ustalık yakalanma riskini %${Math.round(sk*.6)} azaltıyor. Yakalanırsan biraz düşer.`)}</div>`;
+ h=h.replace(/<div class="kv"><div>Polis dikkati/,bar+'<div class="kv"><div>Polis dikkati');
+ return h.replace(/yakalanma %(\d+)/g,(m,p)=>m)}}
+/* listede gerçek (ustalıklı) risk yazsın */
+{const _sj2=shJC;shJC=function(){if(jailed())return _sj2();const keep=CRIMES.map(c=>c.risk);CRIMES.forEach(c=>{c.risk=crRisk(c)-S.cr.heat/250-(S.fame>40?.08:0)+(S.star?.5:0)});try{return _sj2()}finally{CRIMES.forEach((c,i)=>c.risk=keep[i])}}}
+if(typeof MROOT!=='undefined')MROOT.CRIMES=()=>CRIMES;
