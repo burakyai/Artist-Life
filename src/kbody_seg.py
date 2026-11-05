@@ -49,11 +49,16 @@ for k, f in FILES.items():
     # kıyafet katmanı: ten dışı pikseller olduğu gibi; ten pikselleri gölge olarak
     shade = np.clip(1 - kv, 0, 1); shade = ndimage.median_filter(shade, size=7); shade = ndimage.gaussian_filter(shade, 1.5)  # ten gölgesi: lekeleri yumuşat
     cloth = np.zeros(sub.shape[:2] + (4,)); cloth[..., :3] = np.where(sk[..., None], np.array([60, 30, 20])[None, None, :], sub)
-    cloth[..., 3] = np.where(sk, shade * .85, 1.0) * sil * 255
+    cloth[..., 3] = np.where(sk, 0, 1.0) * sil * 255
+    # tint: ten piksellerinin baz tene oranı (oyunda ten rengiyle multiply); gölge lekeleri yumuşatılmış
+    rat = np.clip(sub / np.array([244.6, 201.0, 166.2]), 0, 1)
+    rat = np.stack([ndimage.gaussian_filter(ndimage.median_filter(rat[..., c], size=7), 1.5) for c in range(3)], -1)
+    tint = np.dstack([rat * 255, np.where(sk, 1.0, 0) * sil * 255])
     skmask = np.dstack([np.full(sk.shape + (3,), 255), ndimage.gaussian_filter(sk.astype(float), .8) * 255 * sil])
     w = x1 - x0; h = y1 - y0; sc = min(1, 480 / max(w, h)); W, H = int(w * sc), int(h * sc)
     Image.fromarray(np.clip(cloth, 0, 255).astype(np.uint8), 'RGBA').resize((W, H), Image.LANCZOS).save(f'{OUT}/b_{k}.webp', quality=86)
     Image.fromarray(np.clip(skmask, 0, 255).astype(np.uint8), 'RGBA').resize((W, H), Image.LANCZOS).save(f'{OUT}/b_{k}_sk.webp', lossless=True)
+    Image.fromarray(np.clip(tint, 0, 255).astype(np.uint8), 'RGBA').resize((W, H), Image.LANCZOS).save(f'{OUT}/b_{k}_t.webp', quality=88)
     meta[k] = dict(x=round(float(OX + (x0 + dx) * SC), 2), y=round(float(OY + (y0 + dy) * SC), 2), w=round(float(w * SC), 2), h=round(float(h * SC), 2), bottom=int(y1 >= 1260))
     prev = np.full(a.shape, 255.); col = np.array([120, 78, 50.])
     S = np.zeros(a.shape[:2]); S[y0:y1, x0:x1] = skmask[..., 3] / 255; C = np.zeros(a.shape[:2] + (4,)); C[y0:y1, x0:x1] = cloth
@@ -62,9 +67,9 @@ for k, f in FILES.items():
 json.dump(meta, open(f'{OUT}/bmeta.json', 'w'))
 b64 = lambda p: base64.b64encode(open(p, 'rb').read()).decode()
 js = '/* ============ Kadın kıyafetleri 2.0: referans görsellerden kesilmiş gövde; kıyafet olduğu gibi, ten kısmı ten rengine boyanır ============ */\n'
-js += 'const KBODY={' + ','.join(f'{k}:{{x:{m["x"]},y:{m["y"]},w:{m["w"]},h:{m["h"]},img:"data:image/webp;base64,{b64(f"{OUT}/b_{k}.webp")}",sk:"data:image/webp;base64,{b64(f"{OUT}/b_{k}_sk.webp")}"}}' for k, m in meta.items()) + '};\n'
+js += 'const KBODY={' + ','.join(f'{k}:{{x:{m["x"]},y:{m["y"]},w:{m["w"]},h:{m["h"]},img:"data:image/webp;base64,{b64(f"{OUT}/b_{k}.webp")}",sk:"data:image/webp;base64,{b64(f"{OUT}/b_{k}_sk.webp")}",t:"data:image/webp;base64,{b64(f"{OUT}/b_{k}_t.webp")}"}}' for k, m in meta.items()) + '};\n'
 js += '''function kbodySVG(o,skin){const B=KBODY[o],id='kb'+(++uid);const H=Math.max(B.h,82.5-B.y);/* alt kenarı viewBox dışına taşır */
- return `<defs><mask id="${id}"><image href="${B.sk}" x="${B.x}" y="${B.y}" width="${B.w}" height="${H}" preserveAspectRatio="none"/></mask></defs><rect x="${B.x}" y="${B.y}" width="${B.w}" height="${H}" fill="${skin}" mask="url(#${id})"/><image href="${B.img}" x="${B.x}" y="${B.y}" width="${B.w}" height="${H}" preserveAspectRatio="none"/>`}
+ return `<defs><mask id="${id}"><image href="${B.sk}" x="${B.x}" y="${B.y}" width="${B.w}" height="${H}" preserveAspectRatio="none"/></mask></defs><rect x="${B.x}" y="${B.y}" width="${B.w}" height="${H}" fill="${skin}" mask="url(#${id})"/><image href="${B.t}" x="${B.x}" y="${B.y}" width="${B.w}" height="${H}" preserveAspectRatio="none" style="mix-blend-mode:multiply"/><image href="${B.img}" x="${B.x}" y="${B.y}" width="${B.w}" height="${H}" preserveAspectRatio="none"/>`}
 '''
 open(f'{OUT}/kbody.js', 'w').write(js)
 print('ok', meta)
