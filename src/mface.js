@@ -32,7 +32,7 @@ function mHead(id,skin,age,sad,B){const X=33.82,Y=11.95,W=32.55,H=40.98;const CH
   /* eski vektör sakallar kaldırıldı; yeni görsel sakallar MBEARD ile gelecek */
   if(adult&&typeof MBEARD!=='undefined'&&MBEARD[L.beard])s+=mbeardSVG(L.beard,hc);
   if(typeof MTAT!=='undefined'&&adult){const tk=accs.filter(a=>MTAT[a]);if(tk.length){const B=(typeof MBODY!=='undefined')&&MBODY[o];const F=MIMG;const X=10.88+370*.062,Y=9.16+45*.062,W=(895-370)*.062,H=(706-45)*.062;
-    let mk=`<image href="${F.sil}" x="${X}" y="${Y}" width="${W}" height="${H}"/>`;if(B)mk+=`<image href="${B.sk}" x="${B.x}" y="${B.y}" width="${B.w}" height="${Math.max(B.h,82.5-B.y)}" preserveAspectRatio="none"/>`;s+=mtatSVG(tk,mk)}}
+    let mk=`<image href="${F.sil}" x="${X}" y="${Y}" width="${W}" height="${H}"/>`;if(B){const ef="te"+(++uid);mk+=`<filter id="${ef}" x="-5%" y="-5%" width="110%" height="110%"><feMorphology operator="erode" radius=".75"/></filter><image href="${B.sk}" x="${B.x}" y="${B.y}" width="${B.w}" height="${Math.max(B.h,82.5-B.y)}" preserveAspectRatio="none" filter="url(#${ef})"/>`}s+=mtatSVG(tk,mk,skin)}}
   if(L.hair!=='kel')s+=G(hair2(L.hair,hc)+hairM(L.hair,hc));
   if(age>=40&&age<58&&!['kel','asker'].includes(L.hair)&&!['gri','beyaz'].includes(L.hairColor))s+=`<path d="M37.8 30 Q37.4 25 38.6 21.6 M62.2 30 Q62.6 25 61.4 21.6" stroke="#c4c4c4" stroke-width="1.4" opacity=".6" fill="none" stroke-linecap="round"/>`;
   ['gozyasi','kasust','yildiz','elmacikgul','cizgi3','alinyazi','kaskesik','altindis','kupe','yara','gozluk','puro','fotr','kasket'].forEach(a=>{if(accs.includes(a))s+=acc2(a)});
@@ -55,3 +55,7 @@ BEARDS.length=0;BEARDS.push(['yok','Sinekkaydı']);if(typeof MBEARD!=='undefined
 /* eski sakal anahtarları → yeni görsel sakallar */
 {const BMAP={kirli:'cerceve',kisasakal:'cerceve',boxed:'cerceve',balbo:'keci',keci:'keci',cene:'cerceve',tam:'gur',ince:'biyik',biyik:'biyik',palakalin:'biyik'};
  const _av=avatarSVG2;avatarSVG2=function(L,age,opts){if(L&&L.g!=='k'&&L.beard&&L.beard!=='yok'&&typeof MBEARD!=='undefined'&&!MBEARD[L.beard])L.beard=BMAP[L.beard]||'yok';return _av(L,age,opts)}}
+
+/* eski çizim dövmeler (erkek) → yeni görsel dövmeler */
+const MTAT_OLD={gozyasi:'t_gozyasi',yildiz:'t_gozyildiz',kasust:'t_loyal',alinyazi:'t_loyal',kalp3:'t_gozkalp',hacg:'t_alinhac',plaka:'t_boyun34',boyun:'t_boyungul',boyun2:'t_boyunhac',boyun3:'t_kanat',dikenli:'t_diken',boyunyazi:'t_sabir',alev:'t_alev',elmacikgul:'t_boyungul',sakak:'t_simsek',roma:'t_kopruck',kelebek:'t_hilal',gulyuz:'t_yanakhancer',cizgi3:'t_ucnokta'};
+{const _av=avatarSVG2;avatarSVG2=function(L,age,opts){if(L&&L.g!=='k'&&L.acc&&L.acc.some(a=>MTAT_OLD[a])){L.acc=L.acc.map(a=>MTAT_OLD[a]&&typeof MTAT!=='undefined'&&MTAT[MTAT_OLD[a]]?MTAT_OLD[a]:a).filter((a,i,arr)=>arr.indexOf(a)===i);if(S&&S.look===L&&S.accOwned)L.acc.forEach(a=>{if(!S.accOwned.includes(a))S.accOwned.push(a)})}return _av(L,age,opts)}}

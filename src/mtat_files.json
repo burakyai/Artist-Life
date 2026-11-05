@@ -1,1 +1,272 @@
-{"t_sabir":{"f":"963a80f7","n":"Boyunda \"SABIR\"","p":6000,"st":2}}
+{
+"t_boyunhac": {
+"f": "/tmp/tatzip/x/AaGpE4quhTH9kljo1iEhrw-AaGpE4qucDa15lGAfEhQQw.jpg",
+"n": "Boyunda haç",
+"p": 4000,
+"st": 2
+},
+"t_boyungul": {
+"f": "/tmp/tatzip/x/AaGpE5_IIQkqBsRF7fI1rA-AaGpE5_IFPMqLFFxO8WZMw.jpg",
+"n": "Boyunda gül",
+"p": 6000,
+"st": 2
+},
+"t_sabir": {
+"f": "/tmp/tatzip/x/AaGpE7DVXgeXigBwxejIEg-AaGpE7DVaA0bx4SXR7FG1Q.jpg",
+"n": "Boyunda \"SABIR\"",
+"p": 6000,
+"st": 2
+},
+"t_boyunhancer": {
+"f": "/tmp/tatzip/x/AaGpE8Evrnw1p0QEAqqBMA-AaGpE8Ev3ZXQwrrj5aj1nQ.jpg",
+"n": "Boyunda hançer",
+"p": 5000,
+"st": 2
+},
+"t_orumcek": {
+"f": "/tmp/tatzip/x/AaGpE9DnKEhofCix0eH3bA-AaGpE9DnH7Ke934rox5kkQ.jpg",
+"n": "Boyunda örümcek ağı",
+"p": 5500,
+"st": 3
+},
+"t_boyunyildiz": {
+"f": "/tmp/tatzip/x/AaGpFAarOwrm7w7StuybUQ-AaGpFAarVg3zTOVboqE4Iw.jpg",
+"n": "Boyunda yıldızlar",
+"p": 4000,
+"st": 2
+},
+"t_yilan": {
+"f": "/tmp/tatzip/x/AaGpFClbexancij6DFmVSw-AaGpFClb2AZFn9hLY_Kv6Q.jpg",
+"n": "Boyunda yılan",
+"p": 8000,
+"st": 3
+},
+"t_boyun34": {
+"f": "/tmp/tatzip/x/AaGpFDp9Zffdr-hYMbXwiA-AaGpFDp9-f-G-U3VNe_UUA.jpg",
+"n": "Boyunda \"34\"",
+"p": 4500,
+"st": 2
+},
+"t_gozyasi": {
+"f": "/tmp/tatzip/x/AaGpFE7DMoyPXDVDNBzAiA-AaGpFE7DdZURE20w3DufcQ.jpg",
+"n": "Gözyaşı",
+"p": 2500,
+"st": 2
+},
+"t_gozyildiz": {
+"f": "/tmp/tatzip/x/AaGpFF436lqITQKA3JzZvg-AaGpFF43ipTsZh81aL9RWw.jpg",
+"n": "Göz altında yıldız",
+"p": 2500,
+"st": 2
+},
+"t_alinhac": {
+"f": "/tmp/tatzip/x/AaGpFGzlGuSUt4g-xTG6Uw-AaGpFGzlFxKXeVvuGNbLwA.jpg",
+"n": "Alında haç",
+"p": 3000,
+"st": 2
+},
+"t_gozkalp": {
+"f": "/tmp/tatzip/x/AaGpFIwQ9bPo0keqrvumfA-AaGpFIwQDei5ekX2jucVUw.jpg",
+"n": "Göz altında kalp",
+"p": 2500,
+"st": 2
+},
+"t_loyal": {
+"f": "/tmp/tatzip/x/AaGpFJ1_JkKit6pmMqJMgQ-AaGpFJ1_BFFtE1A6xRFm0g.jpg",
+"n": "Kaş üstü \"LOYAL\"",
+"p": 3500,
+"st": 2
+},
+"t_ucnokta": {
+"f": "/tmp/tatzip/x/AaGpFK4ZB_Z_16j5u54Qag-AaGpFK4ZZ526zSvIVm4fsg.jpg",
+"n": "Göz altında üç nokta",
+"p": 2000,
+"st": 2
+},
+"t_simsek": {
+"f": "/tmp/tatzip/x/AaGpFL41XSVh7j3OI-Co9g-AaGpFL41n7QE249vb9Anjg.jpg",
+"n": "Şakakta şimşek",
+"p": 3000,
+"st": 2
+},
+"t_yanakhancer": {
+"f": "/tmp/tatzip/x/AaGpFM4MwaZJNfXDzalFuA-AaGpFM4MgzAROLgeZIhFWw.jpg",
+"n": "Yanakta hançer",
+"p": 3500,
+"st": 2
+},
+"t_hilal": {
+"f": "/tmp/tatzip/x/AaGpFN7A6p3Iq5Bt-PHP4Q-AaGpFN7A9tdxyf2uw3okBA.jpg",
+"n": "Şakakta hilal",
+"p": 3000,
+"st": 2
+},
+"t_tribal": {
+"f": "/tmp/tatzip/x/AaGpFPDkJGqpxY2dKSt5BA-AaGpFPDkWGIybcSvM2m1RA.jpg",
+"n": "Tribal kol",
+"p": 18000,
+"st": 4
+},
+"t_gulkol": {
+"f": "/tmp/tatzip/x/AaGpFQNswXiOeZq4vRKADA-AaGpFQNsl6MZWI-PAfP6Dw.jpg",
+"n": "Gül kolu",
+"p": 22000,
+"st": 4
+},
+"t_kurukafa": {
+"f": "/tmp/tatzip/x/AaGpFRUAWpFCePHzWwVhkg-AaGpFRUAz7dWY6EP6iAiTA.jpg",
+"n": "Omuzda kuru kafa",
+"p": 9000,
+"st": 3
+},
+"t_aslan": {
+"f": "/tmp/tatzip/x/AaGpFSTFpg4ExsY7-dQwtw-AaGpFSTFb1sV-kb6h08DVA.jpg",
+"n": "Omuzda aslan",
+"p": 12000,
+"st": 4
+},
+"t_kaplan": {
+"f": "/tmp/tatzip/x/AaGpFTPPY-nM-_PjWjA3Xw-AaGpFTPPipsuEaVlBgtmIg.jpg",
+"n": "Kolda kaplan",
+"p": 14000,
+"st": 4
+},
+"t_ejderha": {
+"f": "/tmp/tatzip/x/AaGpFUMmUHiJFKPBnffJfQ-AaGpFUMms42Nu0UOhoBvfw.jpg",
+"n": "Kolda ejderha",
+"p": 20000,
+"st": 5
+},
+"t_kartal": {
+"f": "/tmp/tatzip/x/AaGpFVJLvocd6YsNB-On_A-AaGpFVJL9JFdeeYAks8dKw.jpg",
+"n": "Kolda kartal",
+"p": 16000,
+"st": 4
+},
+"t_kurt": {
+"f": "/tmp/tatzip/x/AaGpFWHP4DZKP6FRaFR6-A-AaGpFWHP7SaXV0HcBGAAcA.jpg",
+"n": "Kolda kurt",
+"p": 12000,
+"st": 4
+},
+"t_dua": {
+"f": "/tmp/tatzip/x/AaGpFXGmSV_FZMco1BH3mQ-AaGpFXGmMxGA4vl707JZrg.jpg",
+"n": "Dua eden eller",
+"p": 10000,
+"st": 3
+},
+"t_istanbul": {
+"f": "/tmp/tatzip/x/AaGpFYHOZ8JAp-RhccU3ow-AaGpFYHORRcJgiVocI2cYA.jpg",
+"n": "İstanbul silueti",
+"p": 12000,
+"st": 4
+},
+"t_ayyildiz": {
+"f": "/tmp/tatzip/x/AaGpFZI1kGgMlSJm_rVVMw-AaGpFZI1aKOvZG_sG4UDaw.jpg",
+"n": "Ay yıldız",
+"p": 6000,
+"st": 3
+},
+"t_mikrofon": {
+"f": "/tmp/tatzip/x/AaGpFaNd510t5c474OJy-Q-AaGpFaNd9BLrIVJ9tIfarA.jpg",
+"n": "Mikrofon",
+"p": 7000,
+"st": 3
+},
+"t_nota": {
+"f": "/tmp/tatzip/x/AaGpFbMNAvock3rFTc7S6g-AaGpFbMNUnZW8gL6ZjjxFA.jpg",
+"n": "Notalar",
+"p": 8000,
+"st": 3
+},
+"t_zar": {
+"f": "/tmp/tatzip/x/AaGpFc9y-JHEay_Ykw0Fig-AaGpFc9yHWxbGzfq8IEIYQ.jpg",
+"n": "Alevli zarlar",
+"p": 7000,
+"st": 3
+},
+"t_iskambil": {
+"f": "/tmp/tatzip/x/AaGpFcFY41yhy6Z3U1orNw-AaGpFcFY8vUO7VbDWtc4Ww.jpg",
+"n": "İskambil",
+"p": 7000,
+"st": 3
+},
+"t_dolar": {
+"f": "/tmp/tatzip/x/AaGpFd-4FU_ERpGAs9n7WQ-AaGpFd-44zIXEfghI85WXg.jpg",
+"n": "Dolar ve para",
+"p": 8000,
+"st": 3
+},
+"t_capa": {
+"f": "/tmp/tatzip/x/AaGpFe8n6wDiRuCLLQw1Pw-AaGpFe8nzZJRPg5QVUg4hA.jpg",
+"n": "Çapa",
+"p": 5000,
+"st": 2
+},
+"t_pusula": {
+"f": "/tmp/tatzip/x/AaGpFf3DmuhbEso4uiPEBg-AaGpFf3DoyI7GMpeX6sTxQ.jpg",
+"n": "Pusula",
+"p": 6000,
+"st": 3
+},
+"t_zincir": {
+"f": "/tmp/tatzip/x/AaGpFgxM9_qESxS_3zrQqA-AaGpFgxMgpmmY5LoD-tFbg.jpg",
+"n": "Zincir bant",
+"p": 5000,
+"st": 2
+},
+"t_koi": {
+"f": "/tmp/tatzip/x/AaGpFh0felEOCiF0VJFFZA-AaGpFh0foDmwXwtr9gqgdA.jpg",
+"n": "Koi balığı",
+"p": 15000,
+"st": 4
+},
+"t_dalga": {
+"f": "/tmp/tatzip/x/AaGpFi79tC9RtzHPmZrTaw-AaGpFi79RsG7Igy5iljcNQ.jpg",
+"n": "Japon dalgası",
+"p": 15000,
+"st": 4
+},
+"t_mandala": {
+"f": "/tmp/tatzip/x/AaGpFj99EH564mal6OclWQ-AaGpFj99sfzpD839oYK9Cw.jpg",
+"n": "Omuzda mandala",
+"p": 11000,
+"st": 4
+},
+"t_diken": {
+"f": "/tmp/tatzip/x/AaGpFk_T5b80WBUTtNhUww-AaGpFk_TIR9wnAEZcReBiw.jpg",
+"n": "Diken bant",
+"p": 5000,
+"st": 2
+},
+"t_aile": {
+"f": "/tmp/tatzip/x/AaGpFmCStI4alyt7RRTpFA-AaGpFmCSVy5Q8lF_ZbAKYg.jpg",
+"n": "Kolda \"AİLE\"",
+"p": 5000,
+"st": 2
+},
+"t_kanat": {
+"f": "/tmp/tatzip/x/AaGpFnDOAAHF8VIWB4DyZw-AaGpFnDOW0-3QS80jIxWSQ.jpg",
+"n": "Melek kanatları",
+"p": 25000,
+"st": 5
+},
+"t_alev": {
+"f": "/tmp/tatzip/x/AaGpFoBau3Jm9yyWOahowQ-AaGpFoBajsM2HO7xQ5t4Yg.jpg",
+"n": "Kollarda alevler",
+"p": 16000,
+"st": 4
+},
+"t_blackout": {
+"f": "/tmp/tatzip/x/AaGpFpHk4VHfFSrdTkRISg-AaGpFpHkUmxRfixz4aRDKw.jpg",
+"n": "Blackout kol",
+"p": 40000,
+"st": 6
+},
+"t_kopruck": {
+"f": "/tmp/tatzip/x/AaGpFqGwNbdPR7SUNAfRLQ-AaGpFqGwErIWGUY7nvcB0g.jpg",
+"n": "Köprücükte yazı",
+"p": 4500,
+"st": 2
+}
+}

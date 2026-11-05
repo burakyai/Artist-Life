@@ -27,24 +27,26 @@ bx, by = anchor(base)
 face_zone = np.zeros(base.shape[:2], bool); face_zone[440:780, 420:845] = True
 meta = {}
 for k, info in FILES.items():
-    a = np.asarray(Image.open(f'{UP}{info["f"]}-image.png').convert('RGB')).astype(float)
+    a = np.asarray(Image.open(info['f'] if '/' in info['f'] else f'{UP}{info["f"]}-image.png').convert('RGB')).astype(float)
     ax_, ay_ = anchor(a); dx, dy = bx - ax_, by - ay_
     a2 = ndimage.shift(a, (dy, dx, 0), order=1, mode='nearest')
     diff = np.abs(a2 - base).max(2)
     v = a2.mean(2)
     # sakal: bazdan farklı ve tenden koyu (siyah/koyu kahve tüy)
     kk = (a2 / SKIN).mean(2)
-    m = (diff > 30) & (v < 150) & face_zone
-    m = ndimage.binary_opening(m, iterations=1)
-    m = ndimage.binary_closing(m, iterations=3)
+    light = info.get('light')
+    m = ((diff > 12) & (v < base.mean(2) - 8) & face_zone) if light else ((diff > 30) & (v < 150) & face_zone)
+    m = m if light else ndimage.binary_opening(m, iterations=1)
+    m = ndimage.binary_closing(m, iterations=1 if light else 3)
     lab, n = ndimage.label(m); sz = ndimage.sum(m, lab, range(1, n + 1))
     m = np.isin(lab, [i + 1 for i, s in enumerate(sz) if s > 120])
     if not m.any(): print('BOŞ', k); continue
     # yumuşak kenar: kirli sakal gibi seyrek olanlarda fark miktarına göre saydamlık
-    dens = np.clip((diff - 20) / 90, 0, 1) * np.clip((170 - v) / 120, 0, 1)
+    dens = np.clip((base.mean(2) - v) / 70, 0, 1) if light else np.clip((diff - 20) / 90, 0, 1) * np.clip((170 - v) / 120, 0, 1)
     dens = ndimage.gaussian_filter(dens, .8)
     alpha = np.where(m, np.maximum(dens, .0), 0)
-    alpha = np.where(ndimage.binary_erosion(m, iterations=3), np.maximum(alpha, .92), alpha)  # gövde dolu
+    if not light: alpha = np.where(ndimage.binary_erosion(m, iterations=3), np.maximum(alpha, .92), alpha)  # gövde dolu
+    else: alpha = np.clip(ndimage.gaussian_filter(alpha, 1.6) * 1.9, 0, .7)
     ys, xs = np.where(alpha > .02); x0, x1, y0, y1 = xs.min(), xs.max() + 1, ys.min(), ys.max() + 1
     sub = a2[y0:y1, x0:x1]; al = alpha[y0:y1, x0:x1]; vv = v[y0:y1, x0:x1]
     # detay: parlak tel ayrımları (açık renk) + dış çizgi (koyu)
