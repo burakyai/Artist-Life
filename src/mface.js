@@ -23,7 +23,8 @@ function mHead(id,skin,age,sad,B){const X=33.82,Y=11.95,W=32.55,H=40.98;const CH
   if(accs.some(a=>a==='boyun'||a==='boyun2'||a==='boyun3'))s+=`<defs><clipPath id="${id}nk"><path d="M44 44 Q43.6 50 43.4 57 Q50 60 56.6 57 Q56.4 50 56 44Z"/></clipPath></defs><g clip-path="url(#${id}nk)"><g transform="translate(50 1) scale(.9 1) translate(-50 0)">${neckTat(accs)}</g></g>`;
   ['zincir','kartal','bayrak'].forEach(a=>{if(accs.includes(a))s+=acc2(a)});
   s+=mHead(id,skin,age,sad,(typeof MBODY!=='undefined')&&MBODY[o]);
-  if(adult)s+=beard2(L.beard,(window.NATHC&&!window.NATHC.includes(L.hairColor)&&age<58)?'#3a2a20':hc);
+  /* eski vektör sakallar kaldırıldı; yeni görsel sakallar MBEARD ile gelecek */
+  if(adult&&typeof MBEARD!=='undefined'&&MBEARD[L.beard])s+=mbeardSVG(L.beard,hc);
   if(typeof MTAT!=='undefined'&&adult){const tk=accs.filter(a=>MTAT[a]);if(tk.length){const B=(typeof MBODY!=='undefined')&&MBODY[o];const F=MIMG;const X=10.88+370*.062,Y=9.16+45*.062,W=(895-370)*.062,H=(706-45)*.062;
     let mk=`<image href="${F.sil}" x="${X}" y="${Y}" width="${W}" height="${H}"/>`;if(B)mk+=`<image href="${B.sk}" x="${B.x}" y="${B.y}" width="${B.w}" height="${Math.max(B.h,82.5-B.y)}" preserveAspectRatio="none"/>`;s+=mtatSVG(tk,mk)}}
   if(L.hair!=='kel')s+=G(hair2(L.hair,hc)+hairM(L.hair,hc));
@@ -41,3 +42,6 @@ function mHead(id,skin,age,sad,B){const X=33.82,Y=11.95,W=32.55,H=40.98;const CH
 
 /* takı sekmeleri geçici olarak kapalı */
 {for(const k of ['kolye','kupe']){const i=AGRP.findIndex(x=>x[0]===k);if(i>=0)AGRP.splice(i,1)}}
+
+/* eski sakal listesi kapalı: yalnız sinekkaydı + görsel sakallar */
+BEARDS.length=0;BEARDS.push(['yok','Sinekkaydı']);if(typeof MBEARD!=='undefined')Object.entries(MBEARD).forEach(([k,v])=>BEARDS.push([k,v.n]));

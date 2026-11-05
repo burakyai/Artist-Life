@@ -11,11 +11,14 @@ SC = .062; OX = 10.88; OY = 9.16
 SKIN = np.array([241.5, 193.0, 160.5])
 base = np.asarray(Image.open(BASE).convert('RGB')).astype(float)
 def lips(a):
-    """hizalama çapası: (yüz merkezi x, çene çizgisi y) — dudak renginden daha güvenilir"""
-    nw = a.min(2) < 230; row = nw[400]; xs = np.where(row)[0]; cx = (xs.min() + xs.max()) / 2
-    dark = a.mean(2) < 60; chin = 680
-    for y in range(630, 780):
-        if dark[y, 600:660].mean() > .5: chin = y; break
+    """hizalama çapası: (yüz merkezi x, çene çizgisi y). Çene, dudakların altındaki ilk kalın koyu çizgi."""
+    nw = a.min(2) < 230
+    m = (a[..., 0] > 170) & (a[..., 1] < 170) & (a[..., 2] < 170) & (a[..., 0] - a[..., 1] > 35); m[:300] = 0; m[800:] = 0; m[:, :450] = 0; m[:, 800:] = 0
+    ly = np.where(m)[0].mean()
+    row = nw[int(ly) - 120]; xs = np.where(row)[0]; cx = (xs.min() + xs.max()) / 2
+    dark = a.mean(2) < 60; chin = int(ly) + 60; c0 = int(cx) - 30
+    for y in range(int(ly) + 25, int(ly) + 160):
+        if dark[y, c0:c0 + 60].mean() > .5: chin = y; break
     return cx, chin
 bx, by = lips(base)
 kk = (base / SKIN).mean(2); dev = np.abs(base - kk[..., None] * SKIN).max(2)
