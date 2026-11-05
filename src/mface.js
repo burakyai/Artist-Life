@@ -45,3 +45,7 @@ function mHead(id,skin,age,sad,B){const X=33.82,Y=11.95,W=32.55,H=40.98;const CH
 
 /* eski sakal listesi kapalı: yalnız sinekkaydı + görsel sakallar */
 BEARDS.length=0;BEARDS.push(['yok','Sinekkaydı']);if(typeof MBEARD!=='undefined')Object.entries(MBEARD).forEach(([k,v])=>BEARDS.push([k,v.n]));
+
+/* eski sakal anahtarları → yeni görsel sakallar */
+{const BMAP={kirli:'cerceve',kisasakal:'cerceve',boxed:'cerceve',balbo:'keci',keci:'keci',cene:'cerceve',tam:'gur',ince:'biyik',biyik:'biyik',palakalin:'biyik'};
+ const _av=avatarSVG2;avatarSVG2=function(L,age,opts){if(L&&L.g!=='k'&&L.beard&&L.beard!=='yok'&&typeof MBEARD!=='undefined'&&!MBEARD[L.beard])L.beard=BMAP[L.beard]||'yok';return _av(L,age,opts)}}
