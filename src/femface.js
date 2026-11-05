@@ -11,7 +11,8 @@ function femHead(id,skin,age,sad){const X=33.4,Y=12,W=33.3,H=40.42;
 {const _av=avatarSVG2;avatarSVG2=function(L,age,opts){if(L.g!=='k')return _av(L,age,opts);
   const skin=SKINS[L.skin],id='k'+(++uid);let hc=HCOL[L.hairColor];
   if(age>=58&&!['gri','beyaz'].includes(L.hairColor))hc=age>=72?HCOL.beyaz:HCOL.gri;
-  const adult=age>=16,o=opts.jail?'mahkum':L.outfit,accs=adult&&!opts.jail?L.acc:(opts.jail&&L.acc.includes('yara')?['yara']:[]);
+  const adult=age>=16,o=opts.jail?'mahkum':L.outfit;let accs=adult&&!opts.jail?L.acc:(opts.jail&&L.acc.includes('yara')?['yara']:[]);
+  accs=accs.filter(a=>!(typeof NECKS!=='undefined'&&NECKS.includes(a))&&!(typeof EARS!=='undefined'&&EARS.includes(a))&&!['zincir','kartal','bayrak'].includes(a));/* takılar geçici olarak kapalı */
   const sad=opts.mood!==undefined&&opts.mood<30;
   const G=x=>`<g stroke="${OL2}" stroke-width=".8" stroke-linejoin="round">${x}</g>`;
   let s=`<svg viewBox="14 2 72 79.2" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" style="--sk:${skin}">`;

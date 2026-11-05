@@ -4,7 +4,7 @@ from PIL import Image
 import numpy as np
 from scipy import ndimage
 BASE, OUT, JS = sys.argv[1], sys.argv[2], sys.argv[3]
-X0, X1, Y0, Y1 = 370, 895, 45, 735
+X0, X1, Y0, Y1 = 370, 895, 45, 694
 im = Image.open(BASE).convert('RGB'); a = np.asarray(im).astype(float)
 base = np.array([241.5, 193.0, 160.5]); a = a[Y0:Y1, X0:X1]
 k = (a / base).mean(2); dev = np.abs(a - k[..., None] * base).max(2)
@@ -15,7 +15,7 @@ lab2, n2 = ndimage.label(fg); sizes = ndimage.sum(fg, lab2, range(1, n2 + 1)); f
 sil = np.zeros(a.shape[:2]); sil[fg] = 1
 edge = np.clip((235 - a.min(2)) / 40, 0, 1); sil = np.minimum(sil, np.maximum(edge, ndimage.binary_erosion(fg, iterations=2)))
 # alt kenar: boyun kesiti yumuşak bitsin (son 18 px'te alpha azalır) — altındaki gövde boynuyla kaynaşır
-fade = np.ones(a.shape[0]); fade[-18:] = np.linspace(1, 0, 18); sil = sil * fade[:, None]
+fade = np.ones(a.shape[0]); fade[-3:] = np.linspace(1, .3, 3); sil = sil * fade[:, None]
 sk = skin & fg; shade = np.clip(1 - k, 0, 1) * fg
 alpha = np.where(sk, shade * 0.85, fg * 1.0) * sil
 rgb = np.where(sk[..., None], np.array([60, 30, 20])[None, None, :], a)

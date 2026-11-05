@@ -30,13 +30,13 @@ for k, f in FILES.items():
     lx, ly = lips(a); dx, dy = bx - lx, by - ly
     fshift = ndimage.shift(face.astype(float), (-dy, -dx), order=0) > .5
     fshift = ndimage.binary_erosion(fshift, iterations=3)
-    fshift[int(670 - dy):] = False  # boyun gövdeye dahil (yüz görseliyle örtüşür, dikiş görünmez)
+    fshift[int(655 - dy):] = False  # boyun gövdeye dahil (yüz görseliyle örtüşür, dikiş görünmez)
     white = a.min(2) > 232
     # arka plan: üst/sol/sağ kenarlara bağlı beyaz (alt kenara değen beyaz gömlek arka plan sayılmaz)
     wl, wn = ndimage.label(white); border = set(wl[0, :]) | set(wl[:, 0]) | set(wl[:, -1]); border.discard(0)
     bg = np.isin(wl, list(border))
     body = ~bg & ~fshift
-    body[:int(670 - dy)] = False  # çenenin üstü asla gövde değil
+    pass
     body = ndimage.binary_opening(body, iterations=2)
     lab, n = ndimage.label(body); sz = ndimage.sum(body, lab, range(1, n + 1)); body = lab == (np.argmax(sz) + 1)
     body = ndimage.binary_fill_holes(body)
