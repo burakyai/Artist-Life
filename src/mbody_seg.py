@@ -20,6 +20,16 @@ def facesil(a):
     return ndimage.binary_fill_holes(l2 == (np.argmax(sz) + 1))
 face = facesil(base)
 face[840:] = False
+# yüz katmanı çene konturunda bitiyor (mface_seg ile aynı kural): gövdeden yalnız konturun ÜSTÜ çıkarılır
+_dk = base.mean(2) < 60; _cut = np.full(base.shape[1], 0, int)
+for _x in range(base.shape[1]):
+    _ys0 = 640 if 545 <= _x <= 715 else 470
+    _r = np.where(_dk[_ys0:760, _x])[0]
+    for _q in _r:
+        if _dk[_ys0 + _q:_ys0 + _q + 3, _x].all(): _cut[_x] = _ys0 + _q; break
+_ix = np.where(_cut > 0)[0]
+if len(_ix): _cut = np.interp(np.arange(base.shape[1]), _ix, _cut[_ix]).astype(int)
+face = face & (np.arange(base.shape[0])[:, None] < _cut[None, :])
 def lips(a):
     """hizalama çapası: (yüz merkezi x, çene çizgisi y). Çene, dudakların altındaki ilk kalın koyu çizgi."""
     nw = a.min(2) < 230
@@ -46,7 +56,6 @@ for k, f in FILES.items():
     lx, ly = lips(a); dx, dy = bx - lx, by - ly
     fshift = ndimage.shift(face.astype(float), (-dy, -dx), order=0) > .5
     # gövde: çene konturunun ALTINDAKİ her şey (boyun dahil) + çene içi de dahil (yüz üstüne biner, kontur dikişi örter)
-    fshift[int(600 - dy):] = False
     fring = np.zeros_like(fshift)
     white = a.min(2) > 232
     # arka plan: üst/sol/sağ kenarlara bağlı beyaz (alt kenara değen beyaz gömlek arka plan sayılmaz)

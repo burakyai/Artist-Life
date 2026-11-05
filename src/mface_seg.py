@@ -20,12 +20,12 @@ dark = (a.mean(2) < 60)
 Y_START = 640 - Y0
 chin_line = np.full(a.shape[1], -1, dtype=int)
 for x in range(a.shape[1]):
-    col = dark[Y_START:, x]
+    xo = x + X0; ys0 = Y_START if 545 <= xo <= 715 else 470 - Y0  # yanlarda çene çizgisi daha yukarıda başlar (ağız bölgesi hariç)
+    col = dark[ys0:, x]
     runs = np.where(col)[0]
     if len(runs):
-        # ilk 3+ px'lik koyu blok (ince gölgeleri atla)
         for r in runs:
-            if col[r:r + 3].all(): chin_line[x] = Y_START + r; break
+            if col[r:r + 3].all(): chin_line[x] = ys0 + r; break
 valid = chin_line >= 0
 # çene köşelerinin dışında (yüz silüeti yok) sütunlar: tamamen gövdeye bırak
 xs_face = np.where(valid)[0]
@@ -41,7 +41,6 @@ if len(idx):
     cut = np.where(inner, np.interp(xi, idx, cut[idx]), Y_START).astype(int)  # çene dışı: çene köşesi hizasında bitir
     # yüz genişliği (y=620'deki dış kontur): bunun dışındaki her şey (omuz/boyun çizgileri) y=640'ta biter
     rowd = np.where(dark[620 - Y0])[0]; fl, fr = rowd.min() - 2, rowd.max() + 2
-    cut = np.where((xi < fl + 8) | (xi > fr - 8), np.minimum(cut, Y_START + 2), cut)
 sil[rows > cut[None, :]] = 0
 _d = cut[None, :] - rows; sil = sil * np.where(_d >= 0, np.clip(_d / 5, 0, 1), 1)  # alt kenarı 5 px yumuşat
 # --- ten tonu katmanları ---
