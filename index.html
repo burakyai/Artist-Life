@@ -253,7 +253,7 @@ body.monob .tab.on,body[data-th="monokrom"] .tab.on,body[data-th="monokrom"] .bt
 <div class="mod" id="confirm"><div class="box"><h2>Yeni hayat?</h2><p>Mevcut hayatın silinecek ve baştan başlayacaksın.</p><button class="btn" onclick="$('confirm').classList.remove('on');restart()">Evet, baştan başla</button><button class="btn sec" onclick="$('confirm').classList.remove('on')">Vazgeç</button></div></div>
 <script>
 try{if('serviceWorker' in navigator&&/github\.io$/.test(location.hostname))navigator.serviceWorker.register('sw.js').catch(()=>{})}catch(e){}
-const APPV='2026.11.05-134334';
+const APPV='2026.11.05-134914';
 (function(){try{if(!/github\.io$/.test(location.hostname))return;const chk=()=>fetch(location.pathname+'?nc='+Date.now(),{cache:'no-store'}).then(r=>r.text()).then(t=>{const m=t.match(/const APPV='([^']+)'/);if(m&&m[1]!==APPV&&!sessionStorage.getItem('upd'+m[1])){sessionStorage.setItem('upd'+m[1],'1');location.replace(location.pathname+'?v='+encodeURIComponent(m[1]))}}).catch(()=>{});chk();document.addEventListener('visibilitychange',()=>{if(!document.hidden)chk()})}catch(e){}})();
 /* ============ Yardımcılar ============ */
 const $=id=>document.getElementById(id);
@@ -4680,7 +4680,13 @@ function femHead(id,skin,age,sad){const X=33.4,Y=12,W=33.3,H=40.42;
   let s=`<svg viewBox="14 2 72 79.2" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" style="--sk:${skin}">`;
   s+=G(hair2Back(L.hair,hc)+hairMBack(L.hair,hc));
   /* gövde: kadın için daha dar omuz */
-  s+=((typeof KBODY!=='undefined'&&KBODY[o])?kbodySVG(o,skin):G(bodyM(o,(L.oc||{})[o])))+tat2Neck(accs,id);
+  {/* hapis: gömlek görseli turuncu tulumla boyanır + numara; çocuk: gövde küçülür */
+   const jail=o==='mahkum'&&typeof KBODY!=='undefined'&&KBODY.gomlek;const ob=jail?'gomlek':o;
+   const kidK=age<10?.88:age<14?.92:age<16?.96:1;
+   let bs=(typeof KBODY!=='undefined'&&KBODY[ob])?kbodySVG(ob,skin):G(bodyM(o,(L.oc||{})[o]));
+   if(jail){const fid='jf'+(++uid);bs=`<defs><filter id="${fid}" color-interpolation-filters="sRGB"><feColorMatrix type="matrix" values=".95 0 0 0 0  .5 0 0 0 0  .18 0 0 0 0  0 0 0 1 0"/></filter></defs>`+bs.replace(/<image href="([^"]+)"([^>]*?)\/>$/,(m,h,r)=>`<image href="${h}"${r} filter="url(#${fid})"/>`)+`<rect x="56" y="68" width="10" height="4.4" rx=".6" fill="#f2efe6" stroke="#222" stroke-width=".35"/><text x="61" y="71.4" font-size="3.2" font-weight="800" text-anchor="middle" font-family="monospace" fill="#222">${(S&&S.cr&&S.cr.no)||1987}</text>`}
+   if(kidK<1)bs=`<g transform="translate(50 0) scale(${kidK} 1) translate(-50 0)">${bs}</g>`;
+   s+=bs+tat2Neck(accs,id);}
   /* boyun görselin içinde; boyun dövmesi */
   if(accs.some(a=>a==='boyun'||a==='boyun2'||a==='boyun3'))s+=`<defs><clipPath id="${id}nk"><path d="M44 44 Q43.6 50 43.4 57 Q50 60 56.6 57 Q56.4 50 56 44Z"/></clipPath></defs><g clip-path="url(#${id}nk)"><g transform="translate(50 1) scale(.9 1) translate(-50 0)">${neckTat(accs)}</g></g>`;
   ['zincir','kartal','bayrak'].forEach(a=>{if(accs.includes(a))s+=acc2(a)});
@@ -4725,14 +4731,20 @@ function mHead(id,skin,age,sad,B){const X=33.82,Y=11.95,W=32.55,H=40.98;const CH
 {const _av=avatarSVG2;avatarSVG2=function(L,age,opts){if(L.g==='k')return _av(L,age,opts);
   const skin=SKINS[L.skin],id='m'+(++uid);let hc=HCOL[L.hairColor];
   if(age>=58&&!['gri','beyaz'].includes(L.hairColor))hc=age>=72?HCOL.beyaz:HCOL.gri;
-  const adult=age>=16;let o=opts.jail?'mahkum':L.outfit;if(typeof MBODY!=='undefined'&&!MBODY[o]&&!opts.jail)o='kas';let accs=adult&&!opts.jail?L.acc:(opts.jail&&L.acc.includes('yara')?['yara']:[]);
+  const adult=age>=16;let o=opts.jail?'mahkum':L.outfit;if(typeof MBODY!=='undefined'&&!MBODY[o]&&!opts.jail)o='kas';if(age<14&&o==='kas')o='hoodie';let accs=adult&&!opts.jail?L.acc:(opts.jail&&L.acc.includes('yara')?['yara']:[]);
   accs=accs.filter(a=>!(typeof NECKS!=='undefined'&&NECKS.includes(a))&&!(typeof EARS!=='undefined'&&EARS.includes(a))&&!['zincir','kartal','bayrak'].includes(a));/* takılar geçici olarak kapalı */
   const sad=opts.mood!==undefined&&opts.mood<30;
   const G=x=>`<g stroke="${OL2}" stroke-width=".8" stroke-linejoin="round">${x}</g>`;
   let s=`<svg viewBox="14 2 72 79.2" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" style="--sk:${skin}">`;
   s+=G(hair2Back(L.hair,hc)+hairMBack(L.hair,hc));
   /* gövde: kadın için daha dar omuz */
-  s+=((typeof MBODY!=='undefined'&&MBODY[o])?mbodySVG(o,skin):G(bodyM(o,(L.oc||{})[o])))+tat2Neck(accs,id);
+  {/* hapis: gömlek görseli turuncu tulumla boyanır + numara; çocuk: gövde küçülür */
+   const jail=o==='mahkum'&&typeof MBODY!=='undefined'&&MBODY.gomlek;const ob=jail?'gomlek':o;
+   const kidK=age<10?.88:age<14?.92:age<16?.96:1;
+   let bs=(typeof MBODY!=='undefined'&&MBODY[ob])?mbodySVG(ob,skin):G(bodyM(o,(L.oc||{})[o]));
+   if(jail){const fid='jf'+(++uid);bs=`<defs><filter id="${fid}" color-interpolation-filters="sRGB"><feColorMatrix type="matrix" values=".95 0 0 0 0  .5 0 0 0 0  .18 0 0 0 0  0 0 0 1 0"/></filter></defs>`+bs.replace(/<image href="([^"]+)"([^>]*?)\/>$/,(m,h,r)=>`<image href="${h}"${r} filter="url(#${fid})"/>`)+`<rect x="56" y="68" width="10" height="4.4" rx=".6" fill="#f2efe6" stroke="#222" stroke-width=".35"/><text x="61" y="71.4" font-size="3.2" font-weight="800" text-anchor="middle" font-family="monospace" fill="#222">${(S&&S.cr&&S.cr.no)||1987}</text>`}
+   if(kidK<1)bs=`<g transform="translate(50 0) scale(${kidK} 1) translate(-50 0)">${bs}</g>`;
+   s+=bs+tat2Neck(accs,id);}
   /* boyun görselin içinde; boyun dövmesi */
   if(accs.some(a=>a==='boyun'||a==='boyun2'||a==='boyun3'))s+=`<defs><clipPath id="${id}nk"><path d="M44 44 Q43.6 50 43.4 57 Q50 60 56.6 57 Q56.4 50 56 44Z"/></clipPath></defs><g clip-path="url(#${id}nk)"><g transform="translate(50 1) scale(.9 1) translate(-50 0)">${neckTat(accs)}</g></g>`;
   ['zincir','kartal','bayrak'].forEach(a=>{if(accs.includes(a))s+=acc2(a)});
