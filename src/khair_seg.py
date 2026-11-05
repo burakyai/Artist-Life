@@ -44,9 +44,12 @@ for k, f in FILES.items():
     ys, xs = np.where(m); x0, x1, y0, y1 = xs.min(), xs.max() + 1, ys.min(), ys.max() + 1
     sub = a[y0:y1, x0:x1]; mm = m[y0:y1, x0:x1]; vv = v[y0:y1, x0:x1]
     sil = ndimage.gaussian_filter(mm.astype(float), 1.0)
-    light = np.clip((vv - 34) / 110, 0, 1); dark = np.clip((16 - vv) / 16, 0, 1)
-    det = np.zeros(sub.shape[:2] + (4,)); det[..., :3] = np.where(light[..., None] > 0, 255, 0)
-    det[..., 3] = np.where(light > 0, light * .55, dark * .8) * sil
+    light = np.clip((vv - 34) / 110, 0, 1) * ndimage.binary_erosion(mm, iterations=6)  # kenar anti-alias pikselleri parlaklık sayılmasın
+    # dış çizgi: maske sınırından içeri ~6 px; iç çizgiler siyah dolgudan ayrılamadığı için sadece parlaklıklar kalır
+    dist = ndimage.distance_transform_edt(mm)
+    outline = np.clip((11 - dist) / 4, 0, 1) * mm
+    det = np.zeros(sub.shape[:2] + (4,)); det[..., :3] = np.where(light[..., None] > .05, 255, 20)
+    det[..., 3] = np.where(light > .05, light * .38, outline * .9) * sil * 255
     w = x1 - x0; h = y1 - y0; sc = min(1, 820 / max(w, h)); W, H = int(w * sc), int(h * sc)
     Image.fromarray(np.dstack([np.full(mm.shape + (3,), 255), sil * 255]).astype(np.uint8), 'RGBA').resize((W, H), Image.LANCZOS).save(f'{OUT}/{k}_sil.webp', quality=88)
     Image.fromarray(np.clip(det, 0, 255).astype(np.uint8), 'RGBA').resize((W, H), Image.LANCZOS).save(f'{OUT}/{k}_det.webp', quality=88)

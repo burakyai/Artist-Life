@@ -16,10 +16,10 @@ function femHead(id,skin,age,sad){const X=33.4,Y=12,W=33.3,H=40.42;
   const G=x=>`<g stroke="${OL2}" stroke-width=".8" stroke-linejoin="round">${x}</g>`;
   let s=`<svg viewBox="14 2 72 79.2" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" style="--sk:${skin}">`;
   s+=G(hair2Back(L.hair,hc)+hairMBack(L.hair,hc));
+  /* gövde: kadın için daha dar omuz */
+  s+=((typeof KBODY!=='undefined'&&KBODY[o])?kbodySVG(o,skin):G(bodyM(o,(L.oc||{})[o])))+tat2Neck(accs,id);
   /* boyun görselin içinde; boyun dövmesi */
   if(accs.some(a=>a==='boyun'||a==='boyun2'||a==='boyun3'))s+=`<defs><clipPath id="${id}nk"><path d="M44 44 Q43.6 50 43.4 57 Q50 60 56.6 57 Q56.4 50 56 44Z"/></clipPath></defs><g clip-path="url(#${id}nk)"><g transform="translate(50 1) scale(.9 1) translate(-50 0)">${neckTat(accs)}</g></g>`;
-  /* gövde: kadın için daha dar omuz */
-  s+=tat2Neck(accs,id)+((typeof KBODY!=='undefined'&&KBODY[o])?kbodySVG(o,skin):G(bodyM(o,(L.oc||{})[o])));
   ['zincir','kartal','bayrak'].forEach(a=>{if(accs.includes(a))s+=acc2(a)});
   s+=femHead(id,skin,age,sad);
   s+=G(hair2(L.hair,hc)+hairM(L.hair,hc));
