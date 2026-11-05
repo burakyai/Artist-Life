@@ -36,8 +36,6 @@ for k, info in FILES.items():
     bl = base.mean(2); al = a2.mean(2)
     alpha = np.clip((bl - al) / np.maximum(bl - 22, 1), 0, 1)
     alpha[bl < 90] = m[bl < 90]            # bazdaki çizgilerin üstünde maskeye güven
-    alpha[m] = np.maximum(alpha[m], .97 * (al[m] < 110))
-    alpha = np.where(m & (al < 150), np.maximum(alpha, ndimage.binary_erosion(m, iterations=2) * 1.0), alpha)
     bgm = bl > 240; alpha[bgm] = np.clip((254 - al[bgm]) / 200, 0, 1)   # arka plan üstü: yalnız gerçek koyu piksel
     alpha[alpha < .08] = 0; alpha *= reg
     ys, xs = np.where(alpha > .05); x0, x1, y0, y1 = xs.min(), xs.max() + 1, ys.min(), ys.max() + 1
@@ -46,7 +44,8 @@ for k, info in FILES.items():
     h = np.clip(Hp.mean(2), 0, 255)
     core = A > .9; med = float(np.median(h[core])) if core.any() else 25.0; med = max(med, 12.0)
     dark = np.clip(1 - h / med, 0, 1) * .85; lite = np.clip((h - med) / (255 - med), 0, 1) * .85
-    lite[(A < .6) | (Ac.mean(2) > 140)] = 0   # kenar karışımlarını parlaklık sanma (gri yapma)
+    core2 = ndimage.binary_erosion(A > .9, iterations=3)
+    lite *= np.clip((A - .85) / .15, 0, 1) * core2; lite[(Ac.mean(2) > 140) | (Bc.mean(2) < 90)] = 0   # fade/geçiş bölgesinde parlaklık yok (gri olmasın)   # kenar karışımlarını parlaklık sanma (gri yapma)
     sil = A
     det = np.zeros(A.shape + (4,)); det[..., :3] = np.where((lite > dark)[..., None], 255, 0)
     det[..., 3] = np.maximum(dark, lite) * A * 255
