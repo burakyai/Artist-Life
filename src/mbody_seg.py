@@ -31,12 +31,20 @@ bx, by = lips(base)
 meta = {}
 for k, f in FILES.items():
     a = np.asarray(Image.open(f'{UP}{f}-image.png').convert('RGB')).astype(float)
+    # ölçek düzeltmesi: kafa tepesi→çene yüksekliği baz ile aynı olsun
+    def _top(img): nw = (img.min(2) < 200)[:, 560:700].any(1); return int(np.argmax(nw))
+    _, bc = lips(base); _, ic = lips(a); bt = _top(base); it = _top(a)
+    sc_ = (bc - bt) / max(1, (ic - it))
+    if abs(sc_ - 1) > .03:
+        im2 = Image.open(f'{UP}{f}-image.png').convert('RGB'); W0, H0 = im2.size
+        nw_, nh_ = int(W0 * sc_), int(H0 * sc_); im2 = im2.resize((nw_, nh_), Image.LANCZOS)
+        canvas = Image.new('RGB', (W0, H0), (255, 255, 255)); ox = (W0 - nw_) // 2; oy = int(bt - it * sc_)
+        canvas.paste(im2, (ox, oy)); a = np.asarray(canvas).astype(float); print('ölçek', k, round(sc_, 3))
     lx, ly = lips(a); dx, dy = bx - lx, by - ly
     fshift = ndimage.shift(face.astype(float), (-dy, -dx), order=0) > .5
-    # çene bandı (640-700): yüz görselinin çene çizgisi gövdedekini örtsün diye gövdeden 6 px pay ile çıkarılır; 700'den aşağısı (boyun, yaka) gövdede kalır
-    fshift[int(700 - dy):] = False
-    fshift = ndimage.binary_dilation(fshift, iterations=6)
-    fring = fshift.copy(); fring[:int(640 - dy)] = False  # ten maskesine eklenecek bant (yüz orada görünsün, delik kalmasın)
+    # gövde: çene konturunun ALTINDAKİ her şey (boyun dahil) + çene içi de dahil (yüz üstüne biner, kontur dikişi örter)
+    fshift[int(600 - dy):] = False
+    fring = np.zeros_like(fshift)
     white = a.min(2) > 232
     # arka plan: üst/sol/sağ kenarlara bağlı beyaz (alt kenara değen beyaz gömlek arka plan sayılmaz)
     wl, wn = ndimage.label(white); border = set(wl[0, :]) | set(wl[:, 0]) | set(wl[:, -1]); border.discard(0)
@@ -47,14 +55,23 @@ for k, f in FILES.items():
     lab, n = ndimage.label(body); sz = ndimage.sum(body, lab, range(1, n + 1)); body = lab == (np.argmax(sz) + 1)
     body = ndimage.binary_fill_holes(body)
     kk = (a / SKIN).mean(2); dev = np.abs(a - kk[..., None] * SKIN).max(2)
-    skin = (dev < 20) & (kk > .45) & (kk < 1.12) & body
+    skin = (dev < 34) & (kk > .45) & (kk < 1.12) & ((a[..., 0] - a[..., 2]) > 45) & body
+    # boyun bandında bazda olmayan koyu çizgiler (kaynağın çene köşesi çizgileri) → tene çevir
+    _, bchin = lips(base)
+    bshift = ndimage.shift(base, (-dy, -dx, 0), order=0, mode='nearest')
+    band = np.zeros(a.shape[:2], bool); band[int(bchin - 70 - dy):int(bchin + 25 - dy), :] = True
+    stray = band & body & (a.mean(2) < 90) & (bshift.mean(2) > 150) & ndimage.binary_dilation(skin, iterations=6)
+    stray = ndimage.binary_dilation(stray, iterations=2) & band & body & ~((a.mean(2) > 200) & ~skin)
+    if stray.any():
+        a = a.copy(); a[stray] = np.array([241.5, 193.0, 160.5]) * .97; skin = skin | stray
+        kk = (a / SKIN).mean(2)
     skin = ndimage.binary_opening(skin, iterations=2)
     ys, xs = np.where(body | fring); x0, x1, y0, y1 = xs.min(), xs.max() + 1, ys.min(), ys.max() + 1
     sub = a[y0:y1, x0:x1]; bm = body[y0:y1, x0:x1]; sk = skin[y0:y1, x0:x1]; kv = kk[y0:y1, x0:x1]
     edge = np.clip((236 - sub.min(2)) / 30, 0, 1)
     sil = np.minimum(bm.astype(float), np.maximum(edge, ndimage.binary_erosion(bm, iterations=2)))
     # kıyafet katmanı: ten dışı pikseller olduğu gibi; ten pikselleri gölge olarak
-    shade = np.clip(1 - kv, 0, 1)
+    shade = np.clip(1 - kv, 0, 1); shade = ndimage.median_filter(shade, size=7); shade = ndimage.gaussian_filter(shade, 1.5)  # ten gölgesi: lekeleri yumuşat
     cloth = np.zeros(sub.shape[:2] + (4,)); cloth[..., :3] = np.where(sk[..., None], np.array([60, 30, 20])[None, None, :], sub)
     cloth[..., 3] = np.where(sk, shade * .85, 1.0) * sil * 255
     skd = ndimage.binary_dilation(sk, iterations=9)  # maske kenarında dikiş olmasın

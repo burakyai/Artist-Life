@@ -40,14 +40,14 @@ for k, f in FILES.items():
     lab, n = ndimage.label(body); sz = ndimage.sum(body, lab, range(1, n + 1)); body = lab == (np.argmax(sz) + 1)
     body = ndimage.binary_fill_holes(body)
     kk = (a / SKIN).mean(2); dev = np.abs(a - kk[..., None] * SKIN).max(2)
-    skin = (dev < 20) & (kk > .45) & (kk < 1.12) & body
+    skin = (dev < 34) & (kk > .45) & (kk < 1.12) & ((a[..., 0] - a[..., 2]) > 45) & body
     skin = ndimage.binary_opening(skin, iterations=2)
     ys, xs = np.where(body); x0, x1, y0, y1 = xs.min(), xs.max() + 1, ys.min(), ys.max() + 1
     sub = a[y0:y1, x0:x1]; bm = body[y0:y1, x0:x1]; sk = skin[y0:y1, x0:x1]; kv = kk[y0:y1, x0:x1]
     edge = np.clip((236 - sub.min(2)) / 30, 0, 1)
     sil = np.minimum(bm.astype(float), np.maximum(edge, ndimage.binary_erosion(bm, iterations=2)))
     # kıyafet katmanı: ten dışı pikseller olduğu gibi; ten pikselleri gölge olarak
-    shade = np.clip(1 - kv, 0, 1)
+    shade = np.clip(1 - kv, 0, 1); shade = ndimage.median_filter(shade, size=7); shade = ndimage.gaussian_filter(shade, 1.5)  # ten gölgesi: lekeleri yumuşat
     cloth = np.zeros(sub.shape[:2] + (4,)); cloth[..., :3] = np.where(sk[..., None], np.array([60, 30, 20])[None, None, :], sub)
     cloth[..., 3] = np.where(sk, shade * .85, 1.0) * sil * 255
     skmask = np.dstack([np.full(sk.shape + (3,), 255), ndimage.gaussian_filter(sk.astype(float), .8) * 255 * sil])
