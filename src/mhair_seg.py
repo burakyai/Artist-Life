@@ -31,17 +31,30 @@ for k, info in FILES.items():
     lo = ndimage.binary_opening(m, iterations=6); m[330:] = lo[330:]  # kulak/çene hizasında ince çizgi artıklarını at
     lab, n = ndimage.label(m); sz = ndimage.sum(m, lab, range(1, n + 1)); m = np.isin(lab, [i + 1 for i, s in enumerate(sz) if s > 3000])
     h_ = ndimage.binary_fill_holes(m) & ~m; hl, hn = ndimage.label(h_); hs = ndimage.sum(h_, hl, range(1, hn + 1)); m |= np.isin(hl, [i + 1 for i, s in enumerate(hs) if s < 3000])
-    ys, xs = np.where(m); x0, x1, y0, y1 = xs.min(), xs.max() + 1, ys.min(), ys.max() + 1
-    mm = m[y0:y1, x0:x1]; vv = v[y0:y1, x0:x1]
-    sil = ndimage.gaussian_filter(mm.astype(float), 1.0)
-    light = np.clip((vv - 34) / 110, 0, 1) * ndimage.binary_erosion(mm, iterations=6)
-    dist = ndimage.distance_transform_edt(mm); outline = np.clip((11 - dist) / 4, 0, 1) * mm
-    det = np.zeros(mm.shape + (4,)); det[..., :3] = np.where(light[..., None] > .05, 255, 20)
-    det[..., 3] = np.where(light > .05, light * .38, outline * .9) * sil * 255
+    # --- yumuşak kaplama (alfa) + orijinal gölge/parlaklık detayları ---
+    reg = ndimage.binary_dilation(m, iterations=4)
+    bl = base.mean(2); al = a2.mean(2)
+    alpha = np.clip((bl - al) / np.maximum(bl - 22, 1), 0, 1)
+    alpha[bl < 90] = m[bl < 90]            # bazdaki çizgilerin üstünde maskeye güven
+    alpha[m] = np.maximum(alpha[m], .97 * (al[m] < 110))
+    alpha = np.where(m & (al < 150), np.maximum(alpha, ndimage.binary_erosion(m, iterations=2) * 1.0), alpha)
+    bgm = bl > 240; alpha[bgm] = np.clip((254 - al[bgm]) / 200, 0, 1)   # arka plan üstü: yalnız gerçek koyu piksel
+    alpha[alpha < .08] = 0; alpha *= reg
+    ys, xs = np.where(alpha > .05); x0, x1, y0, y1 = xs.min(), xs.max() + 1, ys.min(), ys.max() + 1
+    A = alpha[y0:y1, x0:x1]; Bc = base[y0:y1, x0:x1]; Ac = a2[y0:y1, x0:x1]
+    Hp = (Ac - (1 - A[..., None]) * Bc) / np.maximum(A[..., None], .3)   # yalnız saçın rengi
+    h = np.clip(Hp.mean(2), 0, 255)
+    core = A > .9; med = float(np.median(h[core])) if core.any() else 25.0; med = max(med, 12.0)
+    dark = np.clip(1 - h / med, 0, 1) * .85; lite = np.clip((h - med) / (255 - med), 0, 1) * .85
+    lite[(A < .6) | (Ac.mean(2) > 140)] = 0   # kenar karışımlarını parlaklık sanma (gri yapma)
+    sil = A
+    det = np.zeros(A.shape + (4,)); det[..., :3] = np.where((lite > dark)[..., None], 255, 0)
+    det[..., 3] = np.maximum(dark, lite) * A * 255
+    mm = A > .05
     Image.fromarray(np.dstack([np.full(mm.shape + (3,), 255), sil * 255]).astype(np.uint8), 'RGBA').save(f'{OUT}/{k}_sil.webp', lossless=True)
     Image.fromarray(np.clip(det, 0, 255).astype(np.uint8), 'RGBA').save(f'{OUT}/{k}_det.webp', quality=88)
     meta[k] = dict(n=info['n'], x=round(float(OX + x0 * SC), 2), y=round(float(OY + y0 * SC), 2), w=round(float((x1 - x0) * SC), 2), h=round(float((y1 - y0) * SC), 2))
-    P = base.copy(); S_ = np.zeros(base.shape[:2]); S_[y0:y1, x0:x1] = sil; P = P * (1 - S_[..., None]) + np.array([200, 60, 120]) * S_[..., None]
+    P = base.copy(); S_ = np.zeros(base.shape[:2]); S_[y0:y1, x0:x1] = sil; P = P * (1 - S_[..., None]) + np.array([120, 70, 40]) * S_[..., None]
     Image.fromarray(P.astype(np.uint8)).resize((316, 316)).save(f'{OUT}/{k}_prev.png'); print(k, 'hiza', dx, dy)
 b64 = lambda p: base64.b64encode(open(p, 'rb').read()).decode()
 js = '/* ============ Erkek saçları 2.0: referans görsellerden; saç rengine boyanır ============ */\n'
