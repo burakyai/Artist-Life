@@ -21,16 +21,22 @@ def facesil(a):
 face = facesil(base)
 face[840:] = False
 def lips(a):
-    m = (a[..., 0] > 170) & (a[..., 1] < 160) & (a[..., 2] < 170) & (a[..., 0] - a[..., 1] > 45); m[:250] = 0; m[800:] = 0; m[:, :400] = 0; m[:, 870:] = 0
-    ys, xs = np.where(m); return xs.mean(), ys.mean()
+    """hizalama çapası: (yüz merkezi x, çene çizgisi y) — dudak renginden daha güvenilir"""
+    nw = a.min(2) < 230; row = nw[400]; xs = np.where(row)[0]; cx = (xs.min() + xs.max()) / 2
+    dark = a.mean(2) < 60; chin = 680
+    for y in range(630, 780):
+        if dark[y, 600:660].mean() > .5: chin = y; break
+    return cx, chin
 bx, by = lips(base)
 meta = {}
 for k, f in FILES.items():
     a = np.asarray(Image.open(f'{UP}{f}-image.png').convert('RGB')).astype(float)
     lx, ly = lips(a); dx, dy = bx - lx, by - ly
     fshift = ndimage.shift(face.astype(float), (-dy, -dx), order=0) > .5
-    fshift = ndimage.binary_erosion(fshift, iterations=3)
-    fshift[int(640 - dy):] = False  # boyun gövdeye dahil (yüz görseliyle örtüşür, dikiş görünmez)
+    # çene bandı (640-700): yüz görselinin çene çizgisi gövdedekini örtsün diye gövdeden 6 px pay ile çıkarılır; 700'den aşağısı (boyun, yaka) gövdede kalır
+    fshift[int(700 - dy):] = False
+    fshift = ndimage.binary_dilation(fshift, iterations=6)
+    fring = fshift.copy(); fring[:int(640 - dy)] = False  # ten maskesine eklenecek bant (yüz orada görünsün, delik kalmasın)
     white = a.min(2) > 232
     # arka plan: üst/sol/sağ kenarlara bağlı beyaz (alt kenara değen beyaz gömlek arka plan sayılmaz)
     wl, wn = ndimage.label(white); border = set(wl[0, :]) | set(wl[:, 0]) | set(wl[:, -1]); border.discard(0)
@@ -43,7 +49,7 @@ for k, f in FILES.items():
     kk = (a / SKIN).mean(2); dev = np.abs(a - kk[..., None] * SKIN).max(2)
     skin = (dev < 20) & (kk > .45) & (kk < 1.12) & body
     skin = ndimage.binary_opening(skin, iterations=2)
-    ys, xs = np.where(body); x0, x1, y0, y1 = xs.min(), xs.max() + 1, ys.min(), ys.max() + 1
+    ys, xs = np.where(body | fring); x0, x1, y0, y1 = xs.min(), xs.max() + 1, ys.min(), ys.max() + 1
     sub = a[y0:y1, x0:x1]; bm = body[y0:y1, x0:x1]; sk = skin[y0:y1, x0:x1]; kv = kk[y0:y1, x0:x1]
     edge = np.clip((236 - sub.min(2)) / 30, 0, 1)
     sil = np.minimum(bm.astype(float), np.maximum(edge, ndimage.binary_erosion(bm, iterations=2)))
@@ -52,7 +58,8 @@ for k, f in FILES.items():
     cloth = np.zeros(sub.shape[:2] + (4,)); cloth[..., :3] = np.where(sk[..., None], np.array([60, 30, 20])[None, None, :], sub)
     cloth[..., 3] = np.where(sk, shade * .85, 1.0) * sil * 255
     skd = ndimage.binary_dilation(sk, iterations=9)  # maske kenarında dikiş olmasın
-    skmask = np.dstack([np.full(sk.shape + (3,), 255), ndimage.gaussian_filter(skd.astype(float), .8) * 255 * sil])
+    skm = np.maximum(ndimage.gaussian_filter(skd.astype(float), .8) * sil, fring[y0:y1, x0:x1].astype(float))  # çene bandı dahil
+    skmask = np.dstack([np.full(sk.shape + (3,), 255), skm * 255])
     w = x1 - x0; h = y1 - y0; sc = min(1, 480 / max(w, h)); W, H = int(w * sc), int(h * sc)
     Image.fromarray(np.clip(cloth, 0, 255).astype(np.uint8), 'RGBA').resize((W, H), Image.LANCZOS).save(f'{OUT}/m_{k}.webp', quality=86)
     Image.fromarray(np.clip(skmask, 0, 255).astype(np.uint8), 'RGBA').resize((W, H), Image.LANCZOS).save(f'{OUT}/m_{k}_sk.webp', lossless=True)
