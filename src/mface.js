@@ -12,7 +12,7 @@ function mHead(id,skin,age,sad,B){const X=33.82,Y=11.95,W=32.55,H=40.98;const CH
   const skin=SKINS[L.skin],id='m'+(++uid);let hc=HCOL[L.hairColor];
   if(age>=58&&!['gri','beyaz'].includes(L.hairColor))hc=age>=72?HCOL.beyaz:HCOL.gri;
   const adult=age>=16;let o=opts.jail?'mahkum':L.outfit;if(typeof MBODY!=='undefined'&&!MBODY[o]&&!opts.jail)o='kas';if(age<14&&o==='kas')o='hoodie';let accs=adult&&!opts.jail?L.acc:(opts.jail&&L.acc.includes('yara')?['yara']:[]);
-  accs=accs.filter(a=>!(typeof NECKS!=='undefined'&&NECKS.includes(a))&&!(typeof EARS!=='undefined'&&EARS.includes(a))&&!['zincir','kartal','bayrak'].includes(a));/* takılar geçici olarak kapalı */
+  const jw=(adult&&!opts.jail&&typeof MJEW!=='undefined')?(L.acc||[]).filter(a=>MJEW[a]):[];accs=accs.filter(a=>!(typeof NECKS!=='undefined'&&NECKS.includes(a))&&!(typeof EARS!=='undefined'&&EARS.includes(a))&&!['zincir','kartal','bayrak'].includes(a));/* takılar geçici olarak kapalı */
   const sad=opts.mood!==undefined&&opts.mood<30;
   const G=x=>`<g stroke="${OL2}" stroke-width=".8" stroke-linejoin="round">${x}</g>`;
   let s=`<svg viewBox="14 2 72 79.2" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" style="--sk:${skin}">`;
@@ -33,6 +33,7 @@ function mHead(id,skin,age,sad,B){const X=33.82,Y=11.95,W=32.55,H=40.98;const CH
   if(adult&&typeof MBEARD!=='undefined'&&MBEARD[L.beard])s+=mbeardSVG(L.beard,hc);
   if(typeof MTAT!=='undefined'&&adult){const tk=accs.filter(a=>MTAT[a]);if(tk.length){const B=(typeof MBODY!=='undefined')&&MBODY[o];const F=MIMG;const X=10.88+370*.062,Y=9.16+45*.062,W=(895-370)*.062,H=(706-45)*.062;
     let mk=`<image href="${F.sil}" x="${X}" y="${Y}" width="${W}" height="${H}"/>`;if(B){const ef="te"+(++uid);mk+=`<filter id="${ef}" x="-5%" y="-5%" width="110%" height="110%"><feMorphology operator="erode" radius=".75"/></filter><image href="${B.sk}" x="${B.x}" y="${B.y}" width="${B.w}" height="${Math.max(B.h,82.5-B.y)}" preserveAspectRatio="none" filter="url(#${ef})"/>`}s+=mtatSVG(tk,mk,skin)}}
+  if(jw.length)s+=mjewSVG(jw.filter(a=>!MJEW[a].ear))+mjewSVG(jw.filter(a=>MJEW[a].ear));
   if(L.hair!=='kel')s+=G(hair2(L.hair,hc)+hairM(L.hair,hc));
   if(age>=40&&age<58&&!['kel','asker'].includes(L.hair)&&!['gri','beyaz'].includes(L.hairColor))s+=`<path d="M37.8 30 Q37.4 25 38.6 21.6 M62.2 30 Q62.6 25 61.4 21.6" stroke="#c4c4c4" stroke-width="1.4" opacity=".6" fill="none" stroke-linecap="round"/>`;
   ['gozyasi','kasust','yildiz','elmacikgul','cizgi3','alinyazi','kaskesik','altindis','kupe','yara','gozluk','puro','fotr','kasket'].forEach(a=>{if(accs.includes(a))s+=acc2(a)});
@@ -47,7 +48,9 @@ function mHead(id,skin,age,sad,B){const X=33.82,Y=11.95,W=32.55,H=40.98;const CH
 {OUT.g=()=>OUT.filter(o=>(o.g?o.g===S.g:true)&&(S.g==='e'?!!MBODY[o.id]:(typeof KBODY!=='undefined'?!!KBODY[o.id]:true)))}
 
 /* takı sekmeleri geçici olarak kapalı */
-{for(const k of ['kolye','kupe']){const i=AGRP.findIndex(x=>x[0]===k);if(i>=0)AGRP.splice(i,1)}}
+/* takılar: erkekte görsel takılar; kadında şimdilik kapalı */
+[['madalyon','Pırlantalı madalyon',250000,8],['dolar','Pırlantalı dolar kolye',400000,9]].forEach(([id,n,p,st])=>{if(!ACCS.some(a=>a.id===id))ACCS.push({id,n,p,st,grp:'kolye',g:'e'})});
+ACCS.forEach(a=>{if((a.grp==='kolye'||a.grp==='kupe')&&!a.g&&typeof MJEW!=='undefined'){if(MJEW[a.id])a.g='e';else a.g='x'}});
 
 /* eski sakal listesi kapalı: yalnız sinekkaydı + görsel sakallar */
 BEARDS.length=0;BEARDS.push(['yok','Sinekkaydı']);if(typeof MBEARD!=='undefined')Object.entries(MBEARD).forEach(([k,v])=>BEARDS.push([k,v.n]));
