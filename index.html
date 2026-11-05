@@ -253,7 +253,7 @@ body.monob .tab.on,body[data-th="monokrom"] .tab.on,body[data-th="monokrom"] .bt
 <div class="mod" id="confirm"><div class="box"><h2>Yeni hayat?</h2><p>Mevcut hayatın silinecek ve baştan başlayacaksın.</p><button class="btn" onclick="$('confirm').classList.remove('on');restart()">Evet, baştan başla</button><button class="btn sec" onclick="$('confirm').classList.remove('on')">Vazgeç</button></div></div>
 <script>
 try{if('serviceWorker' in navigator&&/github\.io$/.test(location.hostname))navigator.serviceWorker.register('sw.js').catch(()=>{})}catch(e){}
-const APPV='2026.11.05-134914';
+const APPV='2026.11.05-135726';
 (function(){try{if(!/github\.io$/.test(location.hostname))return;const chk=()=>fetch(location.pathname+'?nc='+Date.now(),{cache:'no-store'}).then(r=>r.text()).then(t=>{const m=t.match(/const APPV='([^']+)'/);if(m&&m[1]!==APPV&&!sessionStorage.getItem('upd'+m[1])){sessionStorage.setItem('upd'+m[1],'1');location.replace(location.pathname+'?v='+encodeURIComponent(m[1]))}}).catch(()=>{});chk();document.addEventListener('visibilitychange',()=>{if(!document.hidden)chk()})}catch(e){}})();
 /* ============ Yardımcılar ============ */
 const $=id=>document.getElementById(id);
@@ -4788,6 +4788,22 @@ function mtatSVG(keys,skinMaskSVG){if(!keys.length)return '';const id='mt'+(++ui
 const MTATP={"t_sabir": [6000, 2]};
 
 Object.entries(MTAT).forEach(([k,T])=>{if(!ACCS.some(a=>a.id===k))ACCS.push({id:k,n:T.n,p:MTATP[k][0],st:MTATP[k][1],grp:'dovme',g:'e'})});
+
+/* ============ Performans: gömülü base64 görselleri açılışta bir kez blob URL'ye çevir ============
+   Avatar SVG'leri artık 180 KB yerine ~3 KB; tarayıcı her görseli bir kez çözer ve önbellekte tutar. */
+(function(){
+ const jobs=[];
+ function walk(o,depth){if(!o||typeof o!=='object'||depth>3)return;for(const k of Object.keys(o)){const v=o[k];if(typeof v==='string'&&v.length>200&&v.slice(0,5)==='data:')jobs.push([o,k,v]);else if(v&&typeof v==='object')walk(v,depth+1)}}
+ function run(){['HIMG','KHAIR','KBODY','MBODY','MIMG','FEMIMG','MBEARD','MTAT'].forEach(n=>{try{const o=eval('typeof '+n+"!=='undefined'?"+n+':null');if(o)walk(o,0)}catch(e){}});
+  /* tarayıcının yerel base64 çözücüsü (fetch) — ana iş parçacığını kilitlemez */
+  Promise.all(jobs.map(([o,k,v])=>fetch(v).then(r=>r.blob()).then(bl=>{const u=URL.createObjectURL(bl);o[k]=u;const im=new Image();im.src=u;if(im.decode)im.decode().catch(()=>{})}).catch(()=>{}))).then(()=>{
+   if(typeof AVC_CLEAR==='function')AVC_CLEAR();try{if(S&&S.alive)render()}catch(e){}})}
+ /* ilk ekran çizildikten sonra başlat */
+ if(document.readyState==='complete')setTimeout(run,50);else window.addEventListener('load',()=>setTimeout(run,50));
+})();
+/* avatar önbelleği: aynı görünüm+yaş+seçenek için SVG'yi tekrar üretme */
+{const _AV=AV,AVC=new Map();window.AVC_CLEAR=()=>AVC.clear();AV=function(L,age,opts){let key;try{key=JSON.stringify([L,age,opts||{},S&&S.cr&&S.cr.no])}catch(e){return _AV(L,age,opts)}
+ let v=AVC.get(key);if(v)return v;v=_AV(L,age,opts);if(AVC.size>400)AVC.clear();AVC.set(key,v);return v}}
 
 boot();
 </script>
