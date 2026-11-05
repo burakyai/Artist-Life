@@ -53,7 +53,7 @@ for k, f in FILES.items():
     skmask = np.dstack([np.full(sk.shape + (3,), 255), ndimage.gaussian_filter(sk.astype(float), .8) * 255 * sil])
     w = x1 - x0; h = y1 - y0; sc = min(1, 480 / max(w, h)); W, H = int(w * sc), int(h * sc)
     Image.fromarray(np.clip(cloth, 0, 255).astype(np.uint8), 'RGBA').resize((W, H), Image.LANCZOS).save(f'{OUT}/b_{k}.webp', quality=86)
-    Image.fromarray(np.clip(skmask, 0, 255).astype(np.uint8), 'RGBA').resize((W, H), Image.LANCZOS).save(f'{OUT}/b_{k}_sk.webp', quality=86)
+    Image.fromarray(np.clip(skmask, 0, 255).astype(np.uint8), 'RGBA').resize((W, H), Image.LANCZOS).save(f'{OUT}/b_{k}_sk.webp', lossless=True)
     meta[k] = dict(x=round(float(OX + (x0 + dx) * SC), 2), y=round(float(OY + (y0 + dy) * SC), 2), w=round(float(w * SC), 2), h=round(float(h * SC), 2), bottom=int(y1 >= 1260))
     prev = np.full(a.shape, 255.); col = np.array([120, 78, 50.])
     S = np.zeros(a.shape[:2]); S[y0:y1, x0:x1] = skmask[..., 3] / 255; C = np.zeros(a.shape[:2] + (4,)); C[y0:y1, x0:x1] = cloth

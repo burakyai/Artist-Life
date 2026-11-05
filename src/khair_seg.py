@@ -51,7 +51,7 @@ for k, f in FILES.items():
     det = np.zeros(sub.shape[:2] + (4,)); det[..., :3] = np.where(light[..., None] > .05, 255, 20)
     det[..., 3] = np.where(light > .05, light * .38, outline * .9) * sil * 255
     w = x1 - x0; h = y1 - y0; sc = min(1, 820 / max(w, h)); W, H = int(w * sc), int(h * sc)
-    Image.fromarray(np.dstack([np.full(mm.shape + (3,), 255), sil * 255]).astype(np.uint8), 'RGBA').resize((W, H), Image.LANCZOS).save(f'{OUT}/{k}_sil.webp', quality=88)
+    Image.fromarray(np.dstack([np.full(mm.shape + (3,), 255), sil * 255]).astype(np.uint8), 'RGBA').resize((W, H), Image.LANCZOS).save(f'{OUT}/{k}_sil.webp', lossless=True)
     Image.fromarray(np.clip(det, 0, 255).astype(np.uint8), 'RGBA').resize((W, H), Image.LANCZOS).save(f'{OUT}/{k}_det.webp', quality=88)
     meta[k] = dict(n=NAMES[k], x=round(float(OX + (x0 + dx) * SC), 2), y=round(float(OY + (y0 + dy) * SC), 2), w=round(float(w * SC), 2), h=round(float(h * SC), 2))
 json.dump(meta, open(f'{OUT}/meta.json', 'w'), ensure_ascii=False)

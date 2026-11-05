@@ -19,7 +19,8 @@ sk = skin & fg; shade = np.clip(1 - k, 0, 1) * fg
 alpha = np.where(sk, shade * 0.85, fg * 1.0) * sil
 rgb = np.where(sk[..., None], np.array([60, 30, 20])[None, None, :], a)
 def save(arr, name):
-    Image.fromarray(np.clip(arr, 0, 255).astype(np.uint8), 'RGBA').resize((560, int(560 * arr.shape[0] / arr.shape[1])), Image.LANCZOS).save(name, quality=90)
+    im = Image.fromarray(np.clip(arr, 0, 255).astype(np.uint8), 'RGBA').resize((560, int(560 * arr.shape[0] / arr.shape[1])), Image.LANCZOS)
+    im.save(name, quality=90, lossless=name.endswith('sil.webp'))
 save(np.dstack([rgb, alpha * 255]), f'{OUT}/det.webp'); save(np.dstack([np.full(a.shape[:2] + (3,), 255), sil * 255]), f'{OUT}/sil.webp')
 b64 = lambda p: base64.b64encode(open(p, 'rb').read()).decode()
 s = open(JS).read()

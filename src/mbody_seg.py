@@ -30,7 +30,7 @@ for k, f in FILES.items():
     lx, ly = lips(a); dx, dy = bx - lx, by - ly
     fshift = ndimage.shift(face.astype(float), (-dy, -dx), order=0) > .5
     fshift = ndimage.binary_erosion(fshift, iterations=3)
-    fshift[int(655 - dy):] = False  # boyun gövdeye dahil (yüz görseliyle örtüşür, dikiş görünmez)
+    fshift[int(640 - dy):] = False  # boyun gövdeye dahil (yüz görseliyle örtüşür, dikiş görünmez)
     white = a.min(2) > 232
     # arka plan: üst/sol/sağ kenarlara bağlı beyaz (alt kenara değen beyaz gömlek arka plan sayılmaz)
     wl, wn = ndimage.label(white); border = set(wl[0, :]) | set(wl[:, 0]) | set(wl[:, -1]); border.discard(0)
@@ -51,10 +51,11 @@ for k, f in FILES.items():
     shade = np.clip(1 - kv, 0, 1)
     cloth = np.zeros(sub.shape[:2] + (4,)); cloth[..., :3] = np.where(sk[..., None], np.array([60, 30, 20])[None, None, :], sub)
     cloth[..., 3] = np.where(sk, shade * .85, 1.0) * sil * 255
-    skmask = np.dstack([np.full(sk.shape + (3,), 255), ndimage.gaussian_filter(sk.astype(float), .8) * 255 * sil])
+    skd = ndimage.binary_dilation(sk, iterations=9)  # maske kenarında dikiş olmasın
+    skmask = np.dstack([np.full(sk.shape + (3,), 255), ndimage.gaussian_filter(skd.astype(float), .8) * 255 * sil])
     w = x1 - x0; h = y1 - y0; sc = min(1, 480 / max(w, h)); W, H = int(w * sc), int(h * sc)
     Image.fromarray(np.clip(cloth, 0, 255).astype(np.uint8), 'RGBA').resize((W, H), Image.LANCZOS).save(f'{OUT}/m_{k}.webp', quality=86)
-    Image.fromarray(np.clip(skmask, 0, 255).astype(np.uint8), 'RGBA').resize((W, H), Image.LANCZOS).save(f'{OUT}/m_{k}_sk.webp', quality=86)
+    Image.fromarray(np.clip(skmask, 0, 255).astype(np.uint8), 'RGBA').resize((W, H), Image.LANCZOS).save(f'{OUT}/m_{k}_sk.webp', lossless=True)
     meta[k] = dict(x=round(float(OX + (x0 + dx) * SC), 2), y=round(float(OY + (y0 + dy) * SC), 2), w=round(float(w * SC), 2), h=round(float(h * SC), 2), bottom=int(y1 >= 1260))
     prev = np.full(a.shape, 255.); col = np.array([120, 78, 50.])
     S = np.zeros(a.shape[:2]); S[y0:y1, x0:x1] = skmask[..., 3] / 255; C = np.zeros(a.shape[:2] + (4,)); C[y0:y1, x0:x1] = cloth
