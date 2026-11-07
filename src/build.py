@@ -29,4 +29,5 @@ m=re.search(r"const IC=\{(.*?)\};",u,re.S).group(1)
 for k2,v in re.findall(r"(\w+):'(<svg.*?</svg>)'",m): sh=sh.replace('__IC_'+k2.upper()+'__',v)
 import time
 sh=sh.replace('__APPV__',time.strftime('%Y.%m.%d-%H%M%S'))
+eb=open('errbox.js').read();k=sh.index('<script');sh=sh[:k]+'<script>'+eb+'</script>\n'+sh[k:]
 open('index.html','w').write(sh)
